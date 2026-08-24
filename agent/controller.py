@@ -1,7 +1,7 @@
 """Agent Controller for SatQuery AI (Division 1 Core Orchestration).
 
 Coordinates the end-to-end vision-language pipeline:
-Input Validation -> Intent Resolution -> Workflow Planning -> Specialist Execution -> Result Aggregation.
+Input Validation -> Intent Resolution -> TaskPlan Generation -> Specialist Execution -> Result Aggregation.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ import uuid
 from core.errors import SatQueryException
 from core.logging import get_logger, set_request_id
 from core.schemas import (
+    AgentDecision,
     ExecutionStage,
     ExecutionTraceEntry,
     QueryRequest,
@@ -117,7 +118,18 @@ class AgentController:
             # 4. Tool Selection via Router
             t0 = time.perf_counter()
             selected_tool = self.router.select_tool(intent=intent, images=request.images)
+            
+            # Check if multi-step composite query
+            is_composite = intent.extracted_parameters.get("is_composite", False)
+            secondary_tool = None
+            if is_composite:
+                secondary_task = intent.extracted_parameters.get("secondary_task", TaskType.SINGLE_IMAGE_VQA)
+                sec_candidates = self.registry.find_tools_for_task(secondary_task)
+                if sec_candidates:
+                    secondary_tool = sec_candidates[0]
+
             dur_router = round((time.perf_counter() - t0) * 1000.0, 2)
+            selected_tool_names = [selected_tool.name] + ([secondary_tool.name] if secondary_tool else [])
 
             system_trace.append(
                 ExecutionTraceEntry(
@@ -125,15 +137,30 @@ class AgentController:
                     component="TaskRouter",
                     status="COMPLETED",
                     duration_ms=dur_router,
-                    details={"selected_tool": selected_tool.name, "tool_version": selected_tool.version},
+                    details={"selected_tools": selected_tool_names, "is_composite": is_composite},
                 )
             )
 
-            # 5. Workflow Planning
-            plan = WorkflowPlanner.create_plan(
+            # 5. Canonical TaskPlan Formulation & Workflow Derivation
+            task_plan = WorkflowPlanner.create_task_plan(
                 intent=intent,
                 selected_tool=selected_tool,
-                is_composite_query=False,
+                secondary_tool=secondary_tool,
+                is_composite_query=is_composite,
+                images=request.images,
+            )
+            workflow_plan = WorkflowPlanner.derive_workflow_plan(task_plan, intent)
+
+            # Construct AgentDecision Card
+            agent_decision = AgentDecision(
+                task=resolved_task,
+                task_display_name=resolved_task.value.replace("_", " ").title(),
+                image_count=len(request.images),
+                detected_modalities=[img.modality for img in request.images],
+                selected_specialist=" -> ".join(selected_tool_names),
+                workflow_summary=" -> ".join([s.tool_name for s in task_plan.steps]),
+                confidence=intent.confidence,
+                why_this_tool=intent.intent_explanation,
             )
 
             # 6. Specialist Execution
@@ -146,10 +173,18 @@ class AgentController:
                 config=request.config,
             )
 
+            # Mark steps as running/completed during execution
+            for step in task_plan.steps:
+                step.status = "running"
+
             tool_results = await self.execution_engine.execute_plan(
-                plan=plan,
+                plan=workflow_plan,
                 base_request=base_tool_request,
             )
+
+            for idx, res in enumerate(tool_results):
+                if idx < len(task_plan.steps):
+                    task_plan.steps[idx].status = "completed" if res.status == ToolStatus.SUCCESS else "failed"
 
             # 7. Result Aggregation
             response = ResultAggregator.aggregate(
@@ -158,6 +193,10 @@ class AgentController:
                 resolved_task=resolved_task,
                 tool_results=tool_results,
                 system_trace_entries=system_trace,
+                task_intent=intent,
+                task_plan=task_plan,
+                agent_decision=agent_decision,
+                selected_tools=selected_tool_names,
             )
 
             response.execution_trace.append(

@@ -43,6 +43,17 @@ class ToolRegistry:
                 logger.info(f"Unregistered tool: '{name}'")
             return tool
 
+    def swap_tool(self, target_name: str, new_tool: BaseSpecialistTool) -> Optional[BaseSpecialistTool]:
+        """Swap an existing registered tool with a new specialist tool implementing BaseSpecialistTool."""
+        if not isinstance(new_tool, BaseSpecialistTool):
+            raise TypeError(f"New tool must inherit from BaseSpecialistTool, got {type(new_tool)}")
+
+        with self._lock:
+            old_tool = self._tools.pop(target_name, None)
+            self._tools[new_tool.name] = new_tool
+            logger.info(f"Swapped specialist tool: '{target_name}' -> '{new_tool.name}' (version {new_tool.version})")
+            return old_tool
+
     def get(self, name: str) -> BaseSpecialistTool:
         """Retrieve a registered tool by its unique name."""
         with self._lock:

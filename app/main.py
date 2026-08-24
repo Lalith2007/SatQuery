@@ -35,6 +35,14 @@ async def lifespan(app: FastAPI):
         register_default_mocks(default_registry)
         logger.info(f"Registered {len(default_registry.list_tools())} tools into default registry.")
 
+    # Ensure demo assets exist on disk for judging presets
+    try:
+        from app.demo_assets import ensure_demo_assets
+        ensure_demo_assets("demo_assets")
+        logger.info("Initialized demo remote-sensing rasters for presentation presets.")
+    except Exception as e:
+        logger.warning(f"Could not generate demo rasters: {e}")
+
     yield
 
     logger.info(f"Shutting down {settings.app_name}...")

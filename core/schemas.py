@@ -193,6 +193,40 @@ class ToolMetadata(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Extensible tool attributes")
 
 
+class TaskPlanStep(BaseModel):
+    """Single operational step within a structured TaskPlan."""
+    step_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique step ID")
+    step_index: int = Field(ge=0, description="0-indexed sequence position")
+    task: TaskType = Field(description="Task to execute in this step")
+    tool_name: str = Field(description="Name of specialist tool to invoke")
+    purpose: str = Field(default="", description="Operational purpose of this workflow step")
+    status: str = Field(default="planned", description="Step status: planned, running, completed, failed, skipped")
+    input_references: List[str] = Field(default_factory=list, description="IDs of image inputs utilized")
+    dependencies: List[str] = Field(default_factory=list, description="Step IDs that must complete prior to this step")
+    pass_context_from_previous: bool = Field(default=True, description="Whether prior step outputs are passed to context")
+
+
+class TaskPlan(BaseModel):
+    """Canonical structured workflow plan for agent execution and observability."""
+    plan_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique plan ID")
+    goal: str = Field(description="Operational objective of this workflow plan")
+    steps: List[TaskPlanStep] = Field(min_length=1, description="Ordered sequence of execution steps")
+    is_multi_step: bool = Field(default=False, description="True if plan chains multiple specialist invocations")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Arbitrary plan metadata")
+
+
+class AgentDecision(BaseModel):
+    """Compact summary of the agent's routing decision and operational explanation."""
+    task: TaskType = Field(description="Resolved remote-sensing task")
+    task_display_name: str = Field(description="Human-readable task title")
+    image_count: int = Field(ge=1, description="Number of validated input images")
+    detected_modalities: List[ImageModality] = Field(description="Observed image modalities")
+    selected_specialist: str = Field(description="Primary tool selected from registry")
+    workflow_summary: str = Field(description="Summary of planned execution flow")
+    confidence: Optional[float] = Field(default=None, description="Confidence in intent resolution")
+    why_this_tool: str = Field(description="Operational rationale for specialist selection (no private CoT)")
+
+
 class SatQueryErrorDetail(BaseModel):
     """Machine-readable and safe structured error detail."""
     error_code: str = Field(description="Centralized error taxonomy code")
@@ -221,5 +255,9 @@ class QueryResponse(BaseModel):
     evidence: List[Evidence] = Field(default_factory=list, description="Aggregated evidence list")
     artifacts: List[Artifact] = Field(default_factory=list, description="Aggregated artifacts list")
     execution_trace: List[ExecutionTraceEntry] = Field(default_factory=list, description="Operational audit trail")
+    task_intent: Optional[TaskIntent] = Field(default=None, description="Resolved structured intent")
+    task_plan: Optional[TaskPlan] = Field(default=None, description="Canonical workflow execution plan")
+    agent_decision: Optional[AgentDecision] = Field(default=None, description="Agent decision summary card")
+    selected_tools: List[str] = Field(default_factory=list, description="List of specialist tool names invoked")
     errors: List[SatQueryErrorDetail] = Field(default_factory=list, description="Errors encountered if any")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Response metadata")

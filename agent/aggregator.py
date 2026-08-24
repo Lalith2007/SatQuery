@@ -10,12 +10,15 @@ from typing import List, Optional
 
 from core.logging import get_logger
 from core.schemas import (
+    AgentDecision,
     Artifact,
     Evidence,
     ExecutionStage,
     ExecutionTraceEntry,
     QueryResponse,
     SatQueryErrorDetail,
+    TaskIntent,
+    TaskPlan,
     TaskType,
     ToolResult,
     ToolStatus,
@@ -36,10 +39,15 @@ class ResultAggregator:
         tool_results: List[ToolResult],
         system_trace_entries: Optional[List[ExecutionTraceEntry]] = None,
         errors: Optional[List[SatQueryErrorDetail]] = None,
+        task_intent: Optional[TaskIntent] = None,
+        task_plan: Optional[TaskPlan] = None,
+        agent_decision: Optional[AgentDecision] = None,
+        selected_tools: Optional[List[str]] = None,
     ) -> QueryResponse:
         """Aggregate one or more ToolResults into a final QueryResponse."""
         system_trace = list(system_trace_entries or [])
         errs = list(errors or [])
+        sel_tools = list(selected_tools or [r.model_info.get("name", "specialist") for r in tool_results])
 
         # If no tool results and errors exist, build error response
         if not tool_results:
@@ -53,6 +61,10 @@ class ResultAggregator:
                 evidence=[],
                 artifacts=[],
                 execution_trace=system_trace,
+                task_intent=task_intent,
+                task_plan=task_plan,
+                agent_decision=agent_decision,
+                selected_tools=sel_tools,
                 errors=errs,
                 metadata={},
             )
@@ -81,6 +93,10 @@ class ResultAggregator:
                 evidence=res.evidence,
                 artifacts=res.artifacts,
                 execution_trace=all_trace,
+                task_intent=task_intent,
+                task_plan=task_plan,
+                agent_decision=agent_decision,
+                selected_tools=sel_tools,
                 errors=errs,
                 metadata={
                     "model_info": res.model_info,
@@ -132,6 +148,10 @@ class ResultAggregator:
             evidence=all_evidence,
             artifacts=all_artifacts,
             execution_trace=system_trace,
+            task_intent=task_intent,
+            task_plan=task_plan,
+            agent_decision=agent_decision,
+            selected_tools=sel_tools,
             errors=errs,
             metadata={"workflow_steps": len(tool_results)},
         )

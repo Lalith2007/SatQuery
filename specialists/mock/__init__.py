@@ -1,6 +1,7 @@
 """High-fidelity mock specialists package for SatQuery AI."""
 
 from registry.registry import ToolRegistry, default_registry
+from specialists.mock.alternate_mock import AlternateMockSingleImageVQATool
 from specialists.mock.failing_mock import MockFailingTool
 from specialists.mock.optical_sar_mock import MockOpticalSARAnalysisTool
 from specialists.mock.single_image_mock import (
@@ -23,6 +24,7 @@ def register_default_mocks(registry: ToolRegistry | None = None) -> None:
 
 __all__ = [
     "MockSingleImageVQATool",
+    "AlternateMockSingleImageVQATool",
     "MockSingleImageCaptionTool",
     "MockSingleImageGroundingTool",
     "MockBiTemporalChangeTool",

@@ -35,6 +35,10 @@ class SatQuerySettings(BaseSettings):
         default=True,
         description="Whether to register default high-fidelity mock specialists when real modules are absent",
     )
+    enable_dev_tool_swap: bool = Field(
+        default=True,
+        description="Enable development-only tool swapping endpoint for live demonstrations",
+    )
     tool_timeout_seconds: float = Field(
         default=30.0,
         ge=1.0,

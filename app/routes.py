@@ -1,7 +1,7 @@
 """API Route handlers for SatQuery AI.
 
 Provides versioned REST endpoints for query submission, raster upload,
-tool inspection, task discovery, and artifact access.
+tool inspection, task discovery, artifact access, and interactive presentation UI.
 """
 
 from __future__ import annotations
@@ -15,7 +15,8 @@ from typing import List, Optional
 import uuid
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from pydantic import BaseModel, Field
 
 from core.config import settings
 from core.errors import ErrorCode, SatQueryException
@@ -32,14 +33,32 @@ from core.schemas import (
     ToolStatus,
 )
 from registry.registry import ToolRegistry, default_registry
+from specialists.mock import (
+    AlternateMockSingleImageVQATool,
+    MockSingleImageVQATool,
+)
 from validation.validator import ALLOWED_EXTENSIONS, RasterInspector
 from agent.controller import AgentController
+from app.ui import DEMO_HTML
 
 logger = get_logger("api_routes")
 router = APIRouter()
 
 # Controller instance backed by default registry
 controller = AgentController(registry=default_registry)
+
+
+class ToolSwapRequest(BaseModel):
+    """Payload for demo-only tool swapping demonstration."""
+    target_tool: str = Field(default="single_image_vqa_mock", description="Tool name to swap")
+    use_alternate: bool = Field(default=True, description="True to swap in alternate mock, False to restore standard mock")
+
+
+@router.get("/", response_class=HTMLResponse, summary="SatQuery Interactive Presentation UI")
+@router.get("/demo", response_class=HTMLResponse, summary="SatQuery Interactive Presentation UI")
+async def get_demo_dashboard():
+    """Serves the rich, interactive agentic orchestration dashboard."""
+    return HTMLResponse(content=DEMO_HTML)
 
 
 @router.get("/health", summary="System Health & Status")
@@ -105,9 +124,40 @@ async def list_tasks():
 
 
 @router.get("/api/v1/tools", summary="List Registered Specialist Tools")
+@router.get("/api/v1/registry", summary="List Registered Specialist Tools (Alias)")
 async def list_registered_tools() -> List[ToolMetadata]:
     """Returns metadata for all specialist tools currently registered in the system."""
     return default_registry.list_tools()
+
+
+@router.post("/api/v1/tools/swap", summary="Swap Specialist Tool Implementation (Demo/Dev Only)")
+async def swap_specialist_tool(req: ToolSwapRequest):
+    """Demonstrates runtime specialist tool swapping without agent modification (Development/Demo only)."""
+    if not settings.enable_dev_tool_swap:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tool swapping endpoint is disabled in this environment configuration.",
+        )
+
+    # Strictly allow swapping only between approved registered mock tools (no arbitrary class loading)
+    if req.use_alternate:
+        alternate_tool = AlternateMockSingleImageVQATool()
+        old_tool = default_registry.swap_tool("single_image_vqa_mock", alternate_tool)
+        return {
+            "status": "swapped",
+            "message": f"Successfully swapped specialist: 'single_image_vqa_mock' -> '{alternate_tool.name}' (version {alternate_tool.version}).",
+            "active_tool": alternate_tool.name,
+            "version": alternate_tool.version,
+        }
+    else:
+        standard_tool = MockSingleImageVQATool()
+        old_tool = default_registry.swap_tool("alternate_single_image_vqa_mock", standard_tool)
+        return {
+            "status": "restored",
+            "message": f"Successfully restored standard specialist: 'alternate_single_image_vqa_mock' -> '{standard_tool.name}' (version {standard_tool.version}).",
+            "active_tool": standard_tool.name,
+            "version": standard_tool.version,
+        }
 
 
 @router.post("/api/v1/query", response_model=QueryResponse, summary="Submit Structured Vision-Language Query")
@@ -240,13 +290,11 @@ async def submit_query_multipart(
 @router.get("/api/v1/artifacts/{artifact_id}", summary="Retrieve Generated Artifact")
 async def get_artifact(artifact_id: str):
     """Retrieve an artifact file (change map, segmented mask, annotated visual) by ID."""
-    # Look in artifact storage path
     storage_root = settings.artifact_storage_path
     
     # Search for matching artifact file
     matched = list(storage_root.rglob(f"*{artifact_id}*"))
     if not matched:
-        # Check if artifact_id matches filename
         matched = list(storage_root.rglob(artifact_id))
 
     if not matched or not matched[0].is_file():

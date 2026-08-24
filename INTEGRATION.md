@@ -1,6 +1,6 @@
 # SatQuery AI: Developer & Specialist Integration Guide (INTEGRATION.md)
 
-This document provides the definitive integration manual for **Division 2 (Sruthi)**, **Division 3 (Dheeraj)**, **Division 4 (Laksh)**, and **Division 5 (Manoj)** to plug their specialist modules and presentation components into the **SatQuery AI Division 1 Backbone** developed by **Lalith**.
+This document provides the definitive integration manual for **Division 2 (Sruthi)**, **Division 3 (Dheeraj)**, **Division 4 (Laksh)**, and **Division 5 (Manoj)** to plug their specialist modules and presentation components into the **SatQuery AI Division 1 Backbone** developed by **Lalith Praveen**.
 
 ---
 
@@ -8,7 +8,7 @@ This document provides the definitive integration manual for **Division 2 (Sruth
 
 | Division | Owner | Domain | Target Directory |
 | :--- | :--- | :--- | :--- |
-| **Division 1** | **Lalith** | Agent Core, Backend, Orchestration, Schemas, Validation, Registry | `core/`, `agent/`, `validation/`, `registry/`, `app/` |
+| **Division 1** | **Lalith Praveen** | Agent Core, Backend, Orchestration, Schemas, Validation, Registry | `core/`, `agent/`, `validation/`, `registry/`, `app/` |
 | **Division 2** | **Sruthi** | Single-Image Intelligence (VQA, Caption, Grounding) | `specialists/single_image/` |
 | **Division 3** | **Dheeraj** | Bi-Temporal Change Intelligence (Change Analysis, Change VQA) | `specialists/temporal_change/` |
 | **Division 4** | **Laksh** | Optical-SAR Cross-Modal Intelligence | `specialists/optical_sar/` |
@@ -144,7 +144,28 @@ class ToolResult(BaseModel):
 
 ---
 
-## 5. Tool Registration & Discovery
+## 5. Structured Response Additions for Presentation (Division 5 - Manoj)
+
+The top-level `QueryResponse` now includes structured observability objects for frontend rendering:
+
+- **`agent_decision` (`AgentDecision`)**:
+  - `task`: Resolved task enum
+  - `task_display_name`: Formatted title string
+  - `image_count`: Number of input images
+  - `detected_modalities`: List of modalities
+  - `selected_specialist`: Name of invoked tool
+  - `workflow_summary`: Summary string
+  - `confidence`: Intent confidence score
+  - `why_this_tool`: Concise, evidence-based operational explanation (never private CoT)
+- **`task_plan` (`TaskPlan`)**:
+  - `goal`: Operational objective
+  - `steps`: Array of `TaskPlanStep` (`step_id`, `step_index`, `task`, `tool_name`, `purpose`, `status`, `dependencies`)
+  - `is_multi_step`: Boolean flag indicating composite workflow execution
+- **`selected_tools`**: List of tool names executed in the pipeline
+
+---
+
+## 6. Tool Registration & Discovery
 
 ### How to Register Your Tool
 In your module or at app startup, register your tool with the `default_registry`:
@@ -156,16 +177,16 @@ from specialists.single_image.my_tool import MySpecialistTool
 default_registry.register(MySpecialistTool())
 ```
 
-### How the Agent Discovers It
-1. The user sends a query + image(s).
-2. `IntentResolver` resolves the query into a structured `TaskIntent`.
-3. `TaskRouter` queries `default_registry.find_tools_for_task(intent.task, images)`.
-4. Your tool is matched based on `supported_tasks`, `min_images`, `max_images`, and `required_modalities`.
-5. The `ExecutionEngine` invokes your tool's `execute(request)` method.
+### Demonstrating Tool Swapping
+Specialists can be swapped at runtime in `default_registry` using:
+```python
+old_tool = default_registry.swap_tool("mock_vqa_name", my_production_tool)
+```
+The agent immediately resolves queries to the newly registered tool without requiring any modifications to the agent controller, router, or backend.
 
 ---
 
-## 6. How to Run Tests
+## 7. How to Run Tests
 
 ### Running Contract Tests for Your Tool
 Verify your tool satisfies the SatQuery system contract:
@@ -177,21 +198,16 @@ pytest tests/test_contracts.py -v
 pytest tests/test_contracts.py -k "my_unique_tool_name" -v
 ```
 
-### Running with Mock Specialists
-To test the complete agent pipeline without GPU or heavy checkpoints:
-```bash
-pytest tests/test_routing.py tests/test_execution_engine.py tests/test_api.py -v
-```
-
-### Running the End-to-End Test Suite
+### Running the Complete Test Suite
 ```bash
 pytest -v
 ```
 
 ---
 
-## 7. Starting the API Backend
+## 8. Starting the API Backend & Web UI
 ```bash
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-Interactive OpenAPI documentation will be available at: `http://localhost:8000/docs`.
+Interactive Presentation Dashboard: **`http://localhost:8000/`**  
+OpenAPI Documentation: **`http://localhost:8000/docs`**

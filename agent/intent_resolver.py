@@ -82,16 +82,36 @@ class IntentResolver:
         # 3. Check for Bi-Temporal Change intent
         is_change_query = any(re.search(p, query_cleaned) for p in cls._CHANGE_PATTERNS)
         if is_change_query or (num_images == 2 and not has_optical_and_sar_images):
+            # Check for composite multi-step query e.g. "what changed, where did it happen, and was it built-up?"
+            is_composite = (
+                ("where" in query_cleaned and "change" in query_cleaned) or
+                ("what changed" in query_cleaned and any(w in query_cleaned for w in ["built-up", "urban", "identify", "characterize", "describe"])) or
+                ("," in query_cleaned and "and" in query_cleaned and "change" in query_cleaned)
+            )
+
             # Differentiate between general change analysis vs specific change-VQA question
             is_question = query_cleaned.endswith("?") or any(
                 query_cleaned.startswith(w) for w in ["what", "how", "has", "did", "is", "can", "why"]
             )
             resolved_task = TaskType.CHANGE_VQA if is_question else TaskType.CHANGE_ANALYSIS
+
+            extracted_params = {
+                "is_composite": is_composite,
+                "secondary_task": TaskType.SINGLE_IMAGE_GROUNDING if "where" in query_cleaned else TaskType.SINGLE_IMAGE_VQA,
+            }
+
+            intent_explanation = (
+                "Query requests a multi-step sequential workflow: bi-temporal change detection followed by localized region characterization."
+                if is_composite else
+                "Query requests temporal change detection / comparison between acquisitions."
+            )
+
             return TaskIntent(
                 task=resolved_task,
-                confidence=0.95 if is_change_query else 0.85,
-                intent_explanation="Query requests temporal change detection / comparison between acquisitions.",
+                confidence=0.96 if is_composite else (0.95 if is_change_query else 0.85),
+                intent_explanation=intent_explanation,
                 target_features=cls._extract_target_features(query),
+                extracted_parameters=extracted_params,
             )
 
         # 4. Check for Single Image Grounding / Localization
