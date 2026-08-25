@@ -18,8 +18,15 @@ import hashlib
 import json
 from pathlib import Path
 import statistics
+import sys
 import time
 from typing import Any, Dict, List
+
+# Ensure repository root is on sys.path for direct CLI/Colab execution
+_repo_root = str(Path(__file__).resolve().parent.parent.parent.parent)
+if _repo_root not in sys.path:
+    sys.path.insert(0, _repo_root)
+
 import psutil
 from safetensors.torch import load_file
 import torch
