@@ -141,9 +141,9 @@ def run_lora_smoke_test(
     assert trainable_params > 0, "No trainable parameters found in LoRA model!"
     assert trainable_percent < 5.0, "Base model parameters were not properly frozen!"
 
-    # 4. Prepare Genuine Sample Inputs
+    # 4. Prepare Genuine Sample Inputs (1 sample for strict low-memory verification)
     dataset = RemoteSensingInstructionDataset(seed=42)
-    train_samples, _, _ = dataset.load_dataset_splits(train_count=2, val_count=1, test_count=1)
+    train_samples, _, _ = dataset.load_dataset_splits(train_count=1, val_count=1, test_count=1)
 
     images: List[Image.Image] = []
     prompts: List[str] = []
@@ -156,7 +156,9 @@ def run_lora_smoke_test(
         else:
             img = Image.new("RGB", (224, 224), color=(34, 139, 34))
         images.append(img)
-        prompts.append(s["prefix"])
+        # Include standard PaliGemma image prefix
+        prefix_text = s["prefix"] if s["prefix"].startswith("<image>") else f"<image>{s['prefix']}"
+        prompts.append(prefix_text)
         suffixes.append(s["suffix"])
 
     try:
@@ -364,7 +366,8 @@ def run_full_lora_training(
                 else:
                     img = Image.new("RGB", (224, 224), color=(34, 139, 34))
                 images.append(img)
-                prompts.append(item["prefix"])
+                prefix_text = item["prefix"] if item["prefix"].startswith("<image>") else f"<image>{item['prefix']}"
+                prompts.append(prefix_text)
                 suffixes.append(item["suffix"])
 
             try:
@@ -389,6 +392,8 @@ def run_full_lora_training(
                 optimizer.zero_grad()
 
             epoch_losses.append(float(outputs.loss.item()))
+            if i % 32 == 0 and torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
         sync_device(target_device)
         epoch_dur_s = round(time.perf_counter() - t_epoch_start, 2)
@@ -401,7 +406,14 @@ def run_full_lora_training(
             for j in range(0, min(len(val_data), 32), batch_size):
                 val_batch = val_data[j : j + batch_size]
                 v_imgs = [Image.open(it["image_path"]).convert("RGB") if Path(it["image_path"]).exists() else Image.new("RGB", (224, 224)) for it in val_batch]
-                v_inputs = processor(text=[it["prefix"] for it in val_batch], images=v_imgs, suffix=[it["suffix"] for it in val_batch], return_tensors="pt", padding="longest")
+                v_prompts = [it["prefix"] if it["prefix"].startswith("<image>") else f"<image>{it['prefix']}" for it in val_batch]
+                try:
+                    v_inputs = processor(text=v_prompts, images=v_imgs, suffix=[it["suffix"] for it in val_batch], return_tensors="pt", padding="longest")
+                except TypeError:
+                    v_full = [f"{p} {it['suffix']}" for p, it in zip(v_prompts, val_batch)]
+                    v_inputs = processor(text=v_full, images=v_imgs, return_tensors="pt", padding="longest")
+                if "labels" not in v_inputs:
+                    v_inputs["labels"] = v_inputs["input_ids"].clone()
                 if target_device in {"cuda", "mps"}:
                     v_inputs = {k: v.to(target_device) for k, v in v_inputs.items()}
                 v_out = model(**v_inputs)
