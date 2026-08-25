@@ -1,10 +1,10 @@
 {
   "manifest_version": "1.1.0",
-  "generated_at": "2026-08-25T14:01:34Z",
+  "generated_at": "2026-08-25T14:25:25Z",
   "evaluation_classification": "CONTROLLED BENCHMARK SUBSET EVALUATION \u2014 N=1,200 CORPUS / N=150 TEST",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "f874ae08cf3a035818115e7be7361e5992f07549",
+    "commit_hash": "2ff91e8ee0449bd32ec2f37544905b5a1134ee1c",
     "branch": "feature/sruthi-single-image",
     "author": "sruthi-270",
     "email": "rajamanurisruthi@gmail.com"
@@ -34,7 +34,7 @@
     "total_tensors": 56,
     "weights_format": "safetensors (Float32 / Float16)",
     "storage_path": "specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors",
-    "sha256_checksum": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0"
+    "sha256_checksum": "152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d"
   },
   "datasets": {
     "sources": [
@@ -94,17 +94,18 @@
     "resident_ram_mb": 309.25
   },
   "runtime_environment": {
-    "os_platform": "macOS-26.5.2-arm64-arm-64bit",
-    "python_version": "3.11.15",
-    "pytorch_version": "2.13.0",
-    "transformers_version": "5.15.1",
+    "os_platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+    "python_version": "3.13.15",
+    "pytorch_version": "2.11.0+cu128",
+    "transformers_version": "5.15.0",
     "peft_version": "0.20.0",
     "safetensors_version": "0.8.0",
     "compute_hardware": {
-      "device_type": "mps",
-      "device_name": "Apple Silicon Metal (MPS)",
-      "memory_gb": 8.0,
-      "metal_version": "Apple MPS Graph API"
+      "device_type": "cuda",
+      "device_name": "Tesla T4",
+      "vram_gb": 14.56,
+      "cuda_version": "12.8",
+      "cudnn_version": 91900
     }
   }
 }

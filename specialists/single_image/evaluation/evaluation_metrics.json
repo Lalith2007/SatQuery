@@ -8,34 +8,34 @@
   "metrics_summary": {
     "base_model": {
       "name": "PaliGemma-3B (Base Zero-Shot)",
-      "vqa_accuracy": 0.435,
-      "grounding_miou": 0.157,
-      "grounding_p_at_05": 0.0
+      "vqa_accuracy": 0.0,
+      "grounding_miou": 0.079,
+      "grounding_p_at_05": 0.046
     },
     "adapted_model": {
       "name": "PaliGemma 3B \u2014 SatQuery Remote-Sensing Adapted (LoRA)",
-      "vqa_accuracy": 0.529,
-      "grounding_miou": 0.265,
-      "grounding_p_at_05": 0.169
+      "vqa_accuracy": 0.894,
+      "grounding_miou": 0.24,
+      "grounding_p_at_05": 0.246
     },
     "improvements": {
       "vqa_accuracy": {
-        "absolute": "+9.4%",
-        "relative": "+21.6%"
+        "absolute": "+89.4%",
+        "relative": "+89400.0%"
       },
       "grounding_miou": {
-        "absolute": "+0.108",
-        "relative": "+68.8%"
+        "absolute": "+0.161",
+        "relative": "+203.8%"
       },
       "grounding_p_at_05": {
-        "absolute": "+16.9%",
-        "relative": "+16900.0%"
+        "absolute": "+20.0%",
+        "relative": "+434.8%"
       }
     }
   },
   "latency_profile": {
-    "hardware": "Apple M2 (ARM64, 8-Core CPU, Metal GPU, 8GB Unified RAM)",
-    "device": "mps",
+    "hardware": "NVIDIA Tesla T4 (14.6 GB VRAM)",
+    "device": "cuda",
     "input_resolution": "224x224 (RGB, 3-channel, 8-bit)",
     "generation_settings": {
       "max_new_tokens": 64,
@@ -44,18 +44,18 @@
     },
     "warmup_runs": 5,
     "runs_measured": 20,
-    "cold_start_latency_ms": 3912.64,
-    "mean_latency_ms": 0.34,
-    "median_latency_ms": 0.33,
-    "min_latency_ms": 0.31,
-    "max_latency_ms": 0.42,
-    "std_dev_ms": 0.03,
+    "cold_start_latency_ms": 61472.06,
+    "mean_latency_ms": 1667.96,
+    "median_latency_ms": 1631.07,
+    "min_latency_ms": 1538.0,
+    "max_latency_ms": 1978.73,
+    "std_dev_ms": 119.59,
     "stage_breakdown_ms": {
-      "mean_preprocessing_ms": 0.32,
-      "mean_generation_ms": 0.0,
-      "mean_postprocessing_ms": 0.0
+      "mean_preprocessing_ms": 1.06,
+      "mean_generation_ms": 1666.64,
+      "mean_postprocessing_ms": 0.01
     },
-    "resident_memory_rss_mb": 309.25
+    "resident_memory_rss_mb": 2475.31
   },
-  "adapter_sha256": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0"
+  "adapter_sha256": "152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d"
 }

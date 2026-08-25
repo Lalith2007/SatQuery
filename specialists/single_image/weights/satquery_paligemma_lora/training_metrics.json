@@ -1,66 +1,32 @@
 {
-  "training_duration_seconds": 0.0,
-  "epochs_completed": 5,
-  "train_samples": 900,
-  "val_samples": 150,
-  "final_train_loss": 0.6338,
-  "final_val_loss": 0.8053,
-  "adapter_sha256": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0",
-  "history": [
+  "status": "REAL_MODEL_TRAINED",
+  "base_model": "google/paligemma-3b-pt-224",
+  "revision": "main",
+  "epochs": 3,
+  "train_samples": 150,
+  "val_samples": 30,
+  "total_training_time_seconds": 202.62,
+  "final_train_loss": 0.3725,
+  "final_val_loss": 0.3299,
+  "adapter_sha256": "152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d",
+  "training_history": [
     {
       "epoch": 1,
-      "train_samples_seen": 900,
-      "train_loss": 1.9696,
-      "val_loss": 2.1468,
-      "learning_rate": 0.0002,
-      "val_vqa_accuracy": 0.732,
-      "val_grounding_miou": 0.615,
-      "epoch_duration_seconds": 0.0,
-      "device": "mps"
+      "train_loss": 3.4067,
+      "val_loss": 1.7572,
+      "duration_seconds": 64.06
     },
     {
       "epoch": 2,
-      "train_samples_seen": 1800,
-      "train_loss": 1.4581,
-      "val_loss": 1.6486,
-      "learning_rate": 0.00017,
-      "val_vqa_accuracy": 0.784,
-      "val_grounding_miou": 0.68,
-      "epoch_duration_seconds": 0.0,
-      "device": "mps"
+      "train_loss": 1.1617,
+      "val_loss": 0.6925,
+      "duration_seconds": 61.63
     },
     {
       "epoch": 3,
-      "train_samples_seen": 2700,
-      "train_loss": 1.0898,
-      "val_loss": 1.28,
-      "learning_rate": 0.0001445,
-      "val_vqa_accuracy": 0.836,
-      "val_grounding_miou": 0.745,
-      "epoch_duration_seconds": 0.0,
-      "device": "mps"
-    },
-    {
-      "epoch": 4,
-      "train_samples_seen": 3600,
-      "train_loss": 0.8247,
-      "val_loss": 1.0072,
-      "learning_rate": 0.000122825,
-      "val_vqa_accuracy": 0.888,
-      "val_grounding_miou": 0.81,
-      "epoch_duration_seconds": 0.0,
-      "device": "mps"
-    },
-    {
-      "epoch": 5,
-      "train_samples_seen": 4500,
-      "train_loss": 0.6338,
-      "val_loss": 0.8053,
-      "learning_rate": 0.00010440124999999998,
-      "val_vqa_accuracy": 0.915,
-      "val_grounding_miou": 0.845,
-      "epoch_duration_seconds": 0.0,
-      "device": "mps"
+      "train_loss": 0.3725,
+      "val_loss": 0.3299,
+      "duration_seconds": 60.96
     }
   ]
 }
