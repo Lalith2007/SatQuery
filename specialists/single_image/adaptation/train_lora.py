@@ -99,7 +99,11 @@ def run_lora_smoke_test(
 
     # 1. Load Real Processor and Base Model
     logger.info(f"Loading base PaliGemma: {model_name} (revision: {revision})...")
-    processor = AutoProcessor.from_pretrained(model_name, revision=revision)
+    try:
+        from transformers import PaliGemmaProcessor
+        processor = PaliGemmaProcessor.from_pretrained(model_name)
+    except Exception:
+        processor = AutoProcessor.from_pretrained(model_name)
     base_model = PaliGemmaForConditionalGeneration.from_pretrained(
         model_name,
         revision=revision,
@@ -280,7 +284,11 @@ def run_full_lora_training(
     dtype = torch.bfloat16 if (target_device == "cuda" and torch.cuda.is_bf16_supported()) else (torch.float16 if target_device in {"cuda", "mps"} else torch.float32)
 
     # 1. Load Processor and Base Model
-    processor = AutoProcessor.from_pretrained(config.base_model_name, revision=config.revision)
+    try:
+        from transformers import PaliGemmaProcessor
+        processor = PaliGemmaProcessor.from_pretrained(config.base_model_name)
+    except Exception:
+        processor = AutoProcessor.from_pretrained(config.base_model_name)
     base_model = PaliGemmaForConditionalGeneration.from_pretrained(
         config.base_model_name,
         revision=config.revision,

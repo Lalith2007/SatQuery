@@ -103,11 +103,12 @@ class PaliGemmaRSInferenceEngine:
 
             dtype = torch.bfloat16 if (self._device == "cuda" and torch.cuda.is_bf16_supported()) else (torch.float16 if self._device in {"cuda", "mps"} else torch.float32)
 
-            # Attempt to load base model if available in cache or local
-            self._processor = AutoProcessor.from_pretrained(
-                self.base_model_id,
-                revision=self.revision,
-            )
+            try:
+                from transformers import PaliGemmaProcessor
+                self._processor = PaliGemmaProcessor.from_pretrained(self.base_model_id)
+            except Exception:
+                from transformers import AutoProcessor
+                self._processor = AutoProcessor.from_pretrained(self.base_model_id)
             self._model = PaliGemmaForConditionalGeneration.from_pretrained(
                 self.base_model_id,
                 revision=self.revision,
