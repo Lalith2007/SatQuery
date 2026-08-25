@@ -46,10 +46,12 @@ class PaliGemmaRSInferenceEngine:
     def __init__(
         self,
         base_model_id: str = "google/paligemma-3b-pt-224",
+        revision: str = "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
         adapter_path: Optional[str] = None,
         device: Optional[str] = None,
     ) -> None:
         self.base_model_id = base_model_id
+        self.revision = revision
         self.adapter_path = adapter_path
         self._device = device or self._detect_best_device()
         self._model = None
@@ -62,11 +64,12 @@ class PaliGemmaRSInferenceEngine:
     def get_instance(
         cls,
         base_model_id: str = "google/paligemma-3b-pt-224",
+        revision: str = "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
         adapter_path: Optional[str] = None,
     ) -> PaliGemmaRSInferenceEngine:
         """Get or initialize process-local singleton engine."""
         if cls._instance is None:
-            cls._instance = cls(base_model_id=base_model_id, adapter_path=adapter_path)
+            cls._instance = cls(base_model_id=base_model_id, revision=revision, adapter_path=adapter_path)
         return cls._instance
 
     @staticmethod
@@ -82,9 +85,13 @@ class PaliGemmaRSInferenceEngine:
     def is_loaded(self) -> bool:
         return self._is_loaded
 
-    def load_model(self) -> None:
+    @property
+    def is_real_model_loaded(self) -> bool:
+        return self._model is not None and self._processor is not None
+
+    def load_model(self, strict: bool = False) -> None:
         """Explicitly load base model and adapter into memory."""
-        if self._is_loaded:
+        if self._is_loaded and (not strict or self.is_real_model_loaded):
             return
 
         t0 = time.perf_counter()
@@ -94,12 +101,16 @@ class PaliGemmaRSInferenceEngine:
             from transformers import AutoProcessor, PaliGemmaForConditionalGeneration
             from peft import PeftModel
 
-            dtype = torch.float16 if self._device in {"cuda", "mps"} else torch.float32
+            dtype = torch.bfloat16 if (self._device == "cuda" and torch.cuda.is_bf16_supported()) else (torch.float16 if self._device in {"cuda", "mps"} else torch.float32)
 
             # Attempt to load base model if available in cache or local
-            self._processor = AutoProcessor.from_pretrained(self.base_model_id)
+            self._processor = AutoProcessor.from_pretrained(
+                self.base_model_id,
+                revision=self.revision,
+            )
             self._model = PaliGemmaForConditionalGeneration.from_pretrained(
                 self.base_model_id,
+                revision=self.revision,
                 torch_dtype=dtype,
                 device_map=self._device if self._device != "mps" else None,
             )
@@ -114,9 +125,15 @@ class PaliGemmaRSInferenceEngine:
 
             self._model.eval()
             self._is_loaded = True
-            logger.info("Successfully loaded PaliGemma model with weights.")
+            logger.info("Successfully loaded REAL PaliGemma model with weights into memory.")
 
         except Exception as e:
+            if strict:
+                raise RuntimeError(
+                    f"REAL_MODEL_UNAVAILABLE: Failed to load genuine PaliGemma weights for '{self.base_model_id}' ({e}). "
+                    f"Ensure Hugging Face token is provided and model license is accepted."
+                ) from e
+
             logger.warning(
                 f"Full weights for '{self.base_model_id}' not loaded into local memory ({e}). "
                 f"Activating high-fidelity deterministic RS neural inference fallback."

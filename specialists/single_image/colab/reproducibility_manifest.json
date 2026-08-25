@@ -1,10 +1,10 @@
 {
   "manifest_version": "1.1.0",
-  "generated_at": "2026-08-25T06:16:41Z",
+  "generated_at": "2026-08-25T06:32:38Z",
   "evaluation_classification": "CONTROLLED BENCHMARK SUBSET EVALUATION \u2014 N=1,200 CORPUS / N=150 TEST",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "b19321737aefb0576cfefb960aede0ec68439655",
+    "commit_hash": "f71c913d42f1fd4323187a4d2f17fd4a08eb7a14",
     "branch": "feature/sruthi-single-image",
     "author": "sruthi-270",
     "email": "rajamanurisruthi@gmail.com"

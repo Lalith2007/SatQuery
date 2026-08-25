@@ -188,9 +188,17 @@ def profile_synchronized_mps_latency(runs: int = 20) -> Dict[str, Any]:
     }
 
 
-def evaluate_held_out_subset(test_samples: List[Dict[str, Any]]) -> Dict[str, Any]:
+def evaluate_held_out_subset(test_samples: List[Dict[str, Any]], strict: bool = True) -> Dict[str, Any]:
     """Run full evaluation comparing Base Zero-Shot vs. SatQuery Adapted LoRA across N=150 test samples."""
     engine = PaliGemmaRSInferenceEngine.get_instance()
+    engine.load_model(strict=strict)
+
+    if strict and not engine.is_real_model_loaded:
+        raise RuntimeError(
+            "REAL_MODEL_UNAVAILABLE: Scientific benchmark evaluation requires genuine PaliGemma neural weights. "
+            "Deterministic fallback is strictly prohibited during scientific evaluation."
+        )
+
     parser = GroundingCoordinateParser()
 
     base_vqa_correct = 0
