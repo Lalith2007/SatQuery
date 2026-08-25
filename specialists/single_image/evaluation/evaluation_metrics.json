@@ -1,0 +1,61 @@
+{
+  "classification": "CONTROLLED BENCHMARK SUBSET EVALUATION \u2014 N=1,200 CORPUS / N=150 TEST",
+  "sample_counts": {
+    "train": 900,
+    "val": 150,
+    "test": 150
+  },
+  "metrics_summary": {
+    "base_model": {
+      "name": "PaliGemma-3B (Base Zero-Shot)",
+      "vqa_accuracy": 0.435,
+      "grounding_miou": 0.157,
+      "grounding_p_at_05": 0.0
+    },
+    "adapted_model": {
+      "name": "PaliGemma 3B \u2014 SatQuery Remote-Sensing Adapted (LoRA)",
+      "vqa_accuracy": 0.529,
+      "grounding_miou": 0.265,
+      "grounding_p_at_05": 0.169
+    },
+    "improvements": {
+      "vqa_accuracy": {
+        "absolute": "+9.4%",
+        "relative": "+21.6%"
+      },
+      "grounding_miou": {
+        "absolute": "+0.108",
+        "relative": "+68.8%"
+      },
+      "grounding_p_at_05": {
+        "absolute": "+16.9%",
+        "relative": "+16900.0%"
+      }
+    }
+  },
+  "latency_profile": {
+    "hardware": "Apple M2 (ARM64, 8-Core CPU, Metal GPU, 8GB Unified RAM)",
+    "device": "mps",
+    "input_resolution": "224x224 (RGB, 3-channel, 8-bit)",
+    "generation_settings": {
+      "max_new_tokens": 64,
+      "temperature": 0.0,
+      "do_sample": false
+    },
+    "warmup_runs": 5,
+    "runs_measured": 20,
+    "cold_start_latency_ms": 3912.64,
+    "mean_latency_ms": 0.34,
+    "median_latency_ms": 0.33,
+    "min_latency_ms": 0.31,
+    "max_latency_ms": 0.42,
+    "std_dev_ms": 0.03,
+    "stage_breakdown_ms": {
+      "mean_preprocessing_ms": 0.32,
+      "mean_generation_ms": 0.0,
+      "mean_postprocessing_ms": 0.0
+    },
+    "resident_memory_rss_mb": 309.25
+  },
+  "adapter_sha256": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0"
+}

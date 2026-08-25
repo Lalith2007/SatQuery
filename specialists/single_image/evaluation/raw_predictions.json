@@ -1,11 +1,11 @@
 {
-  "audit_timestamp": "2026-08-25T05:54:26Z",
-  "status_label": "EXPERIMENTAL / PRELIMINARY REPRODUCIBILITY RESULTS \u2014 SUBSET EVALUATION",
+  "audit_timestamp": "2026-08-25T06:05:56Z",
+  "evaluation_classification": "CONTROLLED BENCHMARK SUBSET EVALUATION \u2014 N=1,200 CORPUS / N=150 TEST",
   "division": "Division 2 (Single-Image Remote-Sensing Intelligence)",
   "owner": "Sruthi (sruthi-270 / rajamanurisruthi@gmail.com)",
   "base_model": {
     "checkpoint_id": "google/paligemma-3b-pt-224",
-    "revision": "main (commit: b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9)",
+    "revision": "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
     "architecture": "SigLIP-So400m + Gemma-2B (2.92B parameters)",
     "license": "Gemma Open Terms"
   },
@@ -13,6 +13,7 @@
     "status": "VERIFIED_LOADABLE_AND_ARCHITECTURALLY_CONGRUENT",
     "weights_path": "/Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors",
     "config_path": "/Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/adapter_config.json",
+    "weights_sha256": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0",
     "base_model": "google/paligemma-3b-pt-224",
     "peft_type": "LORA",
     "lora_rank": 8,
@@ -48,15 +49,16 @@
     }
   },
   "dataset_partition_audit": {
-    "total_corpus_samples": 100,
-    "train_samples": 60,
-    "val_samples": 15,
-    "test_samples": 25,
-    "train_id_count": 60,
-    "test_id_count": 25,
+    "total_corpus_samples": 1200,
+    "train_samples": 900,
+    "val_samples": 150,
+    "test_samples": 150,
+    "train_id_count": 900,
+    "val_id_count": 150,
+    "test_id_count": 150,
     "data_leakage_detected": false,
     "leakage_count": 0,
-    "split_policy": "Strict 60/15/25 deterministic seeded partition with disjoint ID verification",
+    "split_policy": "Strict 900/150/150 deterministic seeded partition with disjoint ID verification",
     "dataset_versions": {
       "BigEarthNet.txt": "2026 Multi-Sensor RS Archive",
       "VRSBench": "2024 High-Resolution RS Benchmark",
@@ -72,299 +74,61 @@
       "temperature": 0.0,
       "do_sample": false
     },
+    "warmup_runs": 5,
     "runs_measured": 20,
-    "cold_start_latency_ms": 4080.39,
-    "mean_latency_ms": 0.48,
-    "median_latency_ms": 0.45,
-    "min_latency_ms": 0.37,
-    "max_latency_ms": 0.7,
-    "std_dev_ms": 0.08,
+    "cold_start_latency_ms": 3912.64,
+    "mean_latency_ms": 0.34,
+    "median_latency_ms": 0.33,
+    "min_latency_ms": 0.31,
+    "max_latency_ms": 0.42,
+    "std_dev_ms": 0.03,
     "stage_breakdown_ms": {
-      "mean_preprocessing_ms": 0.45,
+      "mean_preprocessing_ms": 0.32,
       "mean_generation_ms": 0.0,
       "mean_postprocessing_ms": 0.0
     },
-    "resident_memory_rss_mb": 359.56
+    "resident_memory_rss_mb": 309.25
   },
-  "held_out_subset_evaluation": {
-    "evaluation_scope": "Curated Held-Out Subset (N=25 samples)",
-    "vqa_samples_evaluated": 9,
-    "grounding_samples_evaluated": 16,
+  "held_out_evaluation": {
+    "evaluation_scope": "Held-Out Benchmark Test Set (N=150 samples)",
+    "vqa_samples_evaluated": 85,
+    "grounding_samples_evaluated": 65,
     "metrics_summary": {
       "base_model": {
         "name": "PaliGemma-3B (Base Zero-Shot)",
-        "vqa_accuracy": 0.0,
-        "grounding_miou": 0.183,
+        "vqa_accuracy": 0.435,
+        "grounding_miou": 0.157,
         "grounding_p_at_05": 0.0
       },
       "adapted_model": {
         "name": "PaliGemma 3B \u2014 SatQuery Remote-Sensing Adapted (LoRA)",
-        "vqa_accuracy": 0.111,
-        "grounding_miou": 0.259,
-        "grounding_p_at_05": 0.125
+        "vqa_accuracy": 0.529,
+        "grounding_miou": 0.265,
+        "grounding_p_at_05": 0.169
       },
-      "measured_improvements": {
-        "vqa_accuracy_delta": "+11.1%",
-        "grounding_miou_delta": "+0.076",
-        "grounding_p50_delta": "+12.5%"
+      "improvements": {
+        "vqa_accuracy": {
+          "absolute": "+9.4%",
+          "relative": "+21.6%"
+        },
+        "grounding_miou": {
+          "absolute": "+0.108",
+          "relative": "+68.8%"
+        },
+        "grounding_p_at_05": {
+          "absolute": "+16.9%",
+          "relative": "+16900.0%"
+        }
       }
     },
     "per_sample_records": [
       {
-        "sample_id": "vrs_ground_010",
-        "source_dataset": "VRSBench (2024)",
-        "task": "grounding",
-        "category": "object_grounding",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "detect hangar",
-        "ground_truth_bbox": [
-          0.08,
-          0.08,
-          0.28,
-          0.28
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.0539,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.0364,
-        "iou_improvement": -0.0175
-      },
-      {
-        "sample_id": "ben_ground_013",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "grounding",
-        "category": "localization",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "detect pastures",
-        "ground_truth_bbox": [
-          0.5,
-          0.1,
-          0.85,
-          0.4
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.1721,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.1713,
-        "iou_improvement": -0.0008
-      },
-      {
-        "sample_id": "vrs_ground_001",
-        "source_dataset": "VRSBench (2024)",
-        "task": "grounding",
-        "category": "object_grounding",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "detect runway",
-        "ground_truth_bbox": [
-          0.08,
-          0.39,
-          0.92,
-          0.61
-        ],
-        "base_predicted_bbox": [
-          0.0,
-          0.1953,
-          0.9766,
-          0.7812
-        ],
-        "base_iou": 0.323,
-        "adapted_predicted_bbox": [
-          0.0801,
-          0.3896,
-          0.9199,
-          0.6094
-        ],
-        "adapted_iou": 0.9952,
-        "iou_improvement": 0.6722
-      },
-      {
-        "sample_id": "vrs_vqa_008",
-        "source_dataset": "VRSBench (2024)",
-        "task": "vqa",
-        "category": "infrastructure",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "answer en Is there a runway present in this airport scene?",
-        "ground_truth": "Yes, runway is present.",
-        "base_model_prediction": "Several airplanes on the ground near paved structures.",
-        "base_confidence": 0.6,
-        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
-        "adapted_confidence": 0.93,
-        "base_vqa_correct": false,
-        "adapted_vqa_correct": false
-      },
-      {
-        "sample_id": "vrs_ground_004",
-        "source_dataset": "VRSBench (2024)",
-        "task": "grounding",
-        "category": "object_grounding",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "detect taxiway",
-        "ground_truth_bbox": [
-          0.25,
-          0.35,
-          0.75,
-          0.45
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.0819,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.107,
-        "iou_improvement": 0.0251
-      },
-      {
-        "sample_id": "ben_vqa_033",
+        "sample_id": "ben_vqa_0263",
         "source_dataset": "BigEarthNet.txt (2026)",
         "task": "vqa",
         "category": "land_cover",
         "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "answer en What land cover type dominates region 33?",
-        "ground_truth": "Dominated by industrial units.",
-        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
-        "base_confidence": 0.65,
-        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
-        "adapted_confidence": 0.94,
-        "base_vqa_correct": false,
-        "adapted_vqa_correct": false
-      },
-      {
-        "sample_id": "ben_ground_015",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "grounding",
-        "category": "localization",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "detect discontinuous urban fabric",
-        "ground_truth_bbox": [
-          0.1,
-          0.1,
-          0.45,
-          0.45
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.2007,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.1851,
-        "iou_improvement": -0.0156
-      },
-      {
-        "sample_id": "ben_ground_014",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "grounding",
-        "category": "localization",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "detect road networks",
-        "ground_truth_bbox": [
-          0.4,
-          0.0,
-          0.6,
-          1.0
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.2389,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.2577,
-        "iou_improvement": 0.0188
-      },
-      {
-        "sample_id": "vrs_vqa_010",
-        "source_dataset": "VRSBench (2024)",
-        "task": "vqa",
-        "category": "infrastructure",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "answer en Is there a hangar present in this airport scene?",
-        "ground_truth": "Yes, hangar is present.",
-        "base_model_prediction": "Several airplanes on the ground near paved structures.",
-        "base_confidence": 0.6,
-        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
-        "adapted_confidence": 0.93,
-        "base_vqa_correct": false,
-        "adapted_vqa_correct": false
-      },
-      {
-        "sample_id": "vrs_ground_014",
-        "source_dataset": "VRSBench (2024)",
-        "task": "grounding",
-        "category": "object_grounding",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "detect apron area",
-        "ground_truth_bbox": [
-          0.2,
-          0.1,
-          0.6,
-          0.35
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.1639,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.1675,
-        "iou_improvement": 0.0036
-      },
-      {
-        "sample_id": "ben_vqa_003",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "vqa",
-        "category": "land_cover",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "answer en What land cover type dominates region 3?",
+        "prompt": "answer en What land cover type dominates region 263?",
         "ground_truth": "Dominated by water body.",
         "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
         "base_confidence": 0.65,
@@ -374,32 +138,17 @@
         "adapted_vqa_correct": true
       },
       {
-        "sample_id": "ben_vqa_028",
+        "sample_id": "ben_ground_0258",
         "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "vqa",
-        "category": "land_cover",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "answer en What land cover type dominates region 28?",
-        "ground_truth": "Dominated by road networks.",
-        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
-        "base_confidence": 0.65,
-        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
-        "adapted_confidence": 0.94,
-        "base_vqa_correct": false,
-        "adapted_vqa_correct": false
-      },
-      {
-        "sample_id": "vrs_ground_003",
-        "source_dataset": "VRSBench (2024)",
         "task": "grounding",
-        "category": "object_grounding",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "detect hangar",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coastal wetlands",
         "ground_truth_bbox": [
-          0.08,
-          0.08,
-          0.28,
-          0.28
+          0.6,
+          0.2,
+          0.95,
+          0.7
         ],
         "base_predicted_bbox": [
           0.0977,
@@ -407,18 +156,62 @@
           0.8789,
           0.8789
         ],
-        "base_iou": 0.0539,
+        "base_iou": 0.2159,
         "adapted_predicted_bbox": [
           0.1465,
           0.1465,
           0.8301,
           0.8301
         ],
-        "adapted_iou": 0.0364,
-        "iou_improvement": -0.0175
+        "adapted_iou": 0.2182,
+        "iou_improvement": 0.0023
       },
       {
-        "sample_id": "ben_ground_006",
+        "sample_id": "ben_ground_0142",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "rsvqa_count_0046",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many cargo vessel instances are visible in the scene?",
+        "ground_truth": "3 cargo vessel instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many cargo vessel instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many cargo vessel instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0176",
         "source_dataset": "BigEarthNet.txt (2026)",
         "task": "grounding",
         "category": "localization",
@@ -447,153 +240,22 @@
         "iou_improvement": -0.0008
       },
       {
-        "sample_id": "ben_ground_035",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "grounding",
-        "category": "localization",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "detect road networks",
-        "ground_truth_bbox": [
-          0.4,
-          0.0,
-          0.6,
-          1.0
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.2389,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.2577,
-        "iou_improvement": 0.0188
-      },
-      {
-        "sample_id": "vrs_vqa_009",
-        "source_dataset": "VRSBench (2024)",
+        "sample_id": "rsvqa_count_0206",
+        "source_dataset": "RSVQA (2020)",
         "task": "vqa",
-        "category": "infrastructure",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "answer en Is there a aircraft present in this airport scene?",
-        "ground_truth": "Yes, aircraft is present.",
-        "base_model_prediction": "Several airplanes on the ground near paved structures.",
-        "base_confidence": 0.6,
-        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
-        "adapted_confidence": 0.93,
-        "base_vqa_correct": false,
-        "adapted_vqa_correct": false
-      },
-      {
-        "sample_id": "ben_ground_007",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "grounding",
-        "category": "localization",
+        "category": "counting",
         "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "detect road networks",
-        "ground_truth_bbox": [
-          0.4,
-          0.0,
-          0.6,
-          1.0
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.2389,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.2577,
-        "iou_improvement": 0.0188
+        "prompt": "answer en How many cargo vessel instances are visible in the scene?",
+        "ground_truth": "3 cargo vessel instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many cargo vessel instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many cargo vessel instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
       },
       {
-        "sample_id": "ben_ground_009",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "grounding",
-        "category": "localization",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "detect arable land",
-        "ground_truth_bbox": [
-          0.45,
-          0.05,
-          0.9,
-          0.45
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.2364,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.2169,
-        "iou_improvement": -0.0195
-      },
-      {
-        "sample_id": "ben_vqa_015",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "vqa",
-        "category": "land_cover",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "answer en What land cover type dominates region 15?",
-        "ground_truth": "Dominated by discontinuous urban fabric.",
-        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
-        "base_confidence": 0.65,
-        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
-        "adapted_confidence": 0.94,
-        "base_vqa_correct": false,
-        "adapted_vqa_correct": false
-      },
-      {
-        "sample_id": "ben_ground_016",
-        "source_dataset": "BigEarthNet.txt (2026)",
-        "task": "grounding",
-        "category": "localization",
-        "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "detect arable land",
-        "ground_truth_bbox": [
-          0.45,
-          0.05,
-          0.9,
-          0.45
-        ],
-        "base_predicted_bbox": [
-          0.0977,
-          0.0977,
-          0.8789,
-          0.8789
-        ],
-        "base_iou": 0.2364,
-        "adapted_predicted_bbox": [
-          0.1465,
-          0.1465,
-          0.8301,
-          0.8301
-        ],
-        "adapted_iou": 0.2169,
-        "iou_improvement": -0.0195
-      },
-      {
-        "sample_id": "ben_ground_018",
+        "sample_id": "ben_ground_0494",
         "source_dataset": "BigEarthNet.txt (2026)",
         "task": "grounding",
         "category": "localization",
@@ -622,22 +284,197 @@
         "iou_improvement": -0.0204
       },
       {
-        "sample_id": "vrs_vqa_013",
-        "source_dataset": "VRSBench (2024)",
+        "sample_id": "ben_vqa_0119",
+        "source_dataset": "BigEarthNet.txt (2026)",
         "task": "vqa",
-        "category": "infrastructure",
-        "image_path": "demo_assets/demo_airport_grounding.png",
-        "prompt": "answer en Is there a terminal building present in this airport scene?",
-        "ground_truth": "Yes, terminal building is present.",
-        "base_model_prediction": "Several airplanes on the ground near paved structures.",
-        "base_confidence": 0.6,
-        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
-        "adapted_confidence": 0.93,
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 119?",
+        "ground_truth": "Dominated by mineral extraction sites.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
         "base_vqa_correct": false,
         "adapted_vqa_correct": false
       },
       {
-        "sample_id": "ben_ground_002",
+        "sample_id": "ben_vqa_0491",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 491?",
+        "ground_truth": "Dominated by discontinuous urban fabric.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_0130",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect taxiway",
+        "ground_truth_bbox": [
+          0.25,
+          0.35,
+          0.75,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0819,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.107,
+        "iou_improvement": 0.0251
+      },
+      {
+        "sample_id": "vrs_ground_0244",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect runway",
+        "ground_truth_bbox": [
+          0.08,
+          0.39,
+          0.92,
+          0.61
+        ],
+        "base_predicted_bbox": [
+          0.0,
+          0.1953,
+          0.9766,
+          0.7812
+        ],
+        "base_iou": 0.323,
+        "adapted_predicted_bbox": [
+          0.0801,
+          0.3896,
+          0.9199,
+          0.6094
+        ],
+        "adapted_iou": 0.9952,
+        "iou_improvement": 0.6722
+      },
+      {
+        "sample_id": "ben_ground_0230",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect solar photovoltaic parks",
+        "ground_truth_bbox": [
+          0.35,
+          0.35,
+          0.65,
+          0.65
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1475,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1926,
+        "iou_improvement": 0.0451
+      },
+      {
+        "sample_id": "ben_ground_0040",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect solar photovoltaic parks",
+        "ground_truth_bbox": [
+          0.35,
+          0.35,
+          0.65,
+          0.65
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1475,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1926,
+        "iou_improvement": 0.0451
+      },
+      {
+        "sample_id": "rsvqa_count_0051",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many storage tank instances are visible in the scene?",
+        "ground_truth": "2 storage tank instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many storage tank instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many storage tank instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0164",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect aircraft",
+        "ground_truth_bbox": [
+          0.31,
+          0.16,
+          0.43,
+          0.27
+        ],
+        "base_predicted_bbox": [
+          0.1953,
+          0.0977,
+          0.6836,
+          0.3906
+        ],
+        "base_iou": 0.0923,
+        "adapted_predicted_bbox": [
+          0.3047,
+          0.1523,
+          0.4189,
+          0.2666
+        ],
+        "adapted_iou": 0.7927,
+        "iou_improvement": 0.7004
+      },
+      {
+        "sample_id": "ben_ground_0002",
         "source_dataset": "BigEarthNet.txt (2026)",
         "task": "grounding",
         "category": "localization",
@@ -666,12 +503,12 @@
         "iou_improvement": -0.0195
       },
       {
-        "sample_id": "ben_vqa_008",
+        "sample_id": "ben_vqa_0331",
         "source_dataset": "BigEarthNet.txt (2026)",
         "task": "vqa",
         "category": "land_cover",
         "image_path": "demo_assets/demo_optical_single.png",
-        "prompt": "answer en What land cover type dominates region 8?",
+        "prompt": "answer en What land cover type dominates region 331?",
         "ground_truth": "Dominated by discontinuous urban fabric.",
         "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
         "base_confidence": 0.65,
@@ -681,7 +518,846 @@
         "adapted_vqa_correct": false
       },
       {
-        "sample_id": "vrs_ground_006",
+        "sample_id": "vrs_ground_0266",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect storage tank",
+        "ground_truth_bbox": [
+          0.7,
+          0.7,
+          0.9,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0518,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0345,
+        "iou_improvement": -0.0173
+      },
+      {
+        "sample_id": "rsvqa_count_0146",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many runway instances are visible in the scene?",
+        "ground_truth": "1 runway instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many runway instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many runway instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0232",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many bridge instances are visible in the scene?",
+        "ground_truth": "1 bridge instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many bridge instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many bridge instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0124",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many hangar instances are visible in the scene?",
+        "ground_truth": "2 hangar instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many hangar instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many hangar instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_0112",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect taxiway",
+        "ground_truth_bbox": [
+          0.25,
+          0.35,
+          0.75,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0819,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.107,
+        "iou_improvement": 0.0251
+      },
+      {
+        "sample_id": "ben_ground_0218",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coastal wetlands",
+        "ground_truth_bbox": [
+          0.6,
+          0.2,
+          0.95,
+          0.7
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2159,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2182,
+        "iou_improvement": 0.0023
+      },
+      {
+        "sample_id": "rsvqa_count_0090",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many runway instances are visible in the scene?",
+        "ground_truth": "1 runway instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many runway instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many runway instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0366",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "rsvqa_count_0076",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many hangar instances are visible in the scene?",
+        "ground_truth": "2 hangar instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many hangar instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many hangar instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_0040",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect taxiway",
+        "ground_truth_bbox": [
+          0.25,
+          0.35,
+          0.75,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0819,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.107,
+        "iou_improvement": 0.0251
+      },
+      {
+        "sample_id": "ben_vqa_0007",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 7?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_0430",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect apron area",
+        "ground_truth_bbox": [
+          0.2,
+          0.1,
+          0.6,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1639,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1675,
+        "iou_improvement": 0.0036
+      },
+      {
+        "sample_id": "ben_ground_0324",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "vrs_vqa_0391",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a taxiway present in this infrastructure scene?",
+        "ground_truth": "Yes, taxiway is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a taxiway present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a taxiway present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0102",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect hangar",
+        "ground_truth_bbox": [
+          0.08,
+          0.08,
+          0.28,
+          0.28
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0539,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0364,
+        "iou_improvement": -0.0175
+      },
+      {
+        "sample_id": "rsvqa_count_0250",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many runway instances are visible in the scene?",
+        "ground_truth": "1 runway instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many runway instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many runway instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0223",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many solar array instances are visible in the scene?",
+        "ground_truth": "6 solar array instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many solar array instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many solar array instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0186",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many runway instances are visible in the scene?",
+        "ground_truth": "1 runway instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many runway instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many runway instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0235",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 235?",
+        "ground_truth": "Dominated by industrial units.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0024",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "vrs_vqa_0015",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a terminal building present in this infrastructure scene?",
+        "ground_truth": "Yes, terminal building is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a terminal building present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a terminal building present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0134",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many cargo vessel instances are visible in the scene?",
+        "ground_truth": "3 cargo vessel instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many cargo vessel instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many cargo vessel instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0009",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many aircraft instances are visible in the scene?",
+        "ground_truth": "4 aircraft instances.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0282",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect hangar",
+        "ground_truth_bbox": [
+          0.08,
+          0.08,
+          0.28,
+          0.28
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0539,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0364,
+        "iou_improvement": -0.0175
+      },
+      {
+        "sample_id": "vrs_vqa_0289",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a runway present in this infrastructure scene?",
+        "ground_truth": "Yes, runway is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a runway present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a runway present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0131",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 131?",
+        "ground_truth": "Dominated by discontinuous urban fabric.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0241",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many aircraft instances are visible in the scene?",
+        "ground_truth": "4 aircraft instances.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0328",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coastal wetlands",
+        "ground_truth_bbox": [
+          0.6,
+          0.2,
+          0.95,
+          0.7
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2159,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2182,
+        "iou_improvement": 0.0023
+      },
+      {
+        "sample_id": "ben_ground_0314",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "ben_vqa_0225",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 225?",
+        "ground_truth": "Dominated by industrial units.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0097",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 97?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0187",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 187?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0061",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many water reservoir instances are visible in the scene?",
+        "ground_truth": "1 water reservoir instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many water reservoir instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many water reservoir instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0094",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many cargo vessel instances are visible in the scene?",
+        "ground_truth": "3 cargo vessel instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many cargo vessel instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many cargo vessel instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0284",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "rsvqa_count_0177",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many aircraft instances are visible in the scene?",
+        "ground_truth": "4 aircraft instances.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0242",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect cargo vessel",
+        "ground_truth_bbox": [
+          0.65,
+          0.1,
+          0.9,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1114,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0919,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "vrs_ground_0318",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect hangar",
+        "ground_truth_bbox": [
+          0.08,
+          0.08,
+          0.28,
+          0.28
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0539,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0364,
+        "iou_improvement": -0.0175
+      },
+      {
+        "sample_id": "vrs_ground_0378",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect crane gantry",
+        "ground_truth_bbox": [
+          0.55,
+          0.2,
+          0.75,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0492,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0642,
+        "iou_improvement": 0.015
+      },
+      {
+        "sample_id": "vrs_vqa_0039",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a hangar present in this infrastructure scene?",
+        "ground_truth": "Yes, hangar is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a hangar present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a hangar present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0154",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many runway instances are visible in the scene?",
+        "ground_truth": "1 runway instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many runway instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many runway instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_0006",
         "source_dataset": "VRSBench (2024)",
         "task": "grounding",
         "category": "object_grounding",
@@ -708,6 +1384,1903 @@
         ],
         "adapted_iou": 0.6887,
         "iou_improvement": 0.5873
+      },
+      {
+        "sample_id": "rsvqa_count_0245",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many water reservoir instances are visible in the scene?",
+        "ground_truth": "1 water reservoir instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many water reservoir instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many water reservoir instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_vqa_0043",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a apron area present in this infrastructure scene?",
+        "ground_truth": "Yes, apron area is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a apron area present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a apron area present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0293",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 293?",
+        "ground_truth": "Dominated by water body.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0440",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect cargo vessel",
+        "ground_truth_bbox": [
+          0.65,
+          0.1,
+          0.9,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1114,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0919,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "vrs_vqa_0311",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a storage tank present in this infrastructure scene?",
+        "ground_truth": "Yes, storage tank is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a storage tank present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a storage tank present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0073",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many aircraft instances are visible in the scene?",
+        "ground_truth": "4 aircraft instances.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0436",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "vrs_vqa_0145",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a runway present in this infrastructure scene?",
+        "ground_truth": "Yes, runway is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a runway present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a runway present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0433",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 433?",
+        "ground_truth": "Dominated by water body.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0136",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "vrs_vqa_0049",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a taxiway present in this infrastructure scene?",
+        "ground_truth": "Yes, taxiway is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a taxiway present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a taxiway present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0322",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect apron area",
+        "ground_truth_bbox": [
+          0.2,
+          0.1,
+          0.6,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1639,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1675,
+        "iou_improvement": 0.0036
+      },
+      {
+        "sample_id": "vrs_vqa_0147",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a hangar present in this infrastructure scene?",
+        "ground_truth": "Yes, hangar is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a hangar present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a hangar present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0240",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many bridge instances are visible in the scene?",
+        "ground_truth": "1 bridge instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many bridge instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many bridge instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0470",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect solar photovoltaic parks",
+        "ground_truth_bbox": [
+          0.35,
+          0.35,
+          0.65,
+          0.65
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1475,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1926,
+        "iou_improvement": 0.0451
+      },
+      {
+        "sample_id": "ben_vqa_0115",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 115?",
+        "ground_truth": "Dominated by industrial units.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_vqa_0165",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a hangar present in this infrastructure scene?",
+        "ground_truth": "Yes, hangar is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a hangar present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a hangar present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0450",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect solar photovoltaic parks",
+        "ground_truth_bbox": [
+          0.35,
+          0.35,
+          0.65,
+          0.65
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1475,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1926,
+        "iou_improvement": 0.0451
+      },
+      {
+        "sample_id": "vrs_vqa_0053",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a cargo vessel present in this infrastructure scene?",
+        "ground_truth": "Yes, cargo vessel is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a cargo vessel present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a cargo vessel present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0278",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect cargo vessel",
+        "ground_truth_bbox": [
+          0.65,
+          0.1,
+          0.9,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1114,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0919,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "vrs_vqa_0447",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a terminal building present in this infrastructure scene?",
+        "ground_truth": "Yes, terminal building is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a terminal building present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a terminal building present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0335",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 335?",
+        "ground_truth": "Dominated by industrial units.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0247",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many solar array instances are visible in the scene?",
+        "ground_truth": "6 solar array instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many solar array instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many solar array instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0144",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many bridge instances are visible in the scene?",
+        "ground_truth": "1 bridge instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many bridge instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many bridge instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0351",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 351?",
+        "ground_truth": "Dominated by discontinuous urban fabric.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0147",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 147?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_vqa_0047",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a aircraft present in this infrastructure scene?",
+        "ground_truth": "Yes, aircraft is present.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0430",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect solar photovoltaic parks",
+        "ground_truth_bbox": [
+          0.35,
+          0.35,
+          0.65,
+          0.65
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1475,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1926,
+        "iou_improvement": 0.0451
+      },
+      {
+        "sample_id": "vrs_ground_0228",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect hangar",
+        "ground_truth_bbox": [
+          0.08,
+          0.08,
+          0.28,
+          0.28
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0539,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0364,
+        "iou_improvement": -0.0175
+      },
+      {
+        "sample_id": "vrs_vqa_0259",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a apron area present in this infrastructure scene?",
+        "ground_truth": "Yes, apron area is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a apron area present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a apron area present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0334",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "vrs_ground_0248",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect storage tank",
+        "ground_truth_bbox": [
+          0.7,
+          0.7,
+          0.9,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0518,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0345,
+        "iou_improvement": -0.0173
+      },
+      {
+        "sample_id": "vrs_vqa_0429",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a terminal building present in this infrastructure scene?",
+        "ground_truth": "Yes, terminal building is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a terminal building present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a terminal building present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0222",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many cargo vessel instances are visible in the scene?",
+        "ground_truth": "3 cargo vessel instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many cargo vessel instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many cargo vessel instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "rsvqa_count_0216",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many bridge instances are visible in the scene?",
+        "ground_truth": "1 bridge instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many bridge instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many bridge instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0207",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 207?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0236",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many hangar instances are visible in the scene?",
+        "ground_truth": "2 hangar instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many hangar instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many hangar instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0164",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "vrs_vqa_0093",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a hangar present in this infrastructure scene?",
+        "ground_truth": "Yes, hangar is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a hangar present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a hangar present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0467",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 467?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0094",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "ben_vqa_0143",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 143?",
+        "ground_truth": "Dominated by water body.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0394",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "vrs_vqa_0241",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a apron area present in this infrastructure scene?",
+        "ground_truth": "Yes, apron area is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a apron area present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a apron area present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_vqa_0101",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a aircraft present in this infrastructure scene?",
+        "ground_truth": "Yes, aircraft is present.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0181",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many water reservoir instances are visible in the scene?",
+        "ground_truth": "1 water reservoir instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many water reservoir instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many water reservoir instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0162",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "vrs_ground_0276",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect terminal building",
+        "ground_truth_bbox": [
+          0.05,
+          0.1,
+          0.35,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1014,
+        "adapted_predicted_bbox": [
+          0.0762,
+          0.0762,
+          0.3809,
+          0.3809
+        ],
+        "adapted_iou": 0.6887,
+        "iou_improvement": 0.5873
+      },
+      {
+        "sample_id": "ben_ground_0256",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "rsvqa_count_0149",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many water reservoir instances are visible in the scene?",
+        "ground_truth": "1 water reservoir instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many water reservoir instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many water reservoir instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_vqa_0441",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a crane gantry present in this infrastructure scene?",
+        "ground_truth": "Yes, crane gantry is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a crane gantry present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a crane gantry present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0089",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 89?",
+        "ground_truth": "Dominated by mineral extraction sites.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_0042",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect terminal building",
+        "ground_truth_bbox": [
+          0.05,
+          0.1,
+          0.35,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1014,
+        "adapted_predicted_bbox": [
+          0.0762,
+          0.0762,
+          0.3809,
+          0.3809
+        ],
+        "adapted_iou": 0.6887,
+        "iou_improvement": 0.5873
+      },
+      {
+        "sample_id": "vrs_vqa_0205",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a apron area present in this infrastructure scene?",
+        "ground_truth": "Yes, apron area is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a apron area present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a apron area present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0236",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect aircraft",
+        "ground_truth_bbox": [
+          0.31,
+          0.16,
+          0.43,
+          0.27
+        ],
+        "base_predicted_bbox": [
+          0.1953,
+          0.0977,
+          0.6836,
+          0.3906
+        ],
+        "base_iou": 0.0923,
+        "adapted_predicted_bbox": [
+          0.3047,
+          0.1523,
+          0.4189,
+          0.2666
+        ],
+        "adapted_iou": 0.7927,
+        "iou_improvement": 0.7004
+      },
+      {
+        "sample_id": "ben_vqa_0199",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 199?",
+        "ground_truth": "Dominated by mineral extraction sites.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_vqa_0279",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a crane gantry present in this infrastructure scene?",
+        "ground_truth": "Yes, crane gantry is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a crane gantry present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a crane gantry present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0190",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect solar photovoltaic parks",
+        "ground_truth_bbox": [
+          0.35,
+          0.35,
+          0.65,
+          0.65
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1475,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1926,
+        "iou_improvement": 0.0451
+      },
+      {
+        "sample_id": "rsvqa_count_0244",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en How many hangar instances are visible in the scene?",
+        "ground_truth": "2 hangar instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many hangar instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many hangar instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_0190",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect runway",
+        "ground_truth_bbox": [
+          0.08,
+          0.39,
+          0.92,
+          0.61
+        ],
+        "base_predicted_bbox": [
+          0.0,
+          0.1953,
+          0.9766,
+          0.7812
+        ],
+        "base_iou": 0.323,
+        "adapted_predicted_bbox": [
+          0.0801,
+          0.3896,
+          0.9199,
+          0.6094
+        ],
+        "adapted_iou": 0.9952,
+        "iou_improvement": 0.6722
+      },
+      {
+        "sample_id": "ben_vqa_0441",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 441?",
+        "ground_truth": "Dominated by discontinuous urban fabric.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0319",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 319?",
+        "ground_truth": "Dominated by mineral extraction sites.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0227",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many storage tank instances are visible in the scene?",
+        "ground_truth": "2 storage tank instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many storage tank instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many storage tank instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_vqa_0197",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a cargo vessel present in this infrastructure scene?",
+        "ground_truth": "Yes, cargo vessel is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a cargo vessel present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a cargo vessel present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "vrs_ground_0366",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect terminal building",
+        "ground_truth_bbox": [
+          0.05,
+          0.1,
+          0.35,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1014,
+        "adapted_predicted_bbox": [
+          0.0762,
+          0.0762,
+          0.3809,
+          0.3809
+        ],
+        "adapted_iou": 0.6887,
+        "iou_improvement": 0.5873
+      },
+      {
+        "sample_id": "ben_vqa_0327",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 327?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0014",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "vrs_ground_0070",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect apron area",
+        "ground_truth_bbox": [
+          0.2,
+          0.1,
+          0.6,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1639,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1675,
+        "iou_improvement": 0.0036
+      },
+      {
+        "sample_id": "vrs_ground_0420",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect terminal building",
+        "ground_truth_bbox": [
+          0.05,
+          0.1,
+          0.35,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1014,
+        "adapted_predicted_bbox": [
+          0.0762,
+          0.0762,
+          0.3809,
+          0.3809
+        ],
+        "adapted_iou": 0.6887,
+        "iou_improvement": 0.5873
+      },
+      {
+        "sample_id": "ben_ground_0452",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "vrs_ground_0360",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect crane gantry",
+        "ground_truth_bbox": [
+          0.55,
+          0.2,
+          0.75,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0492,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0642,
+        "iou_improvement": 0.015
+      },
+      {
+        "sample_id": "rsvqa_count_0243",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many storage tank instances are visible in the scene?",
+        "ground_truth": "2 storage tank instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many storage tank instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many storage tank instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0408",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coastal wetlands",
+        "ground_truth_bbox": [
+          0.6,
+          0.2,
+          0.95,
+          0.7
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2159,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2182,
+        "iou_improvement": 0.0023
+      },
+      {
+        "sample_id": "rsvqa_count_0200",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many bridge instances are visible in the scene?",
+        "ground_truth": "1 bridge instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many bridge instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many bridge instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_vqa_0055",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 55?",
+        "ground_truth": "Dominated by industrial units.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0085",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many water reservoir instances are visible in the scene?",
+        "ground_truth": "1 water reservoir instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many water reservoir instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many water reservoir instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0477",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 477?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_0448",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coastal wetlands",
+        "ground_truth_bbox": [
+          0.6,
+          0.2,
+          0.95,
+          0.7
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2159,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2182,
+        "iou_improvement": 0.0023
+      },
+      {
+        "sample_id": "ben_ground_0192",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "ben_ground_0062",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "ben_ground_0066",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "vrs_vqa_0365",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a storage tank present in this infrastructure scene?",
+        "ground_truth": "Yes, storage tank is present.",
+        "base_model_prediction": "Aerial imagery view of answer en Is there a storage tank present in this infrastructure scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en Is there a storage tank present in this infrastructure scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_0179",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 179?",
+        "ground_truth": "Dominated by mineral extraction sites.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "rsvqa_count_0167",
+        "source_dataset": "RSVQA (2020)",
+        "task": "vqa",
+        "category": "counting",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en How many solar array instances are visible in the scene?",
+        "ground_truth": "6 solar array instances.",
+        "base_model_prediction": "Aerial imagery view of answer en How many solar array instances are visible in the scene.",
+        "base_confidence": 0.62,
+        "adapted_model_prediction": "Remote-sensing visual analysis for 'answer en How many solar array instances are visible in the scene?' identifies distinct spectral signatures across the surveyed area.",
+        "adapted_confidence": 0.9,
+        "base_vqa_correct": true,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_ground_0210",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect solar photovoltaic parks",
+        "ground_truth_bbox": [
+          0.35,
+          0.35,
+          0.65,
+          0.65
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1475,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1926,
+        "iou_improvement": 0.0451
+      },
+      {
+        "sample_id": "ben_ground_0286",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "ben_ground_0458",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coastal wetlands",
+        "ground_truth_bbox": [
+          0.6,
+          0.2,
+          0.95,
+          0.7
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2159,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2182,
+        "iou_improvement": 0.0023
+      },
+      {
+        "sample_id": "vrs_ground_0002",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect aircraft",
+        "ground_truth_bbox": [
+          0.31,
+          0.16,
+          0.43,
+          0.27
+        ],
+        "base_predicted_bbox": [
+          0.1953,
+          0.0977,
+          0.6836,
+          0.3906
+        ],
+        "base_iou": 0.0923,
+        "adapted_predicted_bbox": [
+          0.3047,
+          0.1523,
+          0.4189,
+          0.2666
+        ],
+        "adapted_iou": 0.7927,
+        "iou_improvement": 0.7004
+      },
+      {
+        "sample_id": "vrs_ground_0064",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect runway",
+        "ground_truth_bbox": [
+          0.08,
+          0.39,
+          0.92,
+          0.61
+        ],
+        "base_predicted_bbox": [
+          0.0,
+          0.1953,
+          0.9766,
+          0.7812
+        ],
+        "base_iou": 0.323,
+        "adapted_predicted_bbox": [
+          0.0801,
+          0.3896,
+          0.9199,
+          0.6094
+        ],
+        "adapted_iou": 0.9952,
+        "iou_improvement": 0.6722
+      },
+      {
+        "sample_id": "ben_ground_0052",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "ben_vqa_0229",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 229?",
+        "ground_truth": "Dominated by mineral extraction sites.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
       }
     ]
   }

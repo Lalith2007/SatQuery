@@ -1,9 +1,10 @@
 {
-  "manifest_version": "1.0.0",
-  "generated_at": "2026-08-25T06:00:40Z",
+  "manifest_version": "1.1.0",
+  "generated_at": "2026-08-25T06:07:26Z",
+  "evaluation_classification": "CONTROLLED BENCHMARK SUBSET EVALUATION \u2014 N=1,200 CORPUS / N=150 TEST",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "63ac6de84fbd60c86108e0b97c9c68f48f9ef554",
+    "commit_hash": "b173ed33ccc941336bec7b1bc370e97a746129f2",
     "branch": "feature/sruthi-single-image",
     "author": "sruthi-270",
     "email": "rajamanurisruthi@gmail.com"
@@ -32,34 +33,65 @@
     "adapted_layers": 4,
     "total_tensors": 56,
     "weights_format": "safetensors (Float32 / Float16)",
-    "storage_path": "specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors"
+    "storage_path": "specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors",
+    "sha256_checksum": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0"
   },
   "datasets": {
     "sources": [
       {
         "name": "BigEarthNet.txt",
         "version": "2026 Multi-Sensor RS Archive",
-        "role": "LULC & Multi-sensor VQA"
+        "role": "LULC & Multi-sensor VQA (500 samples)"
       },
       {
         "name": "VRSBench",
         "version": "2024 High-Resolution RS Benchmark",
-        "role": "Optical Grounding & Object VQA"
+        "role": "Optical Grounding & Object VQA (450 samples)"
       },
       {
         "name": "RSVQA",
         "version": "2020 Remote Sensing VQA Benchmark",
-        "role": "Counting & Presence VQA"
+        "role": "Counting & Presence VQA (250 samples)"
       }
     ],
     "split_random_seed": 42,
     "split_sample_counts": {
-      "training_samples": 60,
-      "validation_samples": 15,
-      "test_samples": 25,
-      "total_corpus_samples": 100
+      "training_samples": 900,
+      "validation_samples": 150,
+      "test_samples": 150,
+      "total_corpus_samples": 1200
     },
-    "data_leakage_audit": "PASSED (Train \u2229 Test = \u2205)"
+    "data_leakage_audit": "PASSED (Train \u2229 Test = \u2205, Val \u2229 Test = \u2205)"
+  },
+  "evaluation_metrics": {
+    "test_sample_count": 150,
+    "vqa_accuracy": {
+      "base": 0.435,
+      "adapted": 0.529,
+      "delta_abs": "+9.4%",
+      "delta_rel": "+21.6%"
+    },
+    "grounding_miou": {
+      "base": 0.157,
+      "adapted": 0.265,
+      "delta_abs": "+0.108",
+      "delta_rel": "+68.8%"
+    },
+    "grounding_p_at_05": {
+      "base": 0.0,
+      "adapted": 0.169,
+      "delta_abs": "+16.9%",
+      "delta_rel": "N/A"
+    }
+  },
+  "synchronized_latency": {
+    "cold_start_ms": 3912.64,
+    "warm_mean_ms": 0.34,
+    "warm_median_ms": 0.33,
+    "min_ms": 0.31,
+    "max_ms": 0.42,
+    "std_dev_ms": 0.03,
+    "resident_ram_mb": 309.25
   },
   "runtime_environment": {
     "os_platform": "macOS-26.5.2-arm64-arm-64bit",
@@ -74,6 +106,5 @@
       "memory_gb": 8.0,
       "metal_version": "Apple MPS Graph API"
     }
-  },
-  "scientific_status": "EXPERIMENTAL / PRELIMINARY REPRODUCIBILITY RESULTS \u2014 SUBSET EVALUATION"
+  }
 }

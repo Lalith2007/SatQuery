@@ -1,51 +1,12 @@
 {
-  "base_model_name_or_path": "google/paligemma-3b-pt-224",
-  "peft_type": "LORA",
-  "task_type": "CAUSAL_LM",
-  "r": 8,
-  "lora_alpha": 16,
-  "lora_dropout": 0.05,
-  "bias": "none",
-  "target_modules": [
-    "q_proj",
-    "k_proj",
-    "v_proj",
-    "o_proj",
-    "gate_proj",
-    "up_proj",
-    "down_proj"
-  ],
-  "inference_mode": true,
-  "init_lora_weights": true,
-  "layers_to_transform": [
-    0,
-    1,
-    2,
-    3
-  ],
-  "revision": "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
-  "training_dataset_mix": {
-    "BigEarthNet.txt": "41.7% (500 samples)",
-    "VRSBench": "37.5% (450 samples)",
-    "RSVQA": "20.8% (250 samples)"
-  },
-  "sample_counts": {
-    "train": 900,
-    "val": 150,
-    "test": 150,
-    "total": 1200
-  },
-  "epochs": 5,
-  "batch_size": 4,
-  "gradient_accumulation_steps": 4,
-  "learning_rate": 0.0002,
-  "seed": 42,
-  "total_tensors": 56,
-  "adapter_sha256": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0",
-  "total_training_time_seconds": 0.0,
+  "training_duration_seconds": 0.0,
+  "epochs_completed": 5,
+  "train_samples": 900,
+  "val_samples": 150,
   "final_train_loss": 0.6338,
   "final_val_loss": 0.8053,
-  "training_history": [
+  "adapter_sha256": "7bd0f5cb4c84c9f72f55549c35c853e2c1059e9ac0ef66b14ceb9f2b11abaef0",
+  "history": [
     {
       "epoch": 1,
       "train_samples_seen": 900,

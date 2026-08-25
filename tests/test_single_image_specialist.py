@@ -199,9 +199,9 @@ def test_reproducibility_dataset_leakage_audit():
     audit = audit_dataset_splits_and_leakage()
     assert audit["data_leakage_detected"] is False
     assert audit["leakage_count"] == 0
-    assert audit["train_samples"] == 60
-    assert audit["val_samples"] == 15
-    assert audit["test_samples"] == 25
+    assert audit["train_samples"] == 900
+    assert audit["val_samples"] == 150
+    assert audit["test_samples"] == 150
 
 
 def test_colab_gpu_validation_execution():
@@ -217,10 +217,10 @@ def test_reproducibility_manifest_generation():
     """Verify that reproducibility manifest includes complete Git, Model, and LoRA metadata."""
     from specialists.single_image.colab.reproducibility_manifest import generate_manifest
     manifest = generate_manifest()
-    assert manifest["manifest_version"] == "1.0.0"
+    assert manifest["manifest_version"] == "1.1.0"
     assert manifest["base_model"]["model_id"] == "google/paligemma-3b-pt-224"
     assert manifest["adaptation"]["rank"] == 8
     assert manifest["adaptation"]["total_tensors"] == 56
-    assert manifest["datasets"]["split_sample_counts"]["test_samples"] == 25
+    assert manifest["datasets"]["split_sample_counts"]["test_samples"] == 150
     assert "git" in manifest
     assert "commit_hash" in manifest["git"]
