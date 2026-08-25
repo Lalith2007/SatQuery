@@ -346,14 +346,25 @@ def run_full_lora_training(
     training_history = []
     t_train_start = time.perf_counter()
 
+    try:
+        from tqdm import tqdm
+        has_tqdm = True
+    except ImportError:
+        has_tqdm = False
+
     for epoch in range(1, epochs + 1):
         sync_device(target_device)
         t_epoch_start = time.perf_counter()
         model.train()
         epoch_losses: List[float] = []
 
+        total_batches = len(train_data) // batch_size
+        batch_iter = range(0, len(train_data), batch_size)
+        if has_tqdm:
+            batch_iter = tqdm(batch_iter, desc=f"Epoch [{epoch}/{epochs}]", total=total_batches, unit="sample")
+
         # Batch iteration
-        for i in range(0, len(train_data), batch_size):
+        for batch_idx, i in enumerate(batch_iter):
             batch_items = train_data[i : i + batch_size]
             images = []
             prompts = []
@@ -383,16 +394,23 @@ def run_full_lora_training(
                 inputs = {k: v.to(target_device) for k, v in inputs.items()}
 
             outputs = model(**inputs)
+            step_loss_val = float(outputs.loss.item())
             loss = outputs.loss / grad_accum_steps
             loss.backward()
 
-            if (i // batch_size + 1) % grad_accum_steps == 0 or (i + batch_size >= len(train_data)):
+            if (batch_idx + 1) % grad_accum_steps == 0 or (i + batch_size >= len(train_data)):
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
                 optimizer.zero_grad()
 
-            epoch_losses.append(float(outputs.loss.item()))
-            if i % 32 == 0 and torch.cuda.is_available():
+            epoch_losses.append(step_loss_val)
+
+            if has_tqdm:
+                batch_iter.set_postfix({"loss": f"{step_loss_val:.4f}", "avg_loss": f"{sum(epoch_losses)/len(epoch_losses):.4f}"})
+            elif (batch_idx + 1) % 10 == 0 or (batch_idx + 1) == total_batches:
+                logger.info(f"Epoch [{epoch}/{epochs}] | Step [{batch_idx+1}/{total_batches}] | Loss: {step_loss_val:.4f}")
+
+            if (batch_idx + 1) % 32 == 0 and torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
         sync_device(target_device)
@@ -428,7 +446,7 @@ def run_full_lora_training(
             "duration_seconds": epoch_dur_s,
         }
         training_history.append(epoch_rec)
-        logger.info(f"Epoch [{epoch}/{epochs}] - Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} ({epoch_dur_s}s)")
+        logger.info(f"Epoch [{epoch}/{epochs}] COMPLETED | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} ({epoch_dur_s}s)")
 
     sync_device(target_device)
     total_time_s = round(time.perf_counter() - t_train_start, 2)
@@ -467,7 +485,9 @@ if __name__ == "__main__":
     parser.add_argument("--smoke-test", action="store_true", help="Execute Phase 2 gradient & backprop smoke test")
     parser.add_argument("--model-name", type=str, default="google/paligemma-3b-pt-224", help="Base model ID")
     parser.add_argument("--revision", type=str, default="main", help="Model revision")
-    parser.add_argument("--epochs", type=int, default=5, help="Epochs")
+    parser.add_argument("--epochs", type=int, default=3, help="Epochs")
+    parser.add_argument("--train-count", type=int, default=150, help="Number of training samples")
+    parser.add_argument("--val-count", type=int, default=30, help="Number of validation samples")
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"], help="Device")
     parser.add_argument("--output-dir", type=str, default="specialists/single_image/weights/satquery_paligemma_lora", help="Output dir")
     args = parser.parse_args()
@@ -485,4 +505,11 @@ if __name__ == "__main__":
         print("=" * 80)
     else:
         cfg = SatQueryLoRAConfig(base_model_name=args.model_name, revision=args.revision)
-        run_full_lora_training(cfg, epochs=args.epochs, device=args.device, output_dir=args.output_dir)
+        run_full_lora_training(
+            cfg,
+            epochs=args.epochs,
+            train_count=args.train_count,
+            val_count=args.val_count,
+            device=args.device,
+            output_dir=args.output_dir,
+        )
