@@ -87,7 +87,11 @@ def run_lora_smoke_test(
     target_device = detect_compute_device(device)
     logger.info("=" * 80)
     logger.info(f"PHASE 2: REAL PEFT / LORA GRADIENT & BACKPROPAGATION SMOKE TEST ON [{target_device.upper()}]")
-    logger.info("=" * 80)
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    import gc
+    gc.collect()
 
     try:
         from transformers import AutoProcessor, PaliGemmaForConditionalGeneration
@@ -95,7 +99,7 @@ def run_lora_smoke_test(
     except ImportError as e:
         raise RuntimeError(f"Missing required ML libraries (transformers/peft): {e}") from e
 
-    dtype = torch.bfloat16 if (target_device == "cuda" and torch.cuda.is_bf16_supported()) else (torch.float16 if target_device in {"cuda", "mps"} else torch.float32)
+    dtype = torch.float16 if target_device in {"cuda", "mps"} else torch.float32
 
     # 1. Load Real Processor and Base Model
     logger.info(f"Loading base PaliGemma: {model_name} (revision: {revision})...")
@@ -108,6 +112,7 @@ def run_lora_smoke_test(
         model_name,
         revision=revision,
         torch_dtype=dtype,
+        low_cpu_mem_usage=True,
         device_map=target_device if target_device != "mps" else None,
     )
     if target_device == "mps":
@@ -273,7 +278,11 @@ def run_full_lora_training(
 
     logger.info("=" * 80)
     logger.info(f"STARTING REAL LORA DOMAIN ADAPTATION TRAINING ON [{target_device.upper()}]")
-    logger.info("=" * 80)
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    import gc
+    gc.collect()
 
     try:
         from transformers import AutoProcessor, PaliGemmaForConditionalGeneration
@@ -281,7 +290,7 @@ def run_full_lora_training(
     except ImportError as e:
         raise RuntimeError(f"Missing required ML libraries: {e}") from e
 
-    dtype = torch.bfloat16 if (target_device == "cuda" and torch.cuda.is_bf16_supported()) else (torch.float16 if target_device in {"cuda", "mps"} else torch.float32)
+    dtype = torch.float16 if target_device in {"cuda", "mps"} else torch.float32
 
     # 1. Load Processor and Base Model
     try:
@@ -293,6 +302,7 @@ def run_full_lora_training(
         config.base_model_name,
         revision=config.revision,
         torch_dtype=dtype,
+        low_cpu_mem_usage=True,
         device_map=target_device if target_device != "mps" else None,
     )
     if target_device == "mps":
