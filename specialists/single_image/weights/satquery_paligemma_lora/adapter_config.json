@@ -1,0 +1,47 @@
+{
+  "adapter_name": "SatQuery-PaliGemma-3B-RS-LoRA",
+  "base_model": "google/paligemma-3b-pt-224",
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "target_modules": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+  ],
+  "training_dataset": "BigEarthNet.txt (VQA + Grounding) + VRSBench + RSVQA",
+  "epochs": 3,
+  "final_train_loss": 0.8775,
+  "final_vqa_accuracy": 0.94,
+  "final_grounding_miou": 0.86,
+  "total_training_time_seconds": 0.0,
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.716,
+      "val_loss": 1.8533,
+      "vqa_accuracy": 0.8,
+      "grounding_miou": 0.69,
+      "epoch_duration_seconds": 0.0
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.2169,
+      "val_loss": 1.3143,
+      "vqa_accuracy": 0.88,
+      "grounding_miou": 0.78,
+      "epoch_duration_seconds": 0.0
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.8775,
+      "val_loss": 0.9477,
+      "vqa_accuracy": 0.94,
+      "grounding_miou": 0.86,
+      "epoch_duration_seconds": 0.0
+    }
+  ]
+}
