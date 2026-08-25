@@ -1,0 +1,44 @@
+{
+  "manifest_description": "SatQuery Division 2 Real Evaluation Data Manifest",
+  "audit_date": "2026-08-25T14:48:00Z",
+  "validation_rule": "Reject records resolving to demo assets when claiming to be external benchmark samples.",
+  "benchmark_datasets": {
+    "BigEarthNet": {
+      "status": "REAL_BENCHMARK_IMAGES_UNAVAILABLE",
+      "required_image_archive": "BigEarthNet-v1.0 (Sentinel-2 L2A / Sentinel-1 GRD)",
+      "local_files_found": 0,
+      "verified_benchmark_samples": []
+    },
+    "VRSBench": {
+      "status": "REAL_BENCHMARK_IMAGES_UNAVAILABLE",
+      "required_image_archive": "VRSBench (High-Resolution Optical RS Imagery)",
+      "local_files_found": 0,
+      "verified_benchmark_samples": []
+    },
+    "RSVQA": {
+      "status": "REAL_BENCHMARK_IMAGES_UNAVAILABLE",
+      "required_image_archive": "RSVQA Low/High Resolution Benchmark Imagery",
+      "local_files_found": 0,
+      "verified_benchmark_samples": []
+    }
+  },
+  "demonstration_assets": {
+    "status": "AVAILABLE_FOR_FUNCTIONAL_SMOKE_TEST",
+    "records": [
+      {
+        "asset_id": "demo_optical_single",
+        "file_path": "demo_assets/demo_optical_single.png",
+        "modality": "optical",
+        "resolution": "224x224",
+        "exists_on_disk": true
+      },
+      {
+        "asset_id": "demo_airport_grounding",
+        "file_path": "demo_assets/demo_airport_grounding.png",
+        "modality": "optical",
+        "resolution": "224x224",
+        "exists_on_disk": true
+      }
+    ]
+  }
+}

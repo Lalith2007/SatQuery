@@ -189,7 +189,8 @@ def generate_manifest(output_path: str = "specialists/single_image/colab/reprodu
     manifest = {
         "manifest_version": "1.2.0",
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "evaluation_classification": "CONTROLLED BENCHMARK SUBSET EVALUATION — N=1,200 CORPUS / N=150 TEST",
+        "evaluation_classification": "CONTROLLED DEMONSTRATION-CORPUS EVALUATION",
+        "scientific_status": "SCIENTIFIC RESULTS — PENDING REAL IMAGE EVALUATION (REAL_BENCHMARK_IMAGES_UNAVAILABLE)",
         "division": "Division 2 — Single-Image Remote-Sensing Intelligence",
         "git": git_info,
         "base_model": {
