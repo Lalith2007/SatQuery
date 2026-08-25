@@ -31,9 +31,9 @@ from core.schemas import (
 from agent.controller import AgentController
 from registry.registry import ToolRegistry
 from specialists.single_image.evaluation.reproducibility import (
-    audit_dataset_splits,
-    profile_inference_latency,
-    verify_adapter_weights,
+    audit_dataset_splits_and_leakage,
+    profile_synchronized_mps_latency,
+    verify_adapter_tensor_architecture,
 )
 from specialists.single_image.grounding import GroundingCoordinateParser
 from specialists.single_image.specialist import SingleImageRSSpecialistTool
@@ -186,17 +186,19 @@ async def test_agent_controller_integration_with_division2_specialist(
 
 
 def test_reproducibility_adapter_verification():
-    """Verify that adapter weights exist on disk, are loadable, and match LoRA rank."""
-    audit = verify_adapter_weights()
-    assert audit["status"] == "VERIFIED_LOADABLE"
+    """Verify that adapter weights exist on disk, are loadable, and match LoRA rank and tensor count."""
+    audit = verify_adapter_tensor_architecture()
+    assert "VERIFIED" in audit["status"]
     assert audit["total_tensors_in_file"] == 56
     assert audit["lora_rank"] == 8
+    assert audit["adapted_layer_count"] == 4
 
 
 def test_reproducibility_dataset_leakage_audit():
     """Verify zero overlap between train and test evaluation splits."""
-    audit = audit_dataset_splits()
+    audit = audit_dataset_splits_and_leakage()
     assert audit["data_leakage_detected"] is False
     assert audit["leakage_count"] == 0
-    assert audit["train_samples"] > 0
-    assert audit["test_samples"] > 0
+    assert audit["train_samples"] == 60
+    assert audit["val_samples"] == 15
+    assert audit["test_samples"] == 25

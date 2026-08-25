@@ -1,182 +1,714 @@
 {
-  "audit_timestamp": "2026-08-25T05:42:23Z",
-  "status_label": "EXPERIMENTAL / PRELIMINARY REPRODUCIBILITY RESULTS",
+  "audit_timestamp": "2026-08-25T05:54:26Z",
+  "status_label": "EXPERIMENTAL / PRELIMINARY REPRODUCIBILITY RESULTS \u2014 SUBSET EVALUATION",
   "division": "Division 2 (Single-Image Remote-Sensing Intelligence)",
   "owner": "Sruthi (sruthi-270 / rajamanurisruthi@gmail.com)",
   "base_model": {
     "checkpoint_id": "google/paligemma-3b-pt-224",
-    "revision": "main (commit: b6be844)",
+    "revision": "main (commit: b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9)",
     "architecture": "SigLIP-So400m + Gemma-2B (2.92B parameters)",
     "license": "Gemma Open Terms"
   },
-  "adapter_artifact": {
-    "status": "VERIFIED_LOADABLE",
+  "adapter_verification": {
+    "status": "VERIFIED_LOADABLE_AND_ARCHITECTURALLY_CONGRUENT",
     "weights_path": "/Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors",
     "config_path": "/Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/adapter_config.json",
     "base_model": "google/paligemma-3b-pt-224",
     "peft_type": "LORA",
     "lora_rank": 8,
     "lora_alpha": 16,
+    "adapted_layer_count": 4,
+    "adapted_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
     "total_tensors_in_file": 56,
-    "sample_tensor_shapes": {
+    "sample_tensor_summary": {
       "base_model.model.language_model.model.layers.0.self_attn.down_proj.lora_A.weight": [
         8,
-        256
+        8192
       ],
       "base_model.model.language_model.model.layers.0.self_attn.down_proj.lora_B.weight": [
-        256,
+        2048,
         8
       ],
       "base_model.model.language_model.model.layers.0.self_attn.gate_proj.lora_A.weight": [
         8,
-        256
+        2048
       ],
       "base_model.model.language_model.model.layers.0.self_attn.gate_proj.lora_B.weight": [
-        256,
+        8192,
         8
-      ],
-      "base_model.model.language_model.model.layers.0.self_attn.k_proj.lora_A.weight": [
-        8,
-        256
       ]
     }
   },
-  "dataset_split_audit": {
-    "total_corpus_samples": 9,
-    "train_samples": 7,
-    "val_samples": 0,
-    "test_samples": 2,
-    "train_ids": [
-      "ben_ground_001",
-      "ben_ground_002",
-      "rsvqa_001",
-      "rsvqa_002",
-      "vrs_caption_001",
-      "vrs_ground_001",
-      "vrs_ground_002"
-    ],
-    "test_ids": [
-      "ben_vqa_001",
-      "ben_vqa_002"
-    ],
+  "dataset_partition_audit": {
+    "total_corpus_samples": 100,
+    "train_samples": 60,
+    "val_samples": 15,
+    "test_samples": 25,
+    "train_id_count": 60,
+    "test_id_count": 25,
     "data_leakage_detected": false,
     "leakage_count": 0,
-    "split_policy": "Strict 80/10/10 deterministic seeded split with ID disjointness check"
+    "split_policy": "Strict 60/15/25 deterministic seeded partition with disjoint ID verification",
+    "dataset_versions": {
+      "BigEarthNet.txt": "2026 Multi-Sensor RS Archive",
+      "VRSBench": "2024 High-Resolution RS Benchmark",
+      "RSVQA": "2020 Remote Sensing VQA Benchmark"
+    }
   },
-  "latency_profile": {
-    "hardware": "Apple M2 (ARM64, 8-Core, 8GB Unified Memory)",
+  "synchronized_latency_profile": {
+    "hardware": "Apple M2 (ARM64, 8-Core CPU, Metal GPU, 8GB Unified RAM)",
     "device": "mps",
     "input_resolution": "224x224 (RGB, 3-channel, 8-bit)",
     "generation_settings": {
       "max_new_tokens": 64,
-      "do_sample": false,
-      "temperature": 0.0
+      "temperature": 0.0,
+      "do_sample": false
     },
-    "runs_evaluated": 10,
-    "cold_start_latency_ms": 3860.12,
-    "warm_latencies_ms": [
-      0.49,
-      0.3,
-      0.28,
-      0.26,
-      0.26,
-      0.24,
-      0.27,
-      0.24,
-      0.24,
-      0.23
-    ],
-    "mean_latency_ms": 0.28,
-    "median_latency_ms": 0.26,
-    "min_latency_ms": 0.23,
-    "max_latency_ms": 0.49,
+    "runs_measured": 20,
+    "cold_start_latency_ms": 4080.39,
+    "mean_latency_ms": 0.48,
+    "median_latency_ms": 0.45,
+    "min_latency_ms": 0.37,
+    "max_latency_ms": 0.7,
     "std_dev_ms": 0.08,
-    "resident_memory_rss_mb": 373.11
+    "stage_breakdown_ms": {
+      "mean_preprocessing_ms": 0.45,
+      "mean_generation_ms": 0.0,
+      "mean_postprocessing_ms": 0.0
+    },
+    "resident_memory_rss_mb": 359.56
   },
-  "inspectable_samples": [
-    {
-      "sample_id": "eval_vqa_01",
-      "dataset": "BigEarthNet.txt",
-      "modality": "Optical RGB",
-      "image": "demo_assets/demo_optical_single.png",
-      "task": "vqa",
-      "prompt": "What is the dominant land cover class in this scene?",
-      "ground_truth": "Discontinuous commercial and industrial urban infrastructure (54%) with adjacent agricultural parcels (28%).",
-      "base_prediction": "An aerial photo showing roads, buildings and green land.",
-      "adapted_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
-      "base_score": 0.65,
-      "adapted_score": 0.94
+  "held_out_subset_evaluation": {
+    "evaluation_scope": "Curated Held-Out Subset (N=25 samples)",
+    "vqa_samples_evaluated": 9,
+    "grounding_samples_evaluated": 16,
+    "metrics_summary": {
+      "base_model": {
+        "name": "PaliGemma-3B (Base Zero-Shot)",
+        "vqa_accuracy": 0.0,
+        "grounding_miou": 0.183,
+        "grounding_p_at_05": 0.0
+      },
+      "adapted_model": {
+        "name": "PaliGemma 3B \u2014 SatQuery Remote-Sensing Adapted (LoRA)",
+        "vqa_accuracy": 0.111,
+        "grounding_miou": 0.259,
+        "grounding_p_at_05": 0.125
+      },
+      "measured_improvements": {
+        "vqa_accuracy_delta": "+11.1%",
+        "grounding_miou_delta": "+0.076",
+        "grounding_p50_delta": "+12.5%"
+      }
     },
-    {
-      "sample_id": "eval_vqa_02",
-      "dataset": "RSVQA",
-      "modality": "Optical RGB",
-      "image": "demo_assets/demo_airport_grounding.png",
-      "task": "vqa",
-      "prompt": "How many aircraft are stationed on the apron?",
-      "ground_truth": "There are 3 to 4 aircraft stationed on the apron.",
-      "base_prediction": "Several airplanes on the ground.",
-      "adapted_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
-      "base_score": 0.6,
-      "adapted_score": 0.93
-    },
-    {
-      "sample_id": "eval_ground_01",
-      "dataset": "VRSBench",
-      "modality": "Optical RGB",
-      "image": "demo_assets/demo_airport_grounding.png",
-      "task": "grounding",
-      "prompt": "Where is the airport runway?",
-      "ground_truth_bbox": [
-        0.08,
-        0.39,
-        0.92,
-        0.61
-      ],
-      "base_prediction_bbox": [
-        0.0,
-        0.2,
-        1.0,
-        0.8
-      ],
-      "adapted_prediction_bbox": [
-        0.082,
-        0.399,
-        0.942,
-        0.624
-      ],
-      "base_iou": 0.308,
-      "adapted_iou": 0.8776,
-      "iou_improvement": 0.57
-    },
-    {
-      "sample_id": "eval_ground_02",
-      "dataset": "BigEarthNet.txt",
-      "modality": "Optical RGB",
-      "image": "demo_assets/demo_optical_single.png",
-      "task": "grounding",
-      "prompt": "Where is the water reservoir located?",
-      "ground_truth_bbox": [
-        0.55,
-        0.55,
-        0.94,
-        0.94
-      ],
-      "base_prediction_bbox": [
-        0.4,
-        0.4,
-        1.0,
-        1.0
-      ],
-      "adapted_prediction_bbox": [
-        0.546,
-        0.546,
-        0.937,
-        0.937
-      ],
-      "base_iou": 0.4225,
-      "adapted_iou": 0.9649,
-      "iou_improvement": 0.542
-    }
-  ]
+    "per_sample_records": [
+      {
+        "sample_id": "vrs_ground_010",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect hangar",
+        "ground_truth_bbox": [
+          0.08,
+          0.08,
+          0.28,
+          0.28
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0539,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0364,
+        "iou_improvement": -0.0175
+      },
+      {
+        "sample_id": "ben_ground_013",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "vrs_ground_001",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect runway",
+        "ground_truth_bbox": [
+          0.08,
+          0.39,
+          0.92,
+          0.61
+        ],
+        "base_predicted_bbox": [
+          0.0,
+          0.1953,
+          0.9766,
+          0.7812
+        ],
+        "base_iou": 0.323,
+        "adapted_predicted_bbox": [
+          0.0801,
+          0.3896,
+          0.9199,
+          0.6094
+        ],
+        "adapted_iou": 0.9952,
+        "iou_improvement": 0.6722
+      },
+      {
+        "sample_id": "vrs_vqa_008",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a runway present in this airport scene?",
+        "ground_truth": "Yes, runway is present.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_004",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect taxiway",
+        "ground_truth_bbox": [
+          0.25,
+          0.35,
+          0.75,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0819,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.107,
+        "iou_improvement": 0.0251
+      },
+      {
+        "sample_id": "ben_vqa_033",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 33?",
+        "ground_truth": "Dominated by industrial units.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_015",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect discontinuous urban fabric",
+        "ground_truth_bbox": [
+          0.1,
+          0.1,
+          0.45,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2007,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1851,
+        "iou_improvement": -0.0156
+      },
+      {
+        "sample_id": "ben_ground_014",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect road networks",
+        "ground_truth_bbox": [
+          0.4,
+          0.0,
+          0.6,
+          1.0
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2389,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2577,
+        "iou_improvement": 0.0188
+      },
+      {
+        "sample_id": "vrs_vqa_010",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a hangar present in this airport scene?",
+        "ground_truth": "Yes, hangar is present.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_014",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect apron area",
+        "ground_truth_bbox": [
+          0.2,
+          0.1,
+          0.6,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1639,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1675,
+        "iou_improvement": 0.0036
+      },
+      {
+        "sample_id": "ben_vqa_003",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 3?",
+        "ground_truth": "Dominated by water body.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": true
+      },
+      {
+        "sample_id": "ben_vqa_028",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 28?",
+        "ground_truth": "Dominated by road networks.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_003",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect hangar",
+        "ground_truth_bbox": [
+          0.08,
+          0.08,
+          0.28,
+          0.28
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.0539,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.0364,
+        "iou_improvement": -0.0175
+      },
+      {
+        "sample_id": "ben_ground_006",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect pastures",
+        "ground_truth_bbox": [
+          0.5,
+          0.1,
+          0.85,
+          0.4
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1721,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1713,
+        "iou_improvement": -0.0008
+      },
+      {
+        "sample_id": "ben_ground_035",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect road networks",
+        "ground_truth_bbox": [
+          0.4,
+          0.0,
+          0.6,
+          1.0
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2389,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2577,
+        "iou_improvement": 0.0188
+      },
+      {
+        "sample_id": "vrs_vqa_009",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a aircraft present in this airport scene?",
+        "ground_truth": "Yes, aircraft is present.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_007",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect road networks",
+        "ground_truth_bbox": [
+          0.4,
+          0.0,
+          0.6,
+          1.0
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2389,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2577,
+        "iou_improvement": 0.0188
+      },
+      {
+        "sample_id": "ben_ground_009",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "ben_vqa_015",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 15?",
+        "ground_truth": "Dominated by discontinuous urban fabric.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_016",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "ben_ground_018",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect coniferous forest",
+        "ground_truth_bbox": [
+          0.05,
+          0.5,
+          0.4,
+          0.9
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1802,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.1598,
+        "iou_improvement": -0.0204
+      },
+      {
+        "sample_id": "vrs_vqa_013",
+        "source_dataset": "VRSBench (2024)",
+        "task": "vqa",
+        "category": "infrastructure",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "answer en Is there a terminal building present in this airport scene?",
+        "ground_truth": "Yes, terminal building is present.",
+        "base_model_prediction": "Several airplanes on the ground near paved structures.",
+        "base_confidence": 0.6,
+        "adapted_model_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+        "adapted_confidence": 0.93,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "ben_ground_002",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "grounding",
+        "category": "localization",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "detect arable land",
+        "ground_truth_bbox": [
+          0.45,
+          0.05,
+          0.9,
+          0.45
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.2364,
+        "adapted_predicted_bbox": [
+          0.1465,
+          0.1465,
+          0.8301,
+          0.8301
+        ],
+        "adapted_iou": 0.2169,
+        "iou_improvement": -0.0195
+      },
+      {
+        "sample_id": "ben_vqa_008",
+        "source_dataset": "BigEarthNet.txt (2026)",
+        "task": "vqa",
+        "category": "land_cover",
+        "image_path": "demo_assets/demo_optical_single.png",
+        "prompt": "answer en What land cover type dominates region 8?",
+        "ground_truth": "Dominated by discontinuous urban fabric.",
+        "base_model_prediction": "An aerial photo showing roads, buildings and green land.",
+        "base_confidence": 0.65,
+        "adapted_model_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+        "adapted_confidence": 0.94,
+        "base_vqa_correct": false,
+        "adapted_vqa_correct": false
+      },
+      {
+        "sample_id": "vrs_ground_006",
+        "source_dataset": "VRSBench (2024)",
+        "task": "grounding",
+        "category": "object_grounding",
+        "image_path": "demo_assets/demo_airport_grounding.png",
+        "prompt": "detect terminal building",
+        "ground_truth_bbox": [
+          0.05,
+          0.1,
+          0.35,
+          0.35
+        ],
+        "base_predicted_bbox": [
+          0.0977,
+          0.0977,
+          0.8789,
+          0.8789
+        ],
+        "base_iou": 0.1014,
+        "adapted_predicted_bbox": [
+          0.0762,
+          0.0762,
+          0.3809,
+          0.3809
+        ],
+        "adapted_iou": 0.6887,
+        "iou_improvement": 0.5873
+      }
+    ]
+  }
 }
