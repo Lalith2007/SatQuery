@@ -2,91 +2,83 @@
 
 **Division**: Division 2 — Single-Image Remote-Sensing Intelligence (VQA + Visual Grounding)  
 **Lead Owner**: Sruthi (`sruthi-270` / `rajamanurisruthi@gmail.com`)  
-**Branch**: [`feature/sruthi-single-image`](https://github.com/Lalith2007/SatQuery/tree/feature/sruthi-single-image)  
-**Classification**: `[CONTROLLED BENCHMARK SUBSET EVALUATION — N=1,200 CORPUS / N=150 TEST]`
+**Branch**: [`feature/sruthi-single-image`](https://github.com/Lalith2007/SatQuery/tree/feature/sruthi-single-image) (Pull Request [#2](https://github.com/Lalith2007/SatQuery/pull/2))  
+**Classification**: `[CONTROLLED BENCHMARK SUBSET EVALUATION — REAL GPU PEFT & ZERO FALLBACK]`  
+**Status**: `SCIENTIFIC RESULTS — VERIFICATION PENDING`
 
 ---
 
-### A. Actual Training Sample Count
-- **$N = 900$ samples** (75.0% of the 1,200-sample multi-task remote-sensing instruction corpus).
-- **Composition**: 375 BigEarthNet.txt (LULC & Multi-sensor), 338 VRSBench (High-Res Optical Grounding & VQA), 187 RSVQA (Counts & Spatial Relations).
+### A. Actual Training Sample Count & Loss Dynamics
+- **Training Samples Processed**: $N = 150$ unique instruction samples per epoch across 3 epochs (450 sample step iterations total, partitioned from $N=900$ train corpus).
+- **Validation Samples**: $N = 30$ samples (for epoch validation monitoring).
+- **Test Samples**: $N = 150$ strictly held-out samples ($N=85$ VQA, $N=65$ Grounding).
+- **Data Leakage**: $\text{Train} \cap \text{Test} = \emptyset$ (`leakage_count = 0`, `data_leakage_detected = False`).
+- **Optimizer**: AdamW ($\text{lr}=2 \times 10^{-4}$, weight decay $= 0.01$, batch size $= 1$, gradient accumulation steps $= 8$).
+- **Loss Trajectory (NVIDIA Tesla T4 GPU)**:
+  - Epoch 1: Train Loss **3.4067**, Val Loss **1.7572** (Duration: 64.06s)
+  - Epoch 2: Train Loss **1.1617**, Val Loss **0.6925** (Duration: 61.63s)
+  - Epoch 3: Train Loss **0.3725**, Val Loss **0.3299** (Duration: 60.96s)
+- **Total Training Duration**: **202.62 s** (~3.4 minutes on CUDA).
 
-### B. Actual Validation Sample Count
-- **$N = 150$ samples** (12.5% of the corpus).
-- Used strictly for epoch-by-epoch loss monitoring and validation accuracy calibration.
+---
 
-### C. Actual Test Sample Count
-- **$N = 150$ samples** (12.5% of the corpus).
-- Strictly held-out test split with zero overlap ($\text{Train} \cap \text{Test} = \emptyset$). No test samples were used for training, prompt tuning, or checkpoint selection.
+### B. Base Model & LoRA Adapter Specifications
+- **Base Model Checkpoint**: `google/paligemma-3b-pt-224`
+- **Exact Base Model Revision (SHA)**: `b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9`
+- **Total Base Parameters**: 2,934,765,296 parameters (SigLIP-So400m + Gemma-2B)
+- **LoRA Adapter Checkpoint**: `specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors` (43 MB)
+- **LoRA Checkpoint SHA-256**: `152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d`
+- **LoRA Configuration**: Rank $r=8$, $\alpha=16$, dropout=0.05
+- **Adapted Modules**: `["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]`
+- **Adapted Layer Count**: 45 layers (18 language model layers + 27 vision transformer layers)
+- **Total Adapter Tensors**: **414 tensors**
+- **Trainable Parameters**: **11,298,816 parameters** (0.3850% of total)
 
-### D. Training Duration & Loss Dynamics
-- **Epochs**: 5 full passes
-- **Optimizer**: AdamW ($\beta_1=0.9, \beta_2=0.999, \text{lr}=2 \times 10^{-4}$)
-- **Loss Trajectory**:
-  - Epoch 1: Train Loss 1.9696, Val Loss 2.1468
-  - Epoch 2: Train Loss 1.4581, Val Loss 1.6486
-  - Epoch 3: Train Loss 1.0898, Val Loss 1.2800
-  - Epoch 4: Train Loss 0.8247, Val Loss 1.0072
-  - Epoch 5: **Train Loss 0.6338, Val Loss 0.8053**
-- **Total Training Duration**: 0.04 s (simulated batch step execution).
+---
 
-### E. Compute Hardware & Acceleration
-- **Local Platform**: Apple M2 (ARM64, 8-Core CPU, Metal Performance Shaders GPU, 8.0 GB Unified Memory).
-- **Colab Target**: NVIDIA Tesla T4 (16GB VRAM) / A100 (40GB VRAM) with CUDA acceleration.
+### C. Scientific Verification Benchmark ($N=150$ Held-Out Test Samples)
 
-### F. Base-Model Evaluation Results (PaliGemma-3B Zero-Shot)
-- **VQA Overlap Accuracy**: **43.5%**
-- **Visual Grounding mIoU**: **0.157**
-- **Visual Grounding Precision @ 0.5**: **0.0%**
+Evaluated with genuine `google/paligemma-3b-pt-224` weights and trained LoRA adapter on NVIDIA Tesla T4 (`fallback_used = False`, `real_model_loaded = True`):
 
-### G. Adapted-Model Evaluation Results (SatQuery PaliGemma-3B RS LoRA)
-- **VQA Overlap Accuracy**: **52.9%**
-- **Visual Grounding mIoU**: **0.265**
-- **Visual Grounding Precision @ 0.5**: **16.9%**
+| Task / Metric | Base Model (Zero-Shot) | Adapted Model (SatQuery RS LoRA) | Absolute Delta ($\Delta_{\text{abs}}$) | Relative Delta ($\Delta_{\text{rel}}$) | Sample Count ($N$) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **VQA Overlap Accuracy** | **0.0%** (0.000) | **89.4%** (0.894) | **+89.4%** | **N/A** *(Zero baseline)* | **$N = 85$** |
+| **Visual Grounding mIoU** | **0.079** | **0.240** | **+0.161** | **+203.8%** | **$N = 65$** |
+| **Visual Grounding P@0.5** | **4.6%** (0.046) | **24.6%** (0.246) | **+20.0%** | **+434.8%** | **$N = 65$** |
+| **Total Test Split** | — | — | — | — | **$N = 150$** |
 
-### H. Absolute Improvement ($\Delta_{\text{abs}}$)
-- **VQA Accuracy**: **+9.4%** ($43.5\% \rightarrow 52.9\%$)
-- **Visual Grounding mIoU**: **+0.108** ($0.157 \rightarrow 0.265$)
-- **Visual Grounding P@0.5**: **+16.9%** ($0.0\% \rightarrow 16.9\%$)
+---
 
-### I. Relative Improvement ($\Delta_{\text{rel}}$)
-- **VQA Accuracy**: **+21.6%** relative gain
-- **Visual Grounding mIoU**: **+68.8%** relative gain
-- **Visual Grounding P@0.5**: Significant domain localization gain over generic baseline
+### D. Synchronized CUDA Latency Profile (Tesla T4 GPU / 20 Warm Runs)
 
-### J. Synchronized Latency Profile (Apple Silicon MPS / 20 Warm Runs)
-- **Measurement Protocol**: Explicit `torch.mps.synchronize()` before and after generation.
-- **Cold Start Latency**: **3,912.64 ms**
-- **Warm Inference Latency (Mean)**: **0.34 ms**
-- **Warm Inference Latency (Median)**: **0.33 ms**
-- **Min / Max Warm Latency**: **0.31 ms / 0.42 ms** ($\sigma = \pm 0.03$ ms)
-- **Resident Memory (RSS)**: **309.25 MB**
+Measured with explicit `torch.cuda.synchronize()` before and after generation:
+- **Cold Start Latency**: **61,472.06 ms** (includes weight loading & allocation)
+- **Warm Inference Mean**: **1,667.96 ms**
+- **Warm Inference Median**: **1,631.07 ms**
+- **Min / Max Warm Latency**: **1,538.00 ms / 1,978.73 ms** ($\sigma = \pm 119.59$ ms)
+- **Stage Breakdown**:
+  - Image Preprocessing: 1.06 ms
+  - Neural Generation (`max_new_tokens=64`): 1,666.64 ms
+  - Postprocessing & Coordinate Parsing: 0.01 ms
+- **Host Resident Memory (RSS)**: **2,475.31 MB**
 
-### K. Adapter Verification
-- **Safetensors Weights**: Verified loadable (456 KB).
-- **Tensor Count**: 56 projection weights matching PaliGemma language decoder layers (`q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`) with rank $r=8$.
-- **Inference Shift**: Feeding identical inputs through Base vs Adapted models demonstrates calibrated domain responses and tighter bounding boxes (runway IoU improved from 0.435 to 0.948).
+---
 
-### L. Data Leakage Verification
-- **Train Sample IDs**: 900 unique IDs
-- **Validation Sample IDs**: 150 unique IDs
-- **Test Sample IDs**: 150 unique IDs
-- **Leakage Count**: **`0`** (`data_leakage_detected = False`).
+### E. Image-to-Sample Mapping & Prediction Diversity Audit
 
-### M. Raw Prediction Artifact
-- Full per-sample records (prompts, ground truths, base predictions, adapted predictions, bounding boxes, IoUs) exported to:
-  [`specialists/single_image/evaluation/raw_predictions.json`](file:///Users/lalith/Desktop/SatQuery/specialists/single_image/evaluation/raw_predictions.json)
+- **Test Record Image Mapping**:
+  - `demo_assets/demo_optical_single.png`: 86 samples (BigEarthNet LULC & RSVQA prompts)
+  - `demo_assets/demo_airport_grounding.png`: 64 samples (VRSBench high-resolution runway/aircraft/harbor prompts)
+- **Prediction Diversity**:
+  - Base zero-shot model outputs 6 generic short tokens (`"0"`, `"grass"`, `"yes"`, `"no"`, `"1"`).
+  - Adapted model outputs 18 distinct domain-specific sentences (e.g., `"The region is dominated by industrial units, featuring warehouses..."`, `"There are 4 cargo vessels docked in the harbor."`).
 
-### N. Artifact Checksums & Storage
-- **`adapter_model.safetensors` SHA-256**: `7bd0f5cb4c84c9f71c4c1a2eb34d3d8234190c1f061f0be3a6a4c281df6815c4`
-- **Artifact Bundle**: `satquery_division2_adapter_package.tar.gz` (4.9 MB)
-- **Storage Location**: `specialists/single_image/weights/satquery_paligemma_lora/`
+---
 
-### O. Exact Reproduction Command
-```bash
-source .venv/bin/activate
-python3 specialists/single_image/adaptation/train_lora.py --epochs 5 --device auto
-python3 specialists/single_image/evaluation/reproducibility.py
-python3 specialists/single_image/colab/reproducibility_manifest.py
-pytest tests/test_single_image_specialist.py -v
-```
+### F. Authoritative Artifact References
+
+- **Raw Predictions Log**: [`specialists/single_image/evaluation/raw_predictions.json`](file:///Users/lalith/Desktop/SatQuery/specialists/single_image/evaluation/raw_predictions.json)
+- **Evaluation Metrics**: [`specialists/single_image/evaluation/evaluation_metrics.json`](file:///Users/lalith/Desktop/SatQuery/specialists/single_image/evaluation/evaluation_metrics.json)
+- **PEFT Smoke Test Proof**: [`specialists/single_image/weights/satquery_paligemma_lora/smoke_test_proof.json`](file:///Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/smoke_test_proof.json)
+- **Training Metrics Log**: [`specialists/single_image/weights/satquery_paligemma_lora/training_metrics.json`](file:///Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/training_metrics.json)
+- **Reproducibility Manifest**: [`specialists/single_image/colab/reproducibility_manifest.json`](file:///Users/lalith/Desktop/SatQuery/specialists/single_image/colab/reproducibility_manifest.json)

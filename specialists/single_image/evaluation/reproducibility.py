@@ -314,13 +314,13 @@ def evaluate_held_out_subset(
 
     # Calculate improvements
     vqa_abs = round(adapted_vqa_acc - base_vqa_acc, 3)
-    vqa_rel = round((vqa_abs / max(base_vqa_acc, 0.001)) * 100, 1)
+    vqa_rel = f"{(vqa_abs / base_vqa_acc) * 100:+.1f}%" if base_vqa_acc > 0 else "N/A"
 
     miou_abs = round(adapted_miou - base_miou, 3)
-    miou_rel = round((miou_abs / max(base_miou, 0.001)) * 100, 1)
+    miou_rel = f"{(miou_abs / base_miou) * 100:+.1f}%" if base_miou > 0 else "N/A"
 
     p50_abs = round(adapted_p50 - base_p50, 3)
-    p50_rel = round((p50_abs / max(base_p50, 0.001)) * 100, 1)
+    p50_rel = f"{(p50_abs / base_p50) * 100:+.1f}%" if base_p50 > 0 else "N/A"
 
     return {
         "evaluation_scope": f"Held-Out Benchmark Test Set (N={len(test_samples)} samples)",
@@ -342,15 +342,15 @@ def evaluate_held_out_subset(
             "improvements": {
                 "vqa_accuracy": {
                     "absolute": f"{vqa_abs*100:+.1f}%",
-                    "relative": f"{vqa_rel:+}%",
+                    "relative": vqa_rel,
                 },
                 "grounding_miou": {
                     "absolute": f"{miou_abs:+.3f}",
-                    "relative": f"{miou_rel:+}%",
+                    "relative": miou_rel,
                 },
                 "grounding_p_at_05": {
                     "absolute": f"{p50_abs*100:+.1f}%",
-                    "relative": f"{p50_rel:+}%",
+                    "relative": p50_rel,
                 },
             },
         },
