@@ -159,7 +159,15 @@ def run_lora_smoke_test(
         prompts.append(s["prefix"])
         suffixes.append(s["suffix"])
 
-    inputs = processor(text=prompts, images=images, suffix=suffixes, return_tensors="pt", padding="longest")
+    try:
+        inputs = processor(text=prompts, images=images, suffix=suffixes, return_tensors="pt", padding="longest")
+    except TypeError:
+        full_texts = [f"{p} {s}" for p, s in zip(prompts, suffixes)]
+        inputs = processor(text=full_texts, images=images, return_tensors="pt", padding="longest")
+
+    if "labels" not in inputs:
+        inputs["labels"] = inputs["input_ids"].clone()
+
     if target_device in {"cuda", "mps"}:
         inputs = {k: v.to(target_device) for k, v in inputs.items()}
 
@@ -359,7 +367,15 @@ def run_full_lora_training(
                 prompts.append(item["prefix"])
                 suffixes.append(item["suffix"])
 
-            inputs = processor(text=prompts, images=images, suffix=suffixes, return_tensors="pt", padding="longest")
+            try:
+                inputs = processor(text=prompts, images=images, suffix=suffixes, return_tensors="pt", padding="longest")
+            except TypeError:
+                full_texts = [f"{p} {s}" for p, s in zip(prompts, suffixes)]
+                inputs = processor(text=full_texts, images=images, return_tensors="pt", padding="longest")
+
+            if "labels" not in inputs:
+                inputs["labels"] = inputs["input_ids"].clone()
+
             if target_device in {"cuda", "mps"}:
                 inputs = {k: v.to(target_device) for k, v in inputs.items()}
 

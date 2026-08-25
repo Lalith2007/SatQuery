@@ -113,6 +113,7 @@ class PaliGemmaRSInferenceEngine:
                 self.base_model_id,
                 revision=self.revision,
                 torch_dtype=dtype,
+                low_cpu_mem_usage=True,
                 device_map=self._device if self._device != "mps" else None,
             )
 
