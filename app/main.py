@@ -35,6 +35,15 @@ async def lifespan(app: FastAPI):
         register_default_mocks(default_registry)
         logger.info(f"Registered {len(default_registry.list_tools())} tools into default registry.")
 
+    # Register real Division 2 specialist (SingleImageRSSpecialistTool)
+    try:
+        from specialists.single_image.specialist import SingleImageRSSpecialistTool
+        div2_tool = SingleImageRSSpecialistTool()
+        default_registry.register(div2_tool, overwrite=True)
+        logger.info(f"Registered real Division 2 specialist: '{div2_tool.name}' (v{div2_tool.version})")
+    except Exception as e:
+        logger.warning(f"Could not register real Division 2 specialist: {e}")
+
     # Ensure demo assets exist on disk for judging presets
     try:
         from app.demo_assets import ensure_demo_assets

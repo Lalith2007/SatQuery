@@ -1,12 +1,12 @@
 {
   "manifest_version": "1.2.0",
-  "generated_at": "2026-08-25T14:49:36Z",
+  "generated_at": "2026-08-25T15:04:43Z",
   "evaluation_classification": "CONTROLLED DEMONSTRATION-CORPUS EVALUATION",
   "scientific_status": "SCIENTIFIC RESULTS \u2014 PENDING REAL IMAGE EVALUATION (REAL_BENCHMARK_IMAGES_UNAVAILABLE)",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "3d50bb080eadf5bf49266f7d0a70d979b8a029a5",
-    "branch": "feature/sruthi-single-image",
+    "commit_hash": "0dcdadd44cd0f982a5807cca5776704ac21006a0",
+    "branch": "integration/division-2",
     "author": "sruthi-270",
     "email": "rajamanurisruthi@gmail.com"
   },
