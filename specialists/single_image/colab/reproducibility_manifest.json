@@ -1,10 +1,10 @@
 {
   "manifest_version": "1.1.0",
-  "generated_at": "2026-08-25T14:25:25Z",
+  "generated_at": "2026-08-25T14:37:35Z",
   "evaluation_classification": "CONTROLLED BENCHMARK SUBSET EVALUATION \u2014 N=1,200 CORPUS / N=150 TEST",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "2ff91e8ee0449bd32ec2f37544905b5a1134ee1c",
+    "commit_hash": "a4f0c4c60d117e6ae0def5382580ad7c65eba288",
     "branch": "feature/sruthi-single-image",
     "author": "sruthi-270",
     "email": "rajamanurisruthi@gmail.com"
@@ -94,18 +94,17 @@
     "resident_ram_mb": 309.25
   },
   "runtime_environment": {
-    "os_platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
-    "python_version": "3.13.15",
-    "pytorch_version": "2.11.0+cu128",
-    "transformers_version": "5.15.0",
+    "os_platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python_version": "3.11.15",
+    "pytorch_version": "2.13.0",
+    "transformers_version": "5.15.1",
     "peft_version": "0.20.0",
     "safetensors_version": "0.8.0",
     "compute_hardware": {
-      "device_type": "cuda",
-      "device_name": "Tesla T4",
-      "vram_gb": 14.56,
-      "cuda_version": "12.8",
-      "cudnn_version": 91900
+      "device_type": "mps",
+      "device_name": "Apple Silicon Metal (MPS)",
+      "memory_gb": 8.0,
+      "metal_version": "Apple MPS Graph API"
     }
   }
 }
