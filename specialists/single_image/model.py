@@ -52,6 +52,10 @@ class PaliGemmaRSInferenceEngine:
     ) -> None:
         self.base_model_id = base_model_id
         self.revision = revision
+        if adapter_path is None:
+            default_ad = Path("specialists/single_image/weights/satquery_paligemma_lora")
+            if default_ad.exists() and ((default_ad / "adapter_model.safetensors").exists() or (default_ad / "adapter_config.json").exists()):
+                adapter_path = str(default_ad)
         self.adapter_path = adapter_path
         self._device = device or self._detect_best_device()
         self._model = None

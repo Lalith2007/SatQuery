@@ -195,9 +195,14 @@ def profile_synchronized_mps_latency(runs: int = 20) -> Dict[str, Any]:
     }
 
 
-def evaluate_held_out_subset(test_samples: List[Dict[str, Any]], strict: bool = True) -> Dict[str, Any]:
+def evaluate_held_out_subset(
+    test_samples: List[Dict[str, Any]],
+    adapter_dir: str = "specialists/single_image/weights/satquery_paligemma_lora",
+    strict: bool = True,
+) -> Dict[str, Any]:
     """Run full evaluation comparing Base Zero-Shot vs. SatQuery Adapted LoRA across N=150 test samples."""
-    engine = PaliGemmaRSInferenceEngine.get_instance()
+    PaliGemmaRSInferenceEngine._instance = None
+    engine = PaliGemmaRSInferenceEngine.get_instance(adapter_path=adapter_dir)
     engine.load_model(strict=strict)
 
     if strict and not engine.is_real_model_loaded:
