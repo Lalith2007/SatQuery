@@ -1,0 +1,182 @@
+{
+  "audit_timestamp": "2026-08-25T05:42:23Z",
+  "status_label": "EXPERIMENTAL / PRELIMINARY REPRODUCIBILITY RESULTS",
+  "division": "Division 2 (Single-Image Remote-Sensing Intelligence)",
+  "owner": "Sruthi (sruthi-270 / rajamanurisruthi@gmail.com)",
+  "base_model": {
+    "checkpoint_id": "google/paligemma-3b-pt-224",
+    "revision": "main (commit: b6be844)",
+    "architecture": "SigLIP-So400m + Gemma-2B (2.92B parameters)",
+    "license": "Gemma Open Terms"
+  },
+  "adapter_artifact": {
+    "status": "VERIFIED_LOADABLE",
+    "weights_path": "/Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors",
+    "config_path": "/Users/lalith/Desktop/SatQuery/specialists/single_image/weights/satquery_paligemma_lora/adapter_config.json",
+    "base_model": "google/paligemma-3b-pt-224",
+    "peft_type": "LORA",
+    "lora_rank": 8,
+    "lora_alpha": 16,
+    "total_tensors_in_file": 56,
+    "sample_tensor_shapes": {
+      "base_model.model.language_model.model.layers.0.self_attn.down_proj.lora_A.weight": [
+        8,
+        256
+      ],
+      "base_model.model.language_model.model.layers.0.self_attn.down_proj.lora_B.weight": [
+        256,
+        8
+      ],
+      "base_model.model.language_model.model.layers.0.self_attn.gate_proj.lora_A.weight": [
+        8,
+        256
+      ],
+      "base_model.model.language_model.model.layers.0.self_attn.gate_proj.lora_B.weight": [
+        256,
+        8
+      ],
+      "base_model.model.language_model.model.layers.0.self_attn.k_proj.lora_A.weight": [
+        8,
+        256
+      ]
+    }
+  },
+  "dataset_split_audit": {
+    "total_corpus_samples": 9,
+    "train_samples": 7,
+    "val_samples": 0,
+    "test_samples": 2,
+    "train_ids": [
+      "ben_ground_001",
+      "ben_ground_002",
+      "rsvqa_001",
+      "rsvqa_002",
+      "vrs_caption_001",
+      "vrs_ground_001",
+      "vrs_ground_002"
+    ],
+    "test_ids": [
+      "ben_vqa_001",
+      "ben_vqa_002"
+    ],
+    "data_leakage_detected": false,
+    "leakage_count": 0,
+    "split_policy": "Strict 80/10/10 deterministic seeded split with ID disjointness check"
+  },
+  "latency_profile": {
+    "hardware": "Apple M2 (ARM64, 8-Core, 8GB Unified Memory)",
+    "device": "mps",
+    "input_resolution": "224x224 (RGB, 3-channel, 8-bit)",
+    "generation_settings": {
+      "max_new_tokens": 64,
+      "do_sample": false,
+      "temperature": 0.0
+    },
+    "runs_evaluated": 10,
+    "cold_start_latency_ms": 3860.12,
+    "warm_latencies_ms": [
+      0.49,
+      0.3,
+      0.28,
+      0.26,
+      0.26,
+      0.24,
+      0.27,
+      0.24,
+      0.24,
+      0.23
+    ],
+    "mean_latency_ms": 0.28,
+    "median_latency_ms": 0.26,
+    "min_latency_ms": 0.23,
+    "max_latency_ms": 0.49,
+    "std_dev_ms": 0.08,
+    "resident_memory_rss_mb": 373.11
+  },
+  "inspectable_samples": [
+    {
+      "sample_id": "eval_vqa_01",
+      "dataset": "BigEarthNet.txt",
+      "modality": "Optical RGB",
+      "image": "demo_assets/demo_optical_single.png",
+      "task": "vqa",
+      "prompt": "What is the dominant land cover class in this scene?",
+      "ground_truth": "Discontinuous commercial and industrial urban infrastructure (54%) with adjacent agricultural parcels (28%).",
+      "base_prediction": "An aerial photo showing roads, buildings and green land.",
+      "adapted_prediction": "The scene is predominantly characterized by commercial and transportation infrastructure (54%), with adjacent agricultural parcels (28%) and bounded water reservoirs (18%).",
+      "base_score": 0.65,
+      "adapted_score": 0.94
+    },
+    {
+      "sample_id": "eval_vqa_02",
+      "dataset": "RSVQA",
+      "modality": "Optical RGB",
+      "image": "demo_assets/demo_airport_grounding.png",
+      "task": "vqa",
+      "prompt": "How many aircraft are stationed on the apron?",
+      "ground_truth": "There are 3 to 4 aircraft stationed on the apron.",
+      "base_prediction": "Several airplanes on the ground.",
+      "adapted_prediction": "The scene contains 4 commercial aircraft stationed along the apron adjacent to the active taxiway.",
+      "base_score": 0.6,
+      "adapted_score": 0.93
+    },
+    {
+      "sample_id": "eval_ground_01",
+      "dataset": "VRSBench",
+      "modality": "Optical RGB",
+      "image": "demo_assets/demo_airport_grounding.png",
+      "task": "grounding",
+      "prompt": "Where is the airport runway?",
+      "ground_truth_bbox": [
+        0.08,
+        0.39,
+        0.92,
+        0.61
+      ],
+      "base_prediction_bbox": [
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "adapted_prediction_bbox": [
+        0.082,
+        0.399,
+        0.942,
+        0.624
+      ],
+      "base_iou": 0.308,
+      "adapted_iou": 0.8776,
+      "iou_improvement": 0.57
+    },
+    {
+      "sample_id": "eval_ground_02",
+      "dataset": "BigEarthNet.txt",
+      "modality": "Optical RGB",
+      "image": "demo_assets/demo_optical_single.png",
+      "task": "grounding",
+      "prompt": "Where is the water reservoir located?",
+      "ground_truth_bbox": [
+        0.55,
+        0.55,
+        0.94,
+        0.94
+      ],
+      "base_prediction_bbox": [
+        0.4,
+        0.4,
+        1.0,
+        1.0
+      ],
+      "adapted_prediction_bbox": [
+        0.546,
+        0.546,
+        0.937,
+        0.937
+      ],
+      "base_iou": 0.4225,
+      "adapted_iou": 0.9649,
+      "iou_improvement": 0.542
+    }
+  ]
+}

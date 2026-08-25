@@ -9,6 +9,7 @@ Tests:
 - Resource metrics recording (latency, memory, device)
 - Graceful failure and validation handling
 - End-to-end integration with Division 1 AgentController
+- Reproducibility verification (adapter weights loadability & dataset leakage audit)
 """
 
 from pathlib import Path
@@ -29,6 +30,11 @@ from core.schemas import (
 )
 from agent.controller import AgentController
 from registry.registry import ToolRegistry
+from specialists.single_image.evaluation.reproducibility import (
+    audit_dataset_splits,
+    profile_inference_latency,
+    verify_adapter_weights,
+)
 from specialists.single_image.grounding import GroundingCoordinateParser
 from specialists.single_image.specialist import SingleImageRSSpecialistTool
 
@@ -177,3 +183,20 @@ async def test_agent_controller_integration_with_division2_specialist(
     assert "single_image_rs_specialist" in response.selected_tools
     assert response.agent_decision is not None
     assert response.agent_decision.selected_specialist == "single_image_rs_specialist"
+
+
+def test_reproducibility_adapter_verification():
+    """Verify that adapter weights exist on disk, are loadable, and match LoRA rank."""
+    audit = verify_adapter_weights()
+    assert audit["status"] == "VERIFIED_LOADABLE"
+    assert audit["total_tensors_in_file"] == 56
+    assert audit["lora_rank"] == 8
+
+
+def test_reproducibility_dataset_leakage_audit():
+    """Verify zero overlap between train and test evaluation splits."""
+    audit = audit_dataset_splits()
+    assert audit["data_leakage_detected"] is False
+    assert audit["leakage_count"] == 0
+    assert audit["train_samples"] > 0
+    assert audit["test_samples"] > 0
