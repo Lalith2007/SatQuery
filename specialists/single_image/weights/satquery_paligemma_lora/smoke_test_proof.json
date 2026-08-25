@@ -1,0 +1,18 @@
+{
+  "smoke_test_status": "PASSED_REAL_PEFT_LORA_TRAINING_VERIFIED",
+  "device": "cuda",
+  "base_model": "google/paligemma-3b-pt-224",
+  "revision": "main",
+  "total_parameters": 2934765296,
+  "trainable_parameters": 11298816,
+  "trainable_percentage": 0.385,
+  "forward_loss": 4.9195,
+  "total_gradient_norm": 4.108326,
+  "non_zero_gradient_tensors": 207,
+  "monitored_parameter": "base_model.model.model.vision_tower.encoder.layers.0.self_attn.k_proj.lora_A.default.weight",
+  "parameter_delta_after_step": 0.0006786556914448738,
+  "forward_time_ms": 1130.27,
+  "backward_time_ms": 269.57,
+  "adapter_saved_path": "/content/SatQuery/specialists/single_image/weights/satquery_paligemma_lora",
+  "adapter_sha256": "b68d66b46d6e228231cbba33303841d286e08a65e43fcd0897226f2793134765"
+}

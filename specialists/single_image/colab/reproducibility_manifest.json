@@ -1,0 +1,114 @@
+{
+  "manifest_version": "1.2.0",
+  "generated_at": "2026-08-25T15:04:43Z",
+  "evaluation_classification": "CONTROLLED DEMONSTRATION-CORPUS EVALUATION",
+  "scientific_status": "SCIENTIFIC RESULTS \u2014 PENDING REAL IMAGE EVALUATION (REAL_BENCHMARK_IMAGES_UNAVAILABLE)",
+  "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
+  "git": {
+    "commit_hash": "0dcdadd44cd0f982a5807cca5776704ac21006a0",
+    "branch": "integration/division-2",
+    "author": "sruthi-270",
+    "email": "rajamanurisruthi@gmail.com"
+  },
+  "base_model": {
+    "model_id": "google/paligemma-3b-pt-224",
+    "revision": "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
+    "architecture": "SigLIP-So400m + Gemma-2B (2.92B parameters)",
+    "license": "Gemma Open Terms of Use"
+  },
+  "adaptation": {
+    "adapter_name": "SatQuery-PaliGemma-3B-RS-LoRA",
+    "peft_type": "LORA",
+    "rank": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "adapted_layers": 27,
+    "total_tensors": 414,
+    "trainable_parameters": 11298816,
+    "weights_format": "safetensors (Float32 / Float16)",
+    "storage_path": "specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors",
+    "sha256_checksum": "152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d"
+  },
+  "datasets": {
+    "sources": [
+      {
+        "name": "BigEarthNet.txt",
+        "version": "2026 Multi-Sensor RS Archive",
+        "role": "LULC & Multi-sensor VQA (500 samples)"
+      },
+      {
+        "name": "VRSBench",
+        "version": "2024 High-Resolution RS Benchmark",
+        "role": "Optical Grounding & Object VQA (450 samples)"
+      },
+      {
+        "name": "RSVQA",
+        "version": "2020 Remote Sensing VQA Benchmark",
+        "role": "Counting & Presence VQA (250 samples)"
+      }
+    ],
+    "split_random_seed": 42,
+    "split_sample_counts": {
+      "training_samples": 900,
+      "validation_samples": 150,
+      "test_samples": 150,
+      "total_corpus_samples": 1200
+    },
+    "data_leakage_audit": "PASSED (Train \u2229 Test = \u2205, Val \u2229 Test = \u2205)"
+  },
+  "evaluation_metrics": {
+    "test_sample_count": 150,
+    "vqa_samples_evaluated": 85,
+    "grounding_samples_evaluated": 65,
+    "vqa_accuracy": {
+      "base": 0.0,
+      "adapted": 0.894,
+      "delta_abs": "+89.4%",
+      "delta_rel": "N/A"
+    },
+    "grounding_miou": {
+      "base": 0.079,
+      "adapted": 0.24,
+      "delta_abs": "+0.161",
+      "delta_rel": "+203.8%"
+    },
+    "grounding_p_at_05": {
+      "base": 0.046,
+      "adapted": 0.246,
+      "delta_abs": "+20.0%",
+      "delta_rel": "+434.8%"
+    }
+  },
+  "synchronized_latency": {
+    "cold_start_ms": 61472.06,
+    "warm_mean_ms": 1667.96,
+    "warm_median_ms": 1631.07,
+    "min_ms": 1538.0,
+    "max_ms": 1978.73,
+    "std_dev_ms": 119.59,
+    "resident_ram_mb": 2475.31
+  },
+  "runtime_environment": {
+    "os_platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python_version": "3.11.15",
+    "pytorch_version": "2.13.0",
+    "transformers_version": "5.15.1",
+    "peft_version": "0.20.0",
+    "safetensors_version": "0.8.0",
+    "compute_hardware": {
+      "device_type": "mps",
+      "device_name": "Apple Silicon Metal (MPS)",
+      "memory_gb": 8.0,
+      "metal_version": "Apple MPS Graph API"
+    }
+  }
+}

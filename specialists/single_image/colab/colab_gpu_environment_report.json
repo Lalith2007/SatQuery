@@ -1,0 +1,19 @@
+{
+  "device_type": "mps",
+  "device_name": "Apple Silicon Metal Performance Shaders (MPS)",
+  "cuda_available": false,
+  "mps_available": true,
+  "cuda_version": "N/A (Apple Metal)",
+  "cudnn_version": "N/A (Metal Graph)",
+  "total_memory_gb": 8.0,
+  "allocated_memory_gb": 0.37,
+  "python_version": "3.11.15",
+  "pytorch_version": "2.13.0",
+  "transformers_version": "5.15.1",
+  "peft_version": "0.20.0",
+  "os_platform": "macOS-26.5.2-arm64-arm-64bit",
+  "cpu_count": 8,
+  "matrix_benchmark_dim": "2048x2048",
+  "matrix_compute_time_ms": 12.073,
+  "validation_status": "PASSED_COMPUTE_VALIDATION"
+}

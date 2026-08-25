@@ -46,7 +46,9 @@ class TaskRouter:
                     f"{len(images)} images."
                 )
 
-        selected = candidate_tools[0]
+        # Prioritize real specialist tools over mock tools
+        real_tools = [t for t in candidate_tools if "mock" not in t.name.lower()]
+        selected = real_tools[0] if real_tools else candidate_tools[0]
         logger.info(f"Selected tool '{selected.name}' (v{selected.version}) for task '{intent.task.value}'")
         return selected
 
@@ -61,5 +63,6 @@ class TaskRouter:
             candidate_tools = self.registry.find_tools_for_task(task, images=images)
             if not candidate_tools:
                 raise ToolNotFoundError(f"Workflow step requires tool for '{task.value}', but none found in registry.")
-            selected_tools.append(candidate_tools[0])
+            real_tools = [t for t in candidate_tools if "mock" not in t.name.lower()]
+            selected_tools.append(real_tools[0] if real_tools else candidate_tools[0])
         return selected_tools

@@ -1,0 +1,62 @@
+{
+  "classification": "CONTROLLED DEMONSTRATION-CORPUS EVALUATION",
+  "scientific_status": "SCIENTIFIC RESULTS — PENDING REAL IMAGE EVALUATION (REAL_BENCHMARK_IMAGES_UNAVAILABLE)",
+  "sample_counts": {
+    "train": 900,
+    "val": 150,
+    "test": 150
+  },
+  "metrics_summary": {
+    "base_model": {
+      "name": "PaliGemma-3B (Base Zero-Shot)",
+      "vqa_accuracy": 0.0,
+      "grounding_miou": 0.079,
+      "grounding_p_at_05": 0.046
+    },
+    "adapted_model": {
+      "name": "PaliGemma 3B \u2014 SatQuery Remote-Sensing Adapted (LoRA)",
+      "vqa_accuracy": 0.894,
+      "grounding_miou": 0.24,
+      "grounding_p_at_05": 0.246
+    },
+    "improvements": {
+      "vqa_accuracy": {
+        "absolute": "+89.4%",
+        "relative": "+89400.0%"
+      },
+      "grounding_miou": {
+        "absolute": "+0.161",
+        "relative": "+203.8%"
+      },
+      "grounding_p_at_05": {
+        "absolute": "+20.0%",
+        "relative": "+434.8%"
+      }
+    }
+  },
+  "latency_profile": {
+    "hardware": "NVIDIA Tesla T4 (14.6 GB VRAM)",
+    "device": "cuda",
+    "input_resolution": "224x224 (RGB, 3-channel, 8-bit)",
+    "generation_settings": {
+      "max_new_tokens": 64,
+      "temperature": 0.0,
+      "do_sample": false
+    },
+    "warmup_runs": 5,
+    "runs_measured": 20,
+    "cold_start_latency_ms": 61472.06,
+    "mean_latency_ms": 1667.96,
+    "median_latency_ms": 1631.07,
+    "min_latency_ms": 1538.0,
+    "max_latency_ms": 1978.73,
+    "std_dev_ms": 119.59,
+    "stage_breakdown_ms": {
+      "mean_preprocessing_ms": 1.06,
+      "mean_generation_ms": 1666.64,
+      "mean_postprocessing_ms": 0.01
+    },
+    "resident_memory_rss_mb": 2475.31
+  },
+  "adapter_sha256": "152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d"
+}

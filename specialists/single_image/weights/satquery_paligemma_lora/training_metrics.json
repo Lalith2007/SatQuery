@@ -1,0 +1,32 @@
+{
+  "status": "REAL_MODEL_TRAINED",
+  "base_model": "google/paligemma-3b-pt-224",
+  "revision": "main",
+  "epochs": 3,
+  "train_samples": 150,
+  "val_samples": 30,
+  "total_training_time_seconds": 202.62,
+  "final_train_loss": 0.3725,
+  "final_val_loss": 0.3299,
+  "adapter_sha256": "152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d",
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 3.4067,
+      "val_loss": 1.7572,
+      "duration_seconds": 64.06
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.1617,
+      "val_loss": 0.6925,
+      "duration_seconds": 61.63
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.3725,
+      "val_loss": 0.3299,
+      "duration_seconds": 60.96
+    }
+  ]
+}
