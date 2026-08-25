@@ -68,7 +68,7 @@ def sync_device(device: str) -> None:
 
 def run_lora_smoke_test(
     model_name: str = "google/paligemma-3b-pt-224",
-    revision: str = "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
+    revision: str = "main",
     device: str = "auto",
     output_dir: str = "specialists/single_image/weights/satquery_paligemma_lora",
 ) -> Dict[str, Any]:
@@ -428,7 +428,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="PaliGemma 3B RS Real LoRA Training")
     parser.add_argument("--smoke-test", action="store_true", help="Execute Phase 2 gradient & backprop smoke test")
     parser.add_argument("--model-name", type=str, default="google/paligemma-3b-pt-224", help="Base model ID")
-    parser.add_argument("--revision", type=str, default="b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9", help="Model revision")
+    parser.add_argument("--revision", type=str, default="main", help="Model revision")
     parser.add_argument("--epochs", type=int, default=5, help="Epochs")
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"], help="Device")
     parser.add_argument("--output-dir", type=str, default="specialists/single_image/weights/satquery_paligemma_lora", help="Output dir")

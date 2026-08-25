@@ -46,7 +46,7 @@ class PaliGemmaRSInferenceEngine:
     def __init__(
         self,
         base_model_id: str = "google/paligemma-3b-pt-224",
-        revision: str = "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
+        revision: str = "main",
         adapter_path: Optional[str] = None,
         device: Optional[str] = None,
     ) -> None:
@@ -64,7 +64,7 @@ class PaliGemmaRSInferenceEngine:
     def get_instance(
         cls,
         base_model_id: str = "google/paligemma-3b-pt-224",
-        revision: str = "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
+        revision: str = "main",
         adapter_path: Optional[str] = None,
     ) -> PaliGemmaRSInferenceEngine:
         """Get or initialize process-local singleton engine."""

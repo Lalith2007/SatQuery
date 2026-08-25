@@ -14,7 +14,7 @@ class SatQueryLoRAConfig:
     """LoRA hyperparameters for PaliGemma 3B remote sensing adaptation."""
 
     base_model_name: str = "google/paligemma-3b-pt-224"
-    revision: str = "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9"
+    revision: str = "main"
     r: int = 8
     lora_alpha: int = 16
     lora_dropout: float = 0.05
