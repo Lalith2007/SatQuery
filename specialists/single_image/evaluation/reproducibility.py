@@ -384,7 +384,7 @@ def run_full_reproducibility_audit() -> Dict[str, Any]:
         "owner": "Sruthi (sruthi-270 / rajamanurisruthi@gmail.com)",
         "base_model": {
             "checkpoint_id": "google/paligemma-3b-pt-224",
-            "revision": "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
+            "revision": "main",
             "architecture": "SigLIP-So400m + Gemma-2B (2.92B parameters)",
             "license": "Gemma Open Terms",
         },
