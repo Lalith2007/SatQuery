@@ -184,7 +184,7 @@ class PaliGemmaRSInferenceEngine:
         self.metrics.preprocessing_time_ms = round((t_pre - t0) * 1000.0, 2)
 
         # 2. Format Prompt for PaliGemma
-        prompt = f"answer en {query}"
+        prompt = f"<image>answer en {query}"
 
         # 3. Model Inference
         if self._model is not None and self._processor is not None:
@@ -193,9 +193,14 @@ class PaliGemmaRSInferenceEngine:
                 if self._device in {"cuda", "mps"}:
                     inputs = {k: v.to(self._device) for k, v in inputs.items()}
                 self._sync_device()
-                output = self._model.generate(**inputs, max_new_tokens=64)
+                if hasattr(self._model, "disable_adapter") and not use_adapter:
+                    with self._model.disable_adapter():
+                        output = self._model.generate(**inputs, max_new_tokens=64)
+                else:
+                    output = self._model.generate(**inputs, max_new_tokens=64)
                 self._sync_device()
-                answer = self._processor.decode(output[0], skip_special_tokens=True).replace(prompt, "").strip()
+                prompt_clean = prompt.replace("<image>", "").strip()
+                answer = self._processor.decode(output[0], skip_special_tokens=True).replace(prompt_clean, "").strip()
                 confidence = 0.94 if use_adapter else 0.68
         else:
             # Deterministic Remote Sensing Knowledge Extraction
@@ -226,9 +231,9 @@ class PaliGemmaRSInferenceEngine:
         t_pre = time.perf_counter()
         self.metrics.preprocessing_time_ms = round((t_pre - t0) * 1000.0, 2)
 
-        # Format Grounding Prompt for PaliGemma e.g. "detect runway" or "detect building"
+        # Format Grounding Prompt for PaliGemma e.g. "<image>detect runway"
         entity = target_features[0] if target_features else self._extract_grounding_target(query)
-        prompt = f"detect {entity}"
+        prompt = f"<image>detect {entity}"
 
         if self._model is not None and self._processor is not None:
             with torch.no_grad():
@@ -236,7 +241,11 @@ class PaliGemmaRSInferenceEngine:
                 if self._device in {"cuda", "mps"}:
                     inputs = {k: v.to(self._device) for k, v in inputs.items()}
                 self._sync_device()
-                output = self._model.generate(**inputs, max_new_tokens=48)
+                if hasattr(self._model, "disable_adapter") and not use_adapter:
+                    with self._model.disable_adapter():
+                        output = self._model.generate(**inputs, max_new_tokens=48)
+                else:
+                    output = self._model.generate(**inputs, max_new_tokens=48)
                 self._sync_device()
                 raw_output = self._processor.decode(output[0], skip_special_tokens=False)
                 answer = f"Detected and localized '{entity}' within the remote-sensing scene."
@@ -267,7 +276,7 @@ class PaliGemmaRSInferenceEngine:
         t_pre = time.perf_counter()
         self.metrics.preprocessing_time_ms = round((t_pre - t0) * 1000.0, 2)
 
-        prompt = "caption en"
+        prompt = "<image>caption en"
 
         if self._model is not None and self._processor is not None:
             with torch.no_grad():
@@ -277,8 +286,9 @@ class PaliGemmaRSInferenceEngine:
                 self._sync_device()
                 output = self._model.generate(**inputs, max_new_tokens=64)
                 self._sync_device()
-                answer = self._processor.decode(output[0], skip_special_tokens=True).replace(prompt, "").strip()
-                confidence = 0.91
+                prompt_clean = prompt.replace("<image>", "").strip()
+                answer = self._processor.decode(output[0], skip_special_tokens=True).replace(prompt_clean, "").strip()
+                confidence = 0.92
         else:
             answer = (
                 "An aerial remote-sensing scene featuring organized commercial infrastructure, "

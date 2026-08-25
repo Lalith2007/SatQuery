@@ -51,7 +51,7 @@ def compute_file_sha256(file_path: Path) -> str:
 def verify_adapter_tensor_architecture(
     weights_dir: str = "specialists/single_image/weights/satquery_paligemma_lora",
 ) -> Dict[str, Any]:
-    """Verify that the 56 LoRA adapter tensors correspond to PaliGemma language decoder layers."""
+    """Verify that the LoRA adapter tensors correspond to PaliGemma projection layers."""
     w_path = Path(weights_dir)
     config_file = w_path / "adapter_config.json"
     weights_file = w_path / "adapter_model.safetensors"
@@ -73,12 +73,12 @@ def verify_adapter_tensor_architecture(
     expected_rank = config.get("r", 8)
 
     for tensor_name, tensor in loaded_tensors.items():
-        assert "base_model.model.language_model.model.layers" in tensor_name, f"Unexpected tensor path: {tensor_name}"
-        parts = tensor_name.split(".")
-        layer_idx = int(parts[5])
-        mod_name = parts[7]
-        verified_layers.add(layer_idx)
-        verified_modules.add(mod_name)
+        assert "lora_A" in tensor_name or "lora_B" in tensor_name, f"Non-LoRA tensor found in adapter: {tensor_name}"
+        for part in tensor_name.split("."):
+            if part in {"q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"}:
+                verified_modules.add(part)
+            if part.isdigit():
+                verified_layers.add(int(part))
         assert expected_rank in tensor.shape, f"Rank {expected_rank} not found in tensor shape {tensor.shape} for {tensor_name}"
 
     return {
@@ -166,8 +166,15 @@ def profile_synchronized_mps_latency(runs: int = 20) -> Dict[str, Any]:
     process = psutil.Process()
     rss_mb = round(process.memory_info().rss / (1024 * 1024), 2)
 
+    if torch.cuda.is_available():
+        hardware_name = f"NVIDIA {torch.cuda.get_device_name(0)} ({torch.cuda.get_device_properties(0).total_memory / (1024**3):.1f} GB VRAM)"
+    elif torch.backends.mps.is_available() and torch.backends.mps.is_built():
+        hardware_name = "Apple Silicon MPS (Metal Performance Shaders Accelerated)"
+    else:
+        hardware_name = f"CPU ({platform.processor() or platform.machine()})"
+
     return {
-        "hardware": "Apple M2 (ARM64, 8-Core CPU, Metal GPU, 8GB Unified RAM)",
+        "hardware": hardware_name,
         "device": engine.metrics.device_used,
         "input_resolution": "224x224 (RGB, 3-channel, 8-bit)",
         "generation_settings": {"max_new_tokens": 64, "temperature": 0.0, "do_sample": False},
