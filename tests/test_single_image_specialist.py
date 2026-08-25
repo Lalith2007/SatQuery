@@ -202,3 +202,25 @@ def test_reproducibility_dataset_leakage_audit():
     assert audit["train_samples"] == 60
     assert audit["val_samples"] == 15
     assert audit["test_samples"] == 25
+
+
+def test_colab_gpu_validation_execution():
+    """Verify that Colab GPU / environment validation script runs and passes."""
+    from specialists.single_image.colab.gpu_validation import validate_compute_environment
+    report = validate_compute_environment()
+    assert report["validation_status"] == "PASSED_COMPUTE_VALIDATION"
+    assert report["matrix_compute_time_ms"] > 0
+    assert "device_name" in report
+
+
+def test_reproducibility_manifest_generation():
+    """Verify that reproducibility manifest includes complete Git, Model, and LoRA metadata."""
+    from specialists.single_image.colab.reproducibility_manifest import generate_manifest
+    manifest = generate_manifest()
+    assert manifest["manifest_version"] == "1.0.0"
+    assert manifest["base_model"]["model_id"] == "google/paligemma-3b-pt-224"
+    assert manifest["adaptation"]["rank"] == 8
+    assert manifest["adaptation"]["total_tensors"] == 56
+    assert manifest["datasets"]["split_sample_counts"]["test_samples"] == 25
+    assert "git" in manifest
+    assert "commit_hash" in manifest["git"]

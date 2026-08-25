@@ -1,0 +1,79 @@
+{
+  "manifest_version": "1.0.0",
+  "generated_at": "2026-08-25T06:00:40Z",
+  "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
+  "git": {
+    "commit_hash": "63ac6de84fbd60c86108e0b97c9c68f48f9ef554",
+    "branch": "feature/sruthi-single-image",
+    "author": "sruthi-270",
+    "email": "rajamanurisruthi@gmail.com"
+  },
+  "base_model": {
+    "model_id": "google/paligemma-3b-pt-224",
+    "revision": "b6be84488344bc2f84bf27b9a5e8e7b1658b1fb9",
+    "architecture": "SigLIP-So400m + Gemma-2B (2.92B parameters)",
+    "license": "Gemma Open Terms of Use"
+  },
+  "adaptation": {
+    "adapter_name": "SatQuery-PaliGemma-3B-RS-LoRA",
+    "peft_type": "LORA",
+    "rank": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "adapted_layers": 4,
+    "total_tensors": 56,
+    "weights_format": "safetensors (Float32 / Float16)",
+    "storage_path": "specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors"
+  },
+  "datasets": {
+    "sources": [
+      {
+        "name": "BigEarthNet.txt",
+        "version": "2026 Multi-Sensor RS Archive",
+        "role": "LULC & Multi-sensor VQA"
+      },
+      {
+        "name": "VRSBench",
+        "version": "2024 High-Resolution RS Benchmark",
+        "role": "Optical Grounding & Object VQA"
+      },
+      {
+        "name": "RSVQA",
+        "version": "2020 Remote Sensing VQA Benchmark",
+        "role": "Counting & Presence VQA"
+      }
+    ],
+    "split_random_seed": 42,
+    "split_sample_counts": {
+      "training_samples": 60,
+      "validation_samples": 15,
+      "test_samples": 25,
+      "total_corpus_samples": 100
+    },
+    "data_leakage_audit": "PASSED (Train \u2229 Test = \u2205)"
+  },
+  "runtime_environment": {
+    "os_platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python_version": "3.11.15",
+    "pytorch_version": "2.13.0",
+    "transformers_version": "5.15.1",
+    "peft_version": "0.20.0",
+    "safetensors_version": "0.8.0",
+    "compute_hardware": {
+      "device_type": "mps",
+      "device_name": "Apple Silicon Metal (MPS)",
+      "memory_gb": 8.0,
+      "metal_version": "Apple MPS Graph API"
+    }
+  },
+  "scientific_status": "EXPERIMENTAL / PRELIMINARY REPRODUCIBILITY RESULTS \u2014 SUBSET EVALUATION"
+}
