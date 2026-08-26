@@ -19,7 +19,7 @@ from core.config import settings
 from core.logging import get_logger
 from core.schemas import Artifact, Evidence, ExecutionTraceEntry, QueryResponse, ToolStatus
 from presentation.confidence import ConfidencePresenter
-from presentation.evidence_renderer import EvidenceRenderer, EvidenceRenderingResult
+from presentation.evidence_renderer import ArtifactRegistry, EvidenceRenderer, EvidenceRenderingResult
 from presentation.trace_presenter import TracePresenter
 from presentation.ui_components import UIComponents
 from reports.templates import HTML_REPORT_TEMPLATE
@@ -114,6 +114,7 @@ class ReportGenerator:
         if save_to_disk:
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(content)
+            ArtifactRegistry.register(report_id, out_path, name=filename)
 
         artifact = Artifact(
             artifact_id=report_id,
@@ -204,6 +205,7 @@ class ReportGenerator:
         if save_to_disk:
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(content)
+            ArtifactRegistry.register(report_id, out_path, name=filename)
 
         artifact = Artifact(
             artifact_id=report_id,
@@ -300,6 +302,7 @@ class ReportGenerator:
         if save_to_disk:
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
+            ArtifactRegistry.register(report_id, out_path, name=filename)
 
         artifact = Artifact(
             artifact_id=report_id,

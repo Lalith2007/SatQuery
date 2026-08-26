@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import io
 import math
+import mimetypes
 import os
 from pathlib import Path
+import threading
 from typing import Any, Dict, List, Optional, Tuple, Union
 import uuid
 
@@ -22,6 +24,34 @@ from core.logging import get_logger
 from core.schemas import Artifact, Evidence, EvidenceType, ImageFormat, ImageInput, ImageModality
 
 logger = get_logger("evidence_renderer")
+
+
+class ArtifactRegistry:
+    """Thread-safe runtime registry mapping artifact IDs and names to verified filesystem paths."""
+
+    _registry: Dict[str, Path] = {}
+    _lock = threading.Lock()
+
+    @classmethod
+    def register(cls, artifact_id: str, file_path: Union[str, Path], name: Optional[str] = None) -> None:
+        """Register an artifact ID and optional name to its filesystem path."""
+        p = Path(file_path)
+        with cls._lock:
+            cls._registry[str(artifact_id)] = p
+            if name:
+                cls._registry[str(name)] = p
+
+    @classmethod
+    def get_path(cls, artifact_id: str) -> Optional[Path]:
+        """Look up the registered filesystem path for an artifact ID."""
+        with cls._lock:
+            return cls._registry.get(str(artifact_id))
+
+    @classmethod
+    def clear(cls) -> None:
+        """Clear all registered artifact records."""
+        with cls._lock:
+            cls._registry.clear()
 
 
 class EvidenceRenderingResult:
@@ -241,9 +271,9 @@ class EvidenceRenderer:
         # Composite overlay onto main image
         final_img = Image.alpha_composite(img, overlay).convert("RGB")
 
-        # Save artifact
+        # Save artifact with full UUID in filename
         artifact_id = str(uuid.uuid4())
-        filename = f"{output_filename_prefix}_{artifact_id[:8]}.png"
+        filename = f"{output_filename_prefix}_{artifact_id}.png"
         out_path = cls.get_evidence_storage_dir() / filename
         final_img.save(out_path, format="PNG")
 
@@ -256,6 +286,9 @@ class EvidenceRenderer:
             mime_type="image/png",
             metadata={"rendered_boxes": rendered_boxes, "source_image": source_image_path},
         )
+
+        # Register artifact in global registry
+        ArtifactRegistry.register(artifact_id, out_path, name=filename)
 
         return EvidenceRenderingResult(
             evidence_id=artifact_id,
@@ -333,9 +366,9 @@ class EvidenceRenderer:
         draw.text((w + 12, 12), "📅 Acquisition T1 (Follow-up)", fill=(147, 197, 253), font=font)
         draw.text((w * 2 + 16, 12), "🔍 Detected Change Difference Mask", fill=(248, 113, 113), font=font)
 
-        # Save artifact
+        # Save artifact with full UUID in filename
         artifact_id = str(uuid.uuid4())
-        filename = f"bitemporal_change_composite_{artifact_id[:8]}.png"
+        filename = f"bitemporal_change_composite_{artifact_id}.png"
         out_path = cls.get_evidence_storage_dir() / filename
         composite.save(out_path, format="PNG")
 
@@ -349,6 +382,9 @@ class EvidenceRenderer:
             mime_type="image/png",
             metadata={"change_pixel_ratio": change_ratio, "t0_source": t0_image_path, "t1_source": t1_image_path},
         )
+
+        # Register artifact in global registry
+        ArtifactRegistry.register(artifact_id, out_path, name=filename)
 
         return EvidenceRenderingResult(
             evidence_id=artifact_id,
@@ -411,9 +447,9 @@ class EvidenceRenderer:
         draw.text((w + 12, 12), "📡 SAR Intensity (Radar Scattering)", fill=(147, 197, 253), font=font)
         draw.text((w * 2 + 16, 12), "⚡ False-Color Radar Penetration Fusion", fill=(196, 181, 253), font=font)
 
-        # Save artifact
+        # Save artifact with full UUID in filename
         artifact_id = str(uuid.uuid4())
-        filename = f"optical_sar_fusion_{artifact_id[:8]}.png"
+        filename = f"optical_sar_fusion_{artifact_id}.png"
         out_path = cls.get_evidence_storage_dir() / filename
         composite.save(out_path, format="PNG")
 
@@ -426,6 +462,9 @@ class EvidenceRenderer:
             mime_type="image/png",
             metadata={"optical_source": optical_path, "sar_source": sar_path},
         )
+
+        # Register artifact in global registry
+        ArtifactRegistry.register(artifact_id, out_path, name=filename)
 
         return EvidenceRenderingResult(
             evidence_id=artifact_id,
@@ -479,7 +518,8 @@ class EvidenceRenderer:
 
         cropped = img.crop(crop_box).convert("RGB")
         artifact_id = str(uuid.uuid4())
-        filename = f"crop_{label.replace(' ', '_').lower()}_{artifact_id[:8]}.png"
+        safe_label = "".join(c if c.isalnum() else "_" for c in label).strip("_").lower()[:32] or "roi"
+        filename = f"crop_{safe_label}_{artifact_id}.png"
         out_path = cls.get_evidence_storage_dir() / filename
         cropped.save(out_path, format="PNG")
 
@@ -492,6 +532,9 @@ class EvidenceRenderer:
             mime_type="image/png",
             metadata={"bbox": bbox, "source_image": source_image_path},
         )
+
+        # Register artifact in global registry
+        ArtifactRegistry.register(artifact_id, out_path, name=filename)
 
         return EvidenceRenderingResult(
             evidence_id=artifact_id,
@@ -541,7 +584,7 @@ class EvidenceRenderer:
         blended = Image.blend(img.convert("RGB"), hm_pil, alpha=0.45)
 
         artifact_id = str(uuid.uuid4())
-        filename = f"heatmap_{artifact_id[:8]}.png"
+        filename = f"heatmap_{artifact_id}.png"
         out_path = cls.get_evidence_storage_dir() / filename
         blended.save(out_path, format="PNG")
 
@@ -554,6 +597,9 @@ class EvidenceRenderer:
             mime_type="image/png",
             metadata={"source_image": source_image_path},
         )
+
+        # Register artifact in global registry
+        ArtifactRegistry.register(artifact_id, out_path, name=filename)
 
         return EvidenceRenderingResult(
             evidence_id=artifact_id,
@@ -598,26 +644,27 @@ class EvidenceRenderer:
 
         # Handle bi-temporal change maps if 2 images present
         change_items = [ev for ev in evidence_list if ev.type == EvidenceType.CHANGE_MAP]
-        if (change_items or (task_hint and "change" in task_hint.lower())) and len(image_inputs) >= 2:
+        if change_items and len(image_inputs) >= 2:
             change_res = cls.render_bitemporal_change_map(
                 image_inputs[0].path_or_uri,
                 image_inputs[1].path_or_uri,
+                title=change_items[0].label,
             )
             results.append(change_res)
 
-        # Handle optical-SAR fusion if heterogeneous modalities present
-        has_optical = any(img.modality == ImageModality.OPTICAL for img in image_inputs)
-        has_sar = any(img.modality == ImageModality.SAR for img in image_inputs)
-        if (has_optical and has_sar and len(image_inputs) >= 2) or (task_hint and "optical_sar" in task_hint.lower() and len(image_inputs) >= 2):
-            opt_path = next(img.path_or_uri for img in image_inputs if img.modality == ImageModality.OPTICAL) if has_optical else image_inputs[0].path_or_uri
-            sar_path = next(img.path_or_uri for img in image_inputs if img.modality == ImageModality.SAR) if has_sar else image_inputs[1].path_or_uri
-            fusion_res = cls.render_optical_sar_fusion(opt_path, sar_path)
+        # Handle optical-SAR highlighted images
+        fusion_items = [ev for ev in evidence_list if ev.type == EvidenceType.HIGHLIGHTED_IMAGE]
+        if fusion_items and len(image_inputs) >= 2:
+            opt_path = next((img.path_or_uri for img in image_inputs if img.modality in {ImageModality.OPTICAL, ImageModality.MULTISPECTRAL}), image_inputs[0].path_or_uri)
+            sar_path = next((img.path_or_uri for img in image_inputs if img.modality == ImageModality.SAR), image_inputs[1].path_or_uri)
+            fusion_res = cls.render_optical_sar_fusion(opt_path, sar_path, title=fusion_items[0].label)
             results.append(fusion_res)
 
-        # Handle explicit heatmaps
-        for ev in evidence_list:
-            if ev.type == EvidenceType.HEATMAP and primary_image_path:
-                hm_res = cls.render_attention_heatmap(primary_image_path, label=ev.label)
+        # Handle heatmaps
+        heatmap_items = [ev for ev in evidence_list if ev.type == EvidenceType.HEATMAP]
+        if heatmap_items and primary_image_path:
+            for hm_ev in heatmap_items:
+                hm_res = cls.render_attention_heatmap(primary_image_path, label=hm_ev.label)
                 results.append(hm_res)
 
         return results

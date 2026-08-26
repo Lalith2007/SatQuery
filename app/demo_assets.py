@@ -81,4 +81,21 @@ def ensure_demo_assets(target_dir: Path | str = "demo_assets") -> dict[str, str]
         sar_arr[50:90, 170:210] = 0.95
         tifffile.imwrite(assets["sar_cross"], sar_arr)
 
+    # 7. Ensure mock specialist sample artifacts exist in artifacts_storage/
+    storage_path = Path("artifacts_storage")
+    storage_path.mkdir(parents=True, exist_ok=True)
+    mock_change = storage_path / "mock_change_map.png"
+    if not mock_change.exists():
+        img = Image.new("RGB", (384, 128), color=(30, 40, 60))
+        d = ImageDraw.Draw(img)
+        d.text((10, 50), "Bi-Temporal Change Map (Mock)", fill=(239, 68, 68))
+        img.save(mock_change)
+
+    mock_fusion = storage_path / "mock_optical_sar_composite.png"
+    if not mock_fusion.exists():
+        img = Image.new("RGB", (384, 128), color=(20, 30, 50))
+        d = ImageDraw.Draw(img)
+        d.text((10, 50), "Optical-SAR False Color (Mock)", fill=(6, 182, 212))
+        img.save(mock_fusion)
+
     return assets

@@ -15,7 +15,7 @@ Division 5 **strictly respects architectural boundaries**:
 - Does **not** mutate Division 1 core schemas or router internals.
 - Does **not** modify Division 2-4 model implementations (`specialists/single_image`, etc.).
 - Does **not** create a competing backend or secondary agent.
-- All 115 tests in the repository pass with zero errors.
+- All 121 tests in the repository pass with zero errors.
 
 ---
 
@@ -25,7 +25,7 @@ Division 5 **strictly respects architectural boundaries**:
 SatQuery/
 ├── presentation/
 │   ├── __init__.py               # Package exports
-│   ├── evidence_renderer.py      # Spatial evidence visualizer (BBoxes, Masks, Change Maps, Cross-Modal Fusion)
+│   ├── evidence_renderer.py      # Spatial evidence visualizer (BBoxes, Masks, Change Maps, Cross-Modal Fusion, ArtifactRegistry)
 │   ├── confidence.py             # Calibrated confidence formatting & qualitative tier mapping
 │   ├── trace_presenter.py        # Operational execution trace auditor & latency tracker
 │   ├── ui_components.py          # Frontend HTML/SVG/Canvas component generators
@@ -49,7 +49,8 @@ SatQuery/
 │   └── README.md                 # Evaluation documentation & benchmark formulas
 ├── app/
 │   ├── ui.py                     # Interactive presentation dashboard template (DEMO_HTML)
-│   └── routes.py                 # FastAPI endpoints (/api/v1/reports/*, /api/v1/evaluation/*)
+│   ├── demo_assets.py            # Presets & demo raster generator
+│   └── routes.py                 # FastAPI endpoints (/api/v1/artifacts/*, /api/v1/reports/*, /api/v1/evaluation/*)
 └── tests/
     ├── test_evidence_renderer.py
     ├── test_confidence_presentation.py
@@ -58,19 +59,20 @@ SatQuery/
     ├── test_evaluation_benchmarks.py
     ├── test_division5_contracts.py
     ├── test_division5_failures.py
-    └── test_division5_integration.py
+    ├── test_division5_integration.py
+    └── test_live_presets.py
 ```
 
 ---
 
 ## 3. Exposed Interfaces & Usage for Lalith
 
-### A. Automatic Evidence Rendering
-When `POST /api/v1/query` or `POST /api/v1/query/multipart` is invoked, Division 5 automatically inspects `response.evidence` and renders spatial bounding boxes, change maps, or fusion blends into visual artifacts saved to `artifacts_storage/evidence/`.
+### A. Automatic Evidence Rendering & Artifact Registration
+When `POST /api/v1/query` or `POST /api/v1/query/multipart` is invoked, Division 5 automatically inspects `response.evidence` and renders spatial bounding boxes, change maps, or fusion blends into visual artifacts saved to `artifacts_storage/evidence/`. All artifacts are registered into `ArtifactRegistry`.
 
 To call programmatically:
 ```python
-from presentation.evidence_renderer import EvidenceRenderer
+from presentation.evidence_renderer import EvidenceRenderer, ArtifactRegistry
 
 rendered_results = EvidenceRenderer.render_all_evidence(
     evidence_list=query_response.evidence,
@@ -79,6 +81,7 @@ rendered_results = EvidenceRenderer.render_all_evidence(
 )
 for r in rendered_results:
     if r.artifact:
+        ArtifactRegistry.register(r.artifact.artifact_id, r.artifact.uri_or_path, name=r.artifact.name)
         query_response.artifacts.append(r.artifact)
 ```
 
@@ -136,6 +139,7 @@ print(f"Aggregate Score: {result.aggregate_normalized_score:.1f} / 100.0")
 | Endpoint | Method | Purpose |
 | :--- | :---: | :--- |
 | `/` or `/demo` | `GET` | Interactive presentation dashboard with live canvas overlays & evaluation lab |
+| `/api/v1/artifacts/{artifact_id}` | `GET` | Retrieves rendered images, change storyboards, fusions, and report files |
 | `/api/v1/reports/generate` | `POST` | Generates HTML, Markdown, or JSON report for a query response |
 | `/api/v1/reports/{report_id}` | `GET` | Downloads generated report file directly |
 | `/api/v1/evaluation/benchmarks`| `GET` | Lists supported benchmark evaluation suites and metrics |
@@ -143,13 +147,33 @@ print(f"Aggregate Score: {result.aggregate_normalized_score:.1f} / 100.0")
 
 ---
 
-## 5. Verification & Test Suite Summary
+## 5. Artifact Serving Pipeline & Bug Fix Documentation
 
-- **Total Test Cases**: **115 passing tests (100% pass rate)**
+### Root Cause of Initial 404 Error:
+1. `EvidenceRenderer` generated on-disk filenames with truncated 8-character UUID prefixes (e.g., `annotated_grounding_b97542a7.png`), while `Artifact.artifact_id` was the full 36-character UUID (`b97542a7-333e-4b6d-abbc-ae4b3015c9b0`).
+2. When the browser requested `GET /api/v1/artifacts/{artifact_uuid}`, the backend search `rglob(f"*{artifact_id}*")` searched for the full 36-character UUID, which did not match the 8-character filename, causing a `404 Not Found`.
+
+### Architectural Resolution:
+1. **Full UUID Persistence**: `EvidenceRenderer` now saves filenames embedding the complete UUID (`{prefix}_{artifact_id}.png`).
+2. **Global `ArtifactRegistry`**: Thread-safe in-memory registry mapping every artifact ID and filename to its resolved filesystem path.
+3. **Multi-Tier Safe Resolution**: `get_artifact` searches:
+   - `ArtifactRegistry` lookup.
+   - `settings.artifact_storage_path` full UUID match.
+   - `settings.artifact_storage_path` 8-character prefix match (for backward compatibility).
+   - Exact filename match.
+   - `demo_assets/` directory fallback.
+4. **Path Traversal Security**: Rejects `..`, `/`, and `\`, and verifies target path is strictly contained within authorized roots.
+5. **Accurate Media-Types**: Sets `image/png`, `image/jpeg`, `image/tiff`, `text/html`, etc.
+
+---
+
+## 6. Verification & Test Suite Summary
+
+- **Total Test Cases**: **121 passing tests (100% pass rate)**
 - **Test Categories**:
   - Division 1 Core & API tests: 55 passed
   - Division 2 Specialist & LoRA tests: 19 passed
-  - Division 5 Presentation, Evidence, Trace, Reports & Evaluation tests: 41 passed
+  - Division 5 Presentation, Evidence, Trace, Reports, Evaluation, & Artifact tests: 47 passed
 - **Execution Command**:
   ```bash
   pytest tests/ -v
@@ -157,8 +181,8 @@ print(f"Aggregate Score: {result.aggregate_normalized_score:.1f} / 100.0")
 
 ---
 
-## 6. Known Limitations & Operational Assumptions
+## 7. Known Limitations & Operational Assumptions
 
 1. **Raster Resolution**: Spatial bounding box visualization depends on input image dimensions. Normalized coordinates `[ymin, xmin, ymax, xmax]` are scaled directly to raster pixel height and width.
-2. **Confidence Calibration**: Division 5 does not invent or alter confidence values. If specialist models do not supply a confidence score, it is strictly presented as `"Unavailable"`.
+2. **Confidence Availability**: If a specialist tool returns `confidence = None`, Division 5 presents it as `"Unavailable"` rather than fabricating artificial numbers.
 3. **ISRO/SAC Hidden Datasets**: Because official Cartosat-2S and RISAT test annotations are private, `evaluation.benchmarks.isro_sac.ISROSACGenericEvaluator` is designed generically to compute exact match, token overlap F1, and mIoU once predictions and references are provided at evaluation time.

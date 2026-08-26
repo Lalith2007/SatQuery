@@ -44,7 +44,7 @@ from validation.validator import ALLOWED_EXTENSIONS, RasterInspector
 from agent.controller import AgentController
 from app.ui import DEMO_HTML
 from presentation.confidence import ConfidencePresenter
-from presentation.evidence_renderer import EvidenceRenderer
+from presentation.evidence_renderer import ArtifactRegistry, EvidenceRenderer
 from presentation.trace_presenter import TracePresenter
 from reports.generator import ReportGenerator
 from evaluation.runner import BenchmarkRunner
@@ -195,6 +195,10 @@ async def submit_query(request: QueryRequest) -> QueryResponse:
     try:
         response = await controller.process_query(request, request_id=req_id)
 
+        # Register any artifacts returned directly by specialists
+        for art in response.artifacts:
+            ArtifactRegistry.register(art.artifact_id, art.uri_or_path, name=art.name)
+
         # Division 5 Enhancement: Render spatial evidence into actual visual artifacts if present
         if response.evidence and request.images:
             try:
@@ -204,8 +208,10 @@ async def submit_query(request: QueryRequest) -> QueryResponse:
                     task_hint=response.resolved_task.value,
                 )
                 for r in rendered_results:
-                    if r.artifact and not any(a.artifact_id == r.artifact.artifact_id for a in response.artifacts):
-                        response.artifacts.append(r.artifact)
+                    if r.artifact:
+                        ArtifactRegistry.register(r.artifact.artifact_id, r.artifact.uri_or_path, name=r.artifact.name)
+                        if not any(a.artifact_id == r.artifact.artifact_id for a in response.artifacts):
+                            response.artifacts.append(r.artifact)
             except Exception as ev_err:
                 logger.warning(f"Evidence rendering notice: {ev_err}")
 
@@ -300,6 +306,10 @@ async def submit_query_multipart(
 
         response = await controller.process_query(query_req, request_id=req_id)
 
+        # Register any artifacts returned directly by specialists
+        for art in response.artifacts:
+            ArtifactRegistry.register(art.artifact_id, art.uri_or_path, name=art.name)
+
         # Division 5 Enhancement: Render spatial evidence into actual visual artifacts
         if response.evidence:
             try:
@@ -309,8 +319,10 @@ async def submit_query_multipart(
                     task_hint=response.resolved_task.value,
                 )
                 for r in rendered_results:
-                    if r.artifact and not any(a.artifact_id == r.artifact.artifact_id for a in response.artifacts):
-                        response.artifacts.append(r.artifact)
+                    if r.artifact:
+                        ArtifactRegistry.register(r.artifact.artifact_id, r.artifact.uri_or_path, name=r.artifact.name)
+                        if not any(a.artifact_id == r.artifact.artifact_id for a in response.artifacts):
+                            response.artifacts.append(r.artifact)
             except Exception as ev_err:
                 logger.warning(f"Evidence rendering notice: {ev_err}")
 
@@ -347,22 +359,90 @@ async def submit_query_multipart(
 
 @router.get("/api/v1/artifacts/{artifact_id}", summary="Retrieve Generated Artifact")
 async def get_artifact(artifact_id: str):
-    """Retrieve an artifact file (change map, segmented mask, annotated visual, report) by ID."""
-    storage_root = settings.artifact_storage_path
-    
-    # Search for matching artifact file across all storage subdirectories
-    matched = list(storage_root.rglob(f"*{artifact_id}*"))
-    if not matched:
-        matched = list(storage_root.rglob(artifact_id))
+    """Retrieve an artifact file (change map, segmented mask, annotated visual, report) by ID or filename safely."""
+    # 1. Path safety: reject path traversal sequences
+    if ".." in artifact_id or "\\" in artifact_id or "/" in artifact_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid artifact identifier.",
+        )
 
-    if not matched or not matched[0].is_file():
+    storage_root = settings.artifact_storage_path.resolve()
+    demo_root = Path("demo_assets").resolve()
+    allowed_roots = [storage_root, demo_root]
+
+    target_path: Optional[Path] = None
+
+    # Step A: Check in-memory ArtifactRegistry
+    registered_path = ArtifactRegistry.get_path(artifact_id)
+    if registered_path:
+        p = Path(registered_path).resolve()
+        if p.is_file():
+            target_path = p
+
+    # Step B: Direct search in storage_root by full UUID or substring
+    if not target_path and storage_root.exists():
+        matched = list(storage_root.rglob(f"*{artifact_id}*"))
+        if matched and matched[0].is_file():
+            target_path = matched[0]
+
+    # Step C: Short UUID prefix match (for backward compatibility with 8-character prefixes)
+    if not target_path and storage_root.exists() and len(artifact_id) >= 8:
+        short_id = artifact_id[:8]
+        matched = list(storage_root.rglob(f"*{short_id}*"))
+        if matched and matched[0].is_file():
+            target_path = matched[0]
+
+    # Step D: Exact filename match in storage_root
+    if not target_path and storage_root.exists():
+        matched = list(storage_root.rglob(artifact_id))
+        if matched and matched[0].is_file():
+            target_path = matched[0]
+
+    # Step E: Search in demo_assets directory
+    if not target_path and demo_root.exists():
+        matched = list(demo_root.rglob(f"*{artifact_id}*"))
+        if not matched:
+            matched = list(demo_root.rglob(artifact_id))
+        if matched and matched[0].is_file():
+            target_path = matched[0]
+
+    # If still not found, return 404
+    if not target_path or not target_path.is_file():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Artifact with identifier '{artifact_id}' not found.",
         )
 
-    file_path = matched[0]
-    return FileResponse(path=str(file_path), filename=file_path.name)
+    # Security check: Ensure target_path is strictly within allowed roots
+    resolved_path = target_path.resolve()
+    is_safe = any(
+        resolved_path == root or root in resolved_path.parents
+        for root in allowed_roots
+    )
+    if not is_safe:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access to requested artifact path is forbidden.",
+        )
+
+    # Determine accurate media_type
+    ext = resolved_path.suffix.lower()
+    media_type_map = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".tif": "image/tiff",
+        ".tiff": "image/tiff",
+        ".svg": "image/svg+xml",
+        ".html": "text/html",
+        ".json": "application/json",
+        ".md": "text/markdown",
+        ".txt": "text/plain",
+    }
+    media_type = media_type_map.get(ext, "application/octet-stream")
+
+    return FileResponse(path=str(resolved_path), filename=resolved_path.name, media_type=media_type)
 
 
 # ---------------------------------------------------------------------------

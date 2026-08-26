@@ -65,7 +65,7 @@ Specialist Models (Div 2, 3, 4)
 SatQuery/
 ├── presentation/
 │   ├── __init__.py               # Package exports
-│   ├── evidence_renderer.py      # Spatial evidence visualizer (BBoxes, Masks, Storyboards)
+│   ├── evidence_renderer.py      # Spatial evidence visualizer (BBoxes, Masks, Storyboards, ArtifactRegistry)
 │   ├── confidence.py             # Calibrated confidence formatting & qualitative tiers
 │   ├── trace_presenter.py        # Operational execution trace auditor & latency tracker
 │   ├── ui_components.py          # Reusable frontend HTML/SVG/Canvas component generators
@@ -89,7 +89,7 @@ SatQuery/
 │   └── README.md                 # Benchmark documentation & CLI guide
 ├── app/
 │   ├── ui.py                     # Presentation dashboard template (DEMO_HTML)
-│   └── routes.py                 # API endpoints (/api/v1/reports/*, /api/v1/evaluation/*)
+│   └── routes.py                 # API endpoints (/api/v1/artifacts/*, /api/v1/reports/*, /api/v1/evaluation/*)
 └── tests/
     ├── test_evidence_renderer.py
     ├── test_confidence_presentation.py
@@ -98,7 +98,8 @@ SatQuery/
     ├── test_evaluation_benchmarks.py
     ├── test_division5_contracts.py
     ├── test_division5_failures.py
-    └── test_division5_integration.py
+    ├── test_division5_integration.py
+    └── test_live_presets.py
 ```
 
 ---
@@ -134,10 +135,41 @@ Division 5 consumes standardized evidence items:
 
 ---
 
-## 5. Running Tests
+## 5. Artifact Serving Pipeline & Lifecycle
+
+### A. Artifact Lifecycle
+```text
+1. Specialist / Tool Execution
+   └── Yields Evidence items & optional initial Artifact records
+2. Division 5 EvidenceRenderer
+   └── Generates visual PNG on disk under settings.artifact_storage_path/evidence/
+   └── Filename embeds full UUID: {prefix}_{artifact_id}.png
+   └── Registers artifact in thread-safe ArtifactRegistry
+3. Backend Response Assembly
+   └── Serializes response.artifacts with artifact_id and uri_or_path
+4. Browser / UI Fetch
+   └── Browser requests GET /api/v1/artifacts/{artifact_id}
+5. Safe Artifact Serving Endpoint
+   └── Resolves artifact_id via:
+       a. ArtifactRegistry in-memory lookup
+       b. settings.artifact_storage_path UUID / prefix / filename search
+       c. demo_assets/ search
+   └── Enforces strict directory containment (blocks path traversal attacks)
+   └── Detects MIME media_type (image/png, image/jpeg, image/tiff, text/html, etc.)
+   └── Returns 200 OK FileResponse with image bytes
+```
+
+### B. Security & Path Safety Guarantees
+- Rejects path traversal sequences (`..`, `/`, `\`) in incoming `artifact_id` arguments.
+- Strictly bounds resolved file paths within `settings.artifact_storage_path` or `demo_assets/`.
+- Prevents unauthorized access to arbitrary host files.
+
+---
+
+## 6. Running Tests
 
 ```bash
-# Run all Division 5 unit and integration test suites
+# Run all Division 5 unit, failure, contract, integration, and live preset tests
 pytest tests/test_evidence_renderer.py \
        tests/test_confidence_presentation.py \
        tests/test_trace_presenter.py \
@@ -145,8 +177,9 @@ pytest tests/test_evidence_renderer.py \
        tests/test_evaluation_benchmarks.py \
        tests/test_division5_contracts.py \
        tests/test_division5_failures.py \
-       tests/test_division5_integration.py -v
+       tests/test_division5_integration.py \
+       tests/test_live_presets.py -v
 
-# Run entire repository test suite (115 passing tests)
+# Run entire repository test suite (121 passing tests)
 pytest tests/ -v
 ```
