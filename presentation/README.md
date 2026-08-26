@@ -1,83 +1,185 @@
-# Division 5: Evidence, Evaluation, and Presentation Layer
+# Division 5: Evidence, Evaluation & Presentation Layer
 
-**Owner**: Manoj  
-**Directory**: `presentation/`, `evaluation/`, `reports/`  
-**Shared Contract**: `core.schemas.QueryResponse`, `core.schemas.Evidence`, `core.schemas.Artifact`
-
----
-
-## 1. Overview & Responsibilities
-Division 5 is responsible for:
-- **Presentation & Web UI**: Consuming the FastAPI backend (`/api/v1/query`, `/health`, `/api/v1/artifacts/{id}`) and rendering interactive visual evidence to the user.
-- **Evidence Rendering**: Displaying bounding boxes, change maps, heatmaps, and false-color composites.
-- **Evaluation & Benchmarks**: Evaluating model accuracy, confidence calibration, and execution latency.
+**Developer / Owner**: Laksh (`lucifer2007india@gmail.com`)  
+**Git Branch**: `feature/laksh-evidence-evaluation`  
+**Shared Contracts Consumed**: `core.schemas.QueryResponse`, `core.schemas.ToolResult`, `core.schemas.Evidence`, `core.schemas.Artifact`, `core.schemas.ExecutionTraceEntry`
 
 ---
 
-## 2. API Contract for Frontend Integration
+## 1. Executive Summary & Purpose
 
-### Query Endpoint
-- **URL**: `POST /api/v1/query` (JSON) or `POST /api/v1/query/multipart` (File Upload)
-- **Response Model**: `QueryResponse` (defined in `core/schemas.py`)
+Division 5 is the presentation, evidence-grounding, evaluation, and reporting subsystem of **SatQuery AI**. It sits immediately downstream of the specialist inference and agent orchestration backbone.
 
-### Sample Response Structure
-```json
-{
-  "request_id": "c7a80a2b-f06b-4e92-8051-7f9f75d6910a",
-  "query": "Where is the airport runway?",
-  "resolved_task": "single_image_grounding",
-  "status": "success",
-  "answer": "Successfully localized Airport Runway at normalized coordinates [0.4, 0.1, 0.6, 0.9].",
-  "confidence": 0.93,
-  "evidence": [
-    {
-      "id": "e1-456",
-      "type": "bounding_box",
-      "label": "Airport Runway",
-      "confidence": 0.94,
-      "data": {
-        "bbox": [0.40, 0.10, 0.60, 0.90],
-        "format": "[ymin, xmin, ymax, xmax]"
-      },
-      "image_id": "img-001"
-    }
-  ],
-  "artifacts": [
-    {
-      "artifact_id": "art-789",
-      "name": "bi_temporal_change_map.png",
-      "type": "change_map",
-      "uri_or_path": "artifacts_storage/mock_change_map.png",
-      "description": "Binary change difference mask."
-    }
-  ],
-  "execution_trace": [
-    {
-      "stage": "INPUT_VALIDATED",
-      "component": "InputValidator",
-      "status": "COMPLETED",
-      "duration_ms": 2.1
-    },
-    {
-      "stage": "TASK_RESOLVED",
-      "component": "IntentResolver",
-      "status": "COMPLETED",
-      "duration_ms": 1.4,
-      "details": {"resolved_task": "single_image_grounding"}
-    },
-    {
-      "stage": "INFERENCE_EXECUTED",
-      "component": "single_image_grounding_mock",
-      "status": "COMPLETED",
-      "duration_ms": 52.1
-    }
-  ],
-  "errors": []
-}
+Its core responsibilities are:
+1. **Evidence Handling & Spatial Rendering**: Ingesting standardized `Evidence` items and rendering high-visibility bounding boxes (`[ymin, xmin, ymax, xmax]`), segmentation/change masks, bi-temporal side-by-side change maps, optical-SAR cross-modal blends, localized ROI crops, and attention heatmaps saved as persistent artifacts.
+2. **Honest Confidence Calibration & Presentation**: Preserving raw specialist confidence scores, formatting them into percentages and decimals, classifying them into qualitative tiers (`HIGH`, `MODERATE`, `LOW`, `UNAVAILABLE`), with a strict non-fabrication guarantee (`None` is explicitly displayed as `"Unavailable"`).
+3. **Auditable Operational Execution Trace Presentation**: Formatting stage-by-stage operational execution events, calculating stage latencies and percentage contributions, and enforcing strict privacy safeguards against private chain-of-thought exposure.
+4. **Interactive Web Presentation Dashboard**: Delivering an interactive, responsive web interface directly from FastAPI with 1-click judging presets, SVG/Canvas bounding box overlays, before/after change comparison sliders, and real-time execution observability.
+5. **Multi-Format Report Generation**: Automated generation of standalone interactive HTML reports, GitHub-flavored Markdown reports, and machine-readable JSON audit dumps.
+6. **Modular Benchmark Evaluation Suite**: Reproducible evaluation framework for **VRSBench**, **RSVQA**, **CDVQA**, and generic **ISRO/SAC** multi-sensor test sets with score normalization.
+
+---
+
+## 2. Architectural Pipeline
+
+```text
+Specialist Models (Div 2, 3, 4) 
+               │
+               ▼
+   Standardized ToolResult
+               │
+               ▼
+   Division 1 Agent Aggregator
+               │
+               ▼
+   Standardized QueryResponse
+               │
+               ▼
+   ┌────────────────────────────────────────────────────────┐
+   │            DIVISION 5 (Laksh — Owner)                  │
+   │                                                        │
+   │  ┌───────────────────────┬──────────────────────────┐  │
+   │  ▼                       ▼                          ▼  │
+   │ Evidence Renderer   Confidence Presenter   Trace Presenter
+   │ (BBoxes, Masks,     (Calibrated Tiers,     (Operational │
+   │  Change Maps, Crops) Non-Fabrication)       Audit Trail)│
+   │  └───────────────────────┼──────────────────────────┘  │
+   │                          ▼                             │
+   │                 Reports Generator                      │
+   │            (Interactive HTML, MD, JSON)                │
+   │                          │                             │
+   │                          ▼                             │
+   │            Interactive Presentation UI                 │
+   │            (Canvas Overlays, Slider)                   │
+   └──────────────────────────┬─────────────────────────────┘
+                              │
+                              ▼
+                      User / Judging Panel
 ```
 
 ---
 
-## 3. Artifact Retrieval Endpoint
-- **URL**: `GET /api/v1/artifacts/{artifact_id}`
-- Returns raw image / binary file for visualization directly in the browser/frontend.
+## 3. Directory Layout & Owned Files
+
+```text
+SatQuery/
+├── presentation/
+│   ├── __init__.py               # Package exports
+│   ├── evidence_renderer.py      # Spatial evidence visualizer (BBoxes, Masks, Storyboards, ArtifactRegistry)
+│   ├── confidence.py             # Calibrated confidence formatting & qualitative tiers
+│   ├── trace_presenter.py        # Operational execution trace auditor & latency tracker
+│   ├── ui_components.py          # Reusable frontend HTML/SVG/Canvas component generators
+│   └── README.md                 # Presentation documentation
+├── reports/
+│   ├── __init__.py               # Package exports
+│   ├── generator.py              # Multi-format report builder (JSON, Markdown, HTML)
+│   ├── templates.py              # HTML/Markdown report templates
+│   └── README.md                 # Report generation documentation
+├── evaluation/
+│   ├── __init__.py               # Package exports
+│   ├── base.py                   # Abstract evaluator interface & MetricResult schemas
+│   ├── normalizer.py             # Normalization strategies (scale_100, min_max, invert_error)
+│   ├── runner.py                 # CLI & programmatic benchmark execution runner
+│   ├── benchmarks/
+│   │   ├── __init__.py
+│   │   ├── vrsbench.py           # VRSBench VQA & Visual Grounding (mIoU, P@0.5)
+│   │   ├── rsvqa.py              # RSVQA Presence, Comparison, Count (RMSE)
+│   │   ├── cdvqa.py              # CDVQA Change VQA & BLEU/ROUGE description
+│   │   └── isro_sac.py           # ISRO/SAC Generic Evaluator (Cartosat-2S + RISAT SAR)
+│   └── README.md                 # Benchmark documentation & CLI guide
+├── app/
+│   ├── ui.py                     # Presentation dashboard template (DEMO_HTML)
+│   └── routes.py                 # API endpoints (/api/v1/artifacts/*, /api/v1/reports/*, /api/v1/evaluation/*)
+└── tests/
+    ├── test_evidence_renderer.py
+    ├── test_confidence_presentation.py
+    ├── test_trace_presenter.py
+    ├── test_report_generation.py
+    ├── test_evaluation_benchmarks.py
+    ├── test_division5_contracts.py
+    ├── test_division5_failures.py
+    ├── test_division5_integration.py
+    └── test_live_presets.py
+```
+
+---
+
+## 4. Key Interfaces & Schemas
+
+### A. Evidence Object Ingestion (`core.schemas.Evidence`)
+Division 5 consumes standardized evidence items:
+```json
+{
+  "id": "e1-456",
+  "type": "bounding_box",
+  "label": "Airport Runway",
+  "confidence": 0.95,
+  "data": {
+    "bbox": [0.082, 0.399, 0.942, 0.624],
+    "format": "[ymin, xmin, ymax, xmax]",
+    "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)"
+  },
+  "image_id": "img-001"
+}
+```
+
+### B. Calibrated Confidence (`presentation.confidence.ConfidenceDisplay`)
+- `HIGH`: $\ge 0.85$ (Green `#10b981`, strong model certainty)
+- `MODERATE`: $0.65 \le c < 0.85$ (Amber `#f59e0b`, verification recommended)
+- `LOW`: $< 0.65$ (Red `#ef4444`, significant uncertainty)
+- `UNAVAILABLE`: `None` (Gray `#9ca3af`, strictly un-fabricated)
+
+### C. Operational Trace (`presentation.trace_presenter.ExecutionTraceSummary`)
+- Stages: `INPUT_VALIDATED`, `TASK_RESOLVED`, `TOOL_SELECTED`, `INFERENCE_EXECUTED`, `EVIDENCE_GENERATED`, `RESULT_AGGREGATED`.
+- Privacy Guard: Automatically filters out private chain-of-thought keys (`chain_of_thought`, `thought`, `cot`, `reasoning`).
+
+---
+
+## 5. Artifact Serving Pipeline & Lifecycle
+
+### A. Artifact Lifecycle
+```text
+1. Specialist / Tool Execution
+   └── Yields Evidence items & optional initial Artifact records
+2. Division 5 EvidenceRenderer
+   └── Generates visual PNG on disk under settings.artifact_storage_path/evidence/
+   └── Filename embeds full UUID: {prefix}_{artifact_id}.png
+   └── Registers artifact in thread-safe ArtifactRegistry
+3. Backend Response Assembly
+   └── Serializes response.artifacts with artifact_id and uri_or_path
+4. Browser / UI Fetch
+   └── Browser requests GET /api/v1/artifacts/{artifact_id}
+5. Safe Artifact Serving Endpoint
+   └── Resolves artifact_id via:
+       a. ArtifactRegistry in-memory lookup
+       b. settings.artifact_storage_path UUID / prefix / filename search
+       c. demo_assets/ search
+   └── Enforces strict directory containment (blocks path traversal attacks)
+   └── Detects MIME media_type (image/png, image/jpeg, image/tiff, text/html, etc.)
+   └── Returns 200 OK FileResponse with image bytes
+```
+
+### B. Security & Path Safety Guarantees
+- Rejects path traversal sequences (`..`, `/`, `\`) in incoming `artifact_id` arguments.
+- Strictly bounds resolved file paths within `settings.artifact_storage_path` or `demo_assets/`.
+- Prevents unauthorized access to arbitrary host files.
+
+---
+
+## 6. Running Tests
+
+```bash
+# Run all Division 5 unit, failure, contract, integration, and live preset tests
+pytest tests/test_evidence_renderer.py \
+       tests/test_confidence_presentation.py \
+       tests/test_trace_presenter.py \
+       tests/test_report_generation.py \
+       tests/test_evaluation_benchmarks.py \
+       tests/test_division5_contracts.py \
+       tests/test_division5_failures.py \
+       tests/test_division5_integration.py \
+       tests/test_live_presets.py -v
+
+# Run entire repository test suite (121 passing tests)
+pytest tests/ -v
+```
