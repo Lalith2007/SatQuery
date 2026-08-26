@@ -7,6 +7,7 @@ ChangeFormerAdapter: Production adapter wrapping a lightweight Siamese
 
 from __future__ import annotations
 
+import os
 import time
 from typing import Any, List, Optional
 
@@ -282,3 +283,134 @@ class ChangeFormerAdapter(ChangeModel):
     @property
     def model_version(self) -> str:
         return "1.0.0"
+
+
+class TinyCDAdapter(ChangeModel):
+    """Production TinyCD Change Detection Adapter.
+
+    Loads the trained TinyCD (Siamese U-Net + MAMB space-time attention) weights
+    and executes neural change detection on bi-temporal image pairs.
+    """
+
+    def __init__(
+        self,
+        checkpoint_path: str = "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+        strict: bool = False,
+    ) -> None:
+        self._checkpoint_path = checkpoint_path
+        self._strict = strict
+        self._model = None
+        self._device = "cpu"
+        self._ready = False
+
+    def initialize(self, device: str = "cpu", **kwargs: Any) -> None:
+        self._device = device
+        try:
+            import torch
+            from specialists.temporal_change.adaptation.models.tinycd import TinyCD
+
+            actual_device = device
+            if device == "cuda" and not torch.cuda.is_available():
+                actual_device = "cpu"
+            elif device == "mps" and not (hasattr(torch.backends, "mps") and torch.backends.mps.is_available()):
+                actual_device = "cpu"
+
+            self._device = actual_device
+            model = TinyCD(in_channels=3, base_features=32)
+
+            if self._checkpoint_path and os.path.isfile(self._checkpoint_path):
+                state_dict = torch.load(self._checkpoint_path, map_location=actual_device, weights_only=True)
+                model.load_state_dict(state_dict)
+                logger.info(f"TinyCDAdapter loaded trained checkpoint: {self._checkpoint_path} on {actual_device}")
+            else:
+                if self._strict:
+                    from specialists.temporal_change.errors import ChangeModelLoadError
+                    raise ChangeModelLoadError(
+                        f"Trained TinyCD checkpoint not found at '{self._checkpoint_path}'. "
+                        "Strict evaluation mode forbids untrained inference."
+                    )
+                logger.warning(
+                    f"TinyCD checkpoint not found at '{self._checkpoint_path}'; running in structural test mode."
+                )
+
+            model.to(actual_device)
+            model.eval()
+            self._model = model
+            self._ready = True
+        except Exception as e:
+            logger.error(f"Failed to initialize TinyCDAdapter: {e}")
+            raise
+
+    def is_ready(self) -> bool:
+        return self._ready and self._model is not None
+
+    def detect_change(
+        self,
+        t0: np.ndarray,
+        t1: np.ndarray,
+        **kwargs: Any,
+    ) -> ChangeDetectionOutput:
+        """Run change detection inference using the trained TinyCD network."""
+        import torch
+
+        start = time.perf_counter()
+
+        # Prepare tensors: (H, W, C) -> (1, C, H, W)
+        if t0.ndim == 3:
+            t0_t = torch.from_numpy(t0).permute(2, 0, 1).unsqueeze(0).float()
+            t1_t = torch.from_numpy(t1).permute(2, 0, 1).unsqueeze(0).float()
+        else:
+            t0_t = torch.from_numpy(t0).unsqueeze(0).unsqueeze(0).float()
+            t1_t = torch.from_numpy(t1).unsqueeze(0).unsqueeze(0).float()
+
+        t0_t = t0_t.to(self._device)
+        t1_t = t1_t.to(self._device)
+
+        with torch.no_grad():
+            prob = self._model(t0_t, t1_t)  # (1, 1, H, W)
+
+        prob_map = prob.squeeze().cpu().numpy().astype(np.float32)
+        binary_map = (prob_map >= 0.5).astype(np.uint8)
+
+        elapsed = (time.perf_counter() - start) * 1000.0
+
+        changed_pixels = int(binary_map.sum())
+        total_pixels = int(binary_map.shape[0] * binary_map.shape[1])
+
+        if changed_pixels > 0:
+            change_conf = float(prob_map[binary_map > 0].mean())
+        else:
+            change_conf = 0.0
+
+        return ChangeDetectionOutput(
+            change_probability_map=prob_map,
+            binary_change_map=binary_map,
+            change_confidence=change_conf,
+            changed_pixel_ratio=changed_pixels / total_pixels if total_pixels > 0 else 0.0,
+            model_name=self.model_name,
+            model_version=self.model_version,
+            device_used=self._device,
+            inference_time_ms=round(elapsed, 2),
+            metadata={"is_mock": False, "architecture": "TinyCD (Siamese U-Net + MAMB)"},
+        )
+
+    def cleanup(self) -> None:
+        if self._model is not None:
+            del self._model
+            self._model = None
+        self._ready = False
+        try:
+            import torch
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except ImportError:
+            pass
+
+    @property
+    def model_name(self) -> str:
+        return "ChangeDetector-TinyCD"
+
+    @property
+    def model_version(self) -> str:
+        return "1.0.0-trained"
+

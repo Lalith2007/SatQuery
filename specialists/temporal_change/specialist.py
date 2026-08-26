@@ -82,6 +82,11 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
             self._change_model = change_model
         elif self._config.use_mock_model:
             self._change_model = MockChangeModel()
+        elif "tinycd" in self._config.model_architecture.lower():
+            from specialists.temporal_change.model_adapter import TinyCDAdapter
+            self._change_model = TinyCDAdapter(
+                checkpoint_path=self._config.model_checkpoint_path or "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+            )
         else:
             self._change_model = ChangeFormerAdapter(
                 checkpoint_path=self._config.model_checkpoint_path,

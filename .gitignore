@@ -72,6 +72,7 @@ venv.bak/
 *.onnx
 *.safetensors
 !specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors
+!specialists/temporal_change/weights/ChangeDetector-TinyCD.pth
 *.ckpt
 *.tar.gz
 checkpoints/

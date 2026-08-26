@@ -1,0 +1,162 @@
+[
+  {
+    "sample_id": "test_test_p0000_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0000_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0000_00.png",
+    "f1": 0.9833,
+    "iou": 0.9671,
+    "precision": 0.9728,
+    "recall": 0.994,
+    "latency_ms": 2.96
+  },
+  {
+    "sample_id": "test_test_p0001_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0001_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0001_00.png",
+    "f1": 0.987,
+    "iou": 0.9744,
+    "precision": 0.9827,
+    "recall": 0.9914,
+    "latency_ms": 2.8
+  },
+  {
+    "sample_id": "test_test_p0002_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0002_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0002_00.png",
+    "f1": 0.9881,
+    "iou": 0.9766,
+    "precision": 0.984,
+    "recall": 0.9923,
+    "latency_ms": 2.52
+  },
+  {
+    "sample_id": "test_test_p0003_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0003_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0003_00.png",
+    "f1": 0.9909,
+    "iou": 0.9821,
+    "precision": 0.9918,
+    "recall": 0.9901,
+    "latency_ms": 2.66
+  },
+  {
+    "sample_id": "test_test_p0004_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0004_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0004_00.png",
+    "f1": 0.9948,
+    "iou": 0.9896,
+    "precision": 0.9935,
+    "recall": 0.9961,
+    "latency_ms": 2.95
+  },
+  {
+    "sample_id": "test_test_p0005_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0005_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0005_00.png",
+    "f1": 0.9659,
+    "iou": 0.9341,
+    "precision": 0.9374,
+    "recall": 0.9963,
+    "latency_ms": 2.91
+  },
+  {
+    "sample_id": "test_test_p0006_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0006_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0006_00.png",
+    "f1": 0.9939,
+    "iou": 0.9878,
+    "precision": 0.9918,
+    "recall": 0.996,
+    "latency_ms": 2.84
+  },
+  {
+    "sample_id": "test_test_p0007_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0007_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0007_00.png",
+    "f1": 0.9932,
+    "iou": 0.9865,
+    "precision": 0.9929,
+    "recall": 0.9935,
+    "latency_ms": 3.05
+  },
+  {
+    "sample_id": "test_test_p0008_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0008_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0008_00.png",
+    "f1": 0.9886,
+    "iou": 0.9774,
+    "precision": 0.9836,
+    "recall": 0.9936,
+    "latency_ms": 3.06
+  },
+  {
+    "sample_id": "test_test_p0009_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0009_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0009_00.png",
+    "f1": 0.9559,
+    "iou": 0.9155,
+    "precision": 0.9207,
+    "recall": 0.9938,
+    "latency_ms": 3.06
+  },
+  {
+    "sample_id": "test_test_p0010_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0010_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0010_00.png",
+    "f1": 0.9781,
+    "iou": 0.9572,
+    "precision": 0.9622,
+    "recall": 0.9946,
+    "latency_ms": 3.08
+  },
+  {
+    "sample_id": "test_test_p0011_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0011_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0011_00.png",
+    "f1": 0.9924,
+    "iou": 0.9848,
+    "precision": 0.9906,
+    "recall": 0.9941,
+    "latency_ms": 3.91
+  },
+  {
+    "sample_id": "test_test_p0012_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0012_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0012_00.png",
+    "f1": 0.9886,
+    "iou": 0.9776,
+    "precision": 0.9922,
+    "recall": 0.9851,
+    "latency_ms": 3.11
+  },
+  {
+    "sample_id": "test_test_p0013_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0013_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0013_00.png",
+    "f1": 0.9936,
+    "iou": 0.9873,
+    "precision": 0.9915,
+    "recall": 0.9957,
+    "latency_ms": 3.0
+  },
+  {
+    "sample_id": "test_test_p0014_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0014_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0014_00.png",
+    "f1": 0.9731,
+    "iou": 0.9477,
+    "precision": 0.9543,
+    "recall": 0.9928,
+    "latency_ms": 3.03
+  },
+  {
+    "sample_id": "test_test_p0015_00",
+    "t0_path": "specialists/temporal_change/data/levir_cd/test/A/test_p0015_00.png",
+    "t1_path": "specialists/temporal_change/data/levir_cd/test/B/test_p0015_00.png",
+    "f1": 0.9955,
+    "iou": 0.9911,
+    "precision": 0.997,
+    "recall": 0.9941,
+    "latency_ms": 3.16
+  }
+]
