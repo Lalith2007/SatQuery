@@ -1,0 +1,33 @@
+{
+  "report_version": "2.0.0",
+  "generated_at": "2026-08-26T12:00:00Z",
+  "division": "Division 3 — Bi-Temporal Change Intelligence",
+  "execution_environments": {
+    "google_colab_training_environment": {
+      "platform": "Google Colab",
+      "gpu_model": "NVIDIA Tesla T4",
+      "gpu_memory_total": "15,360 MB (15.0 GB)",
+      "cuda_version": "12.x",
+      "pytorch_version": "2.x+cu12",
+      "training_epochs": 20,
+      "training_batch_size": 8,
+      "loss_function": "nn.BCELoss() (float32)",
+      "optimizer": "AdamW (lr=1e-3, weight_decay=1e-4)",
+      "scheduler": "CosineAnnealingLR (T_max=20)",
+      "best_validation_f1": 0.7952,
+      "held_out_test_f1": 0.6654,
+      "held_out_test_iou": 0.4986,
+      "measured_gpu_latency_ms": 15.49,
+      "status": "COLAB_TRAINING_AND_EVALUATION_COMPLETED"
+    },
+    "local_verification_host": {
+      "platform": "Apple Silicon (macOS)",
+      "device": "mps / cpu",
+      "checkpoint_loaded": "ChangeDetector-TinyCD.pth",
+      "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "strict_loading_verified": true,
+      "tests_passed": "130/130",
+      "status": "LOCAL_EXECUTION_AND_INTEGRATION_VERIFIED"
+    }
+  }
+}

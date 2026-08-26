@@ -1,14 +1,14 @@
 {
   "manifest_version": "1.2.0",
-  "generated_at": "2026-08-25T15:04:43Z",
+  "generated_at": "2026-08-26T07:11:23Z",
   "evaluation_classification": "CONTROLLED DEMONSTRATION-CORPUS EVALUATION",
   "scientific_status": "SCIENTIFIC RESULTS \u2014 PENDING REAL IMAGE EVALUATION (REAL_BENCHMARK_IMAGES_UNAVAILABLE)",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "0dcdadd44cd0f982a5807cca5776704ac21006a0",
-    "branch": "integration/division-2",
-    "author": "sruthi-270",
-    "email": "rajamanurisruthi@gmail.com"
+    "commit_hash": "1cbbd67d6b448dddd2fbe4888cbe527206b3ae0c",
+    "branch": "feature/dheeraj-change",
+    "author": "dheeraj-7ty",
+    "email": "dheeraj12237@gmail.com"
   },
   "base_model": {
     "model_id": "google/paligemma-3b-pt-224",

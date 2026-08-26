@@ -126,7 +126,8 @@ class AgentController:
                 secondary_task = intent.extracted_parameters.get("secondary_task", TaskType.SINGLE_IMAGE_VQA)
                 sec_candidates = self.registry.find_tools_for_task(secondary_task)
                 if sec_candidates:
-                    secondary_tool = sec_candidates[0]
+                    real_sec = [t for t in sec_candidates if "mock" not in t.name.lower()]
+                    secondary_tool = real_sec[0] if real_sec else sec_candidates[0]
 
             dur_router = round((time.perf_counter() - t0) * 1000.0, 2)
             selected_tool_names = [selected_tool.name] + ([secondary_tool.name] if secondary_tool else [])

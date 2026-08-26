@@ -1,106 +1,93 @@
 # Division 3: Bi-Temporal Change Intelligence
 
-**Owner**: Dheeraj  
-**Directory**: `specialists/temporal_change/`  
-**Shared Contract**: `core.interfaces.BaseSpecialistTool`
+**Owner:** Dheeraj  
+**Module:** `specialists/temporal_change/`  
+**Status:** Implemented and tested (44 tests, all passing)
 
----
+## Overview
 
-## 1. Overview & Responsibilities
-Division 3 is responsible for bi-temporal remote-sensing intelligence across pairs of acquisitions (T0 and T1) over the same geographic region:
-- **Change Analysis**: Difference detection, change segmentation, and quantitative expansion metrics.
-- **Change VQA**: Question answering regarding changes between dates (e.g. "Has built-up area increased?").
-- **Change Localization & Maps**: Generating change difference map artifacts and bounding boxes for changed clusters.
+This module provides bi-temporal change detection, spatial localization, and change-based visual question answering for remote sensing imagery. It accepts exactly two co-registered images (T0 and T1) and a natural-language query, producing a structured `ToolResult` with change maps, bounding boxes, and textual analysis.
 
----
+## Architecture
 
-## 2. Key Architectural Guidelines
-1. **Resolution & Dimension Invariance**: Do not require identical pixel dimensions between T0 and T1 images. Different acquisition angles, sensors, or resamplings may yield different raster shapes.
-2. **First-Class Evidence & Artifacts**: Return `EvidenceType.CHANGE_MAP` and `EvidenceType.BOUNDING_BOX` for spatial change areas, and write output masks to `settings.artifact_storage_path` as `Artifact` references.
+```
+T0 + T1 + Query
+    → 6-Point Validation
+    → Controlled Geospatial Alignment
+    → Pluggable ChangeModel
+    → Postprocessing / Localization
+    → Query Intent Classification
+    → Pluggable SemanticReasoner
+    → Evidence Packaging
+    → Canonical ToolResult
+```
 
----
+## Module Structure
 
-## 3. Tool Implementation Example
+```
+specialists/temporal_change/
+├── __init__.py            # Package init + registration helper
+├── config.py              # Environment-configurable settings (SATQUERY_TC_*)
+├── errors.py              # Error taxonomy extending core.errors
+├── evidence.py            # Evidence and artifact generation
+├── interfaces.py          # ChangeModel, SemanticReasoner ABCs
+├── model_adapter.py       # MockChangeModel, ChangeFormerAdapter
+├── postprocessing.py      # Thresholding, morphology, connected components
+├── preprocessing.py       # Image loading, normalization, model-input resize
+├── semantic_reasoning.py  # MockSemanticReasoner, SpatialMetricSynthesizer
+├── specialist.py          # BiTemporalChangeSpecialistTool (main entry)
+├── utils.py               # Geospatial metadata utilities
+└── validation.py          # 6-point pair validation
+```
+
+## Quick Start
+
 ```python
-from core.interfaces import BaseSpecialistTool, ValidationResult
-from core.schemas import (
-    Artifact,
-    Evidence,
-    EvidenceType,
-    ExecutionStage,
-    ExecutionTraceEntry,
-    ImageModality,
-    TaskType,
-    ToolMetadata,
-    ToolRequest,
-    ToolResult,
-    ToolStatus,
+from registry.registry import ToolRegistry
+from specialists.temporal_change import register_temporal_change_specialist
+
+# Register into any ToolRegistry
+registry = ToolRegistry()
+tool = register_temporal_change_specialist(registry)
+
+# Or use pluggable backends
+from specialists.temporal_change import (
+    BiTemporalChangeSpecialistTool,
+    ChangeFormerAdapter,
+    SpatialMetricSynthesizer,
 )
 
-class BiTemporalChangeSpecialist(BaseSpecialistTool):
-    def __init__(self):
-        super().__init__(
-            name="bitemporal_change_specialist",
-            description="Production specialist for bi-temporal remote sensing change detection.",
-            supported_tasks={TaskType.CHANGE_ANALYSIS, TaskType.CHANGE_VQA},
-            version="1.0.0",
-            metadata=ToolMetadata(
-                name="bitemporal_change_specialist",
-                description="Production specialist for bi-temporal remote sensing change detection.",
-                version="1.0.0",
-                supported_tasks=[TaskType.CHANGE_ANALYSIS, TaskType.CHANGE_VQA],
-                required_modalities=[ImageModality.OPTICAL, ImageModality.MULTISPECTRAL, ImageModality.SAR],
-                min_images=2,
-                max_images=2,
-                author_or_division="Division 3 (Dheeraj)",
-            ),
-        )
-
-    async def execute(self, request: ToolRequest) -> ToolResult:
-        img_t0, img_t1 = request.images[0], request.images[1]
-        
-        # Perform change detection inference...
-        answer = "Detected a 15% increase in urban construction in the south sector."
-        evidence = [
-            Evidence(
-                type=EvidenceType.CHANGE_MAP,
-                label="Urban Growth Mask",
-                confidence=0.93,
-                data={"changed_area_ha": 12.5, "t0_id": img_t0.image_id, "t1_id": img_t1.image_id},
-            )
-        ]
-        artifacts = [
-            Artifact(
-                name="change_mask.png",
-                type="change_map",
-                uri_or_path="artifacts_storage/change_mask.png",
-                description="Binary change mask for T0/T1.",
-            )
-        ]
-
-        return ToolResult(
-            request_id=request.request_id,
-            task=request.task,
-            status=ToolStatus.SUCCESS,
-            answer=answer,
-            confidence=0.93,
-            evidence=evidence,
-            artifacts=artifacts,
-            model_info={"name": "BiTemporal-SiamDiff", "version": "1.0"},
-            execution_trace=[
-                ExecutionTraceEntry(
-                    stage=ExecutionStage.INFERENCE_EXECUTED,
-                    component=self.name,
-                    status="COMPLETED",
-                )
-            ],
-        )
+tool = BiTemporalChangeSpecialistTool(
+    change_model=ChangeFormerAdapter(checkpoint_path="path/to/weights.pth"),
+    semantic_reasoner=SpatialMetricSynthesizer(),
+)
 ```
 
----
+## Configuration
 
-## 4. Testing Your Specialist
-Run contract tests:
+All settings are environment-configurable with `SATQUERY_TC_` prefix:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SATQUERY_TC_DEVICE` | `auto` | Compute device (auto, cpu, cuda, mps) |
+| `SATQUERY_TC_CHANGE_THRESHOLD` | `0.5` | Binary change threshold |
+| `SATQUERY_TC_MIN_REGION_AREA` | `100` | Minimum changed region area (pixels) |
+| `SATQUERY_TC_USE_MOCK` | `true` | Use mock model for testing |
+| `SATQUERY_TC_ALLOW_REPROJECTION` | `false` | Enable controlled geospatial resampling |
+| `SATQUERY_TC_INPUT_SIZE` | `256` | Model input square dimension |
+
+## Testing
+
 ```bash
-pytest tests/test_contracts.py -k "change"
+uv run pytest tests/test_temporal_change_specialist.py -v
 ```
+
+44 tests across 6 gates: Unit, Contract, Mock-Service, Sample Inference, Registry, Agent Integration.
+
+## Integration Notes
+
+- Fully isolated from Division 2 (`specialists/single_image/`)
+- Inherits from `core.interfaces.BaseSpecialistTool`
+- Consumes `core.schemas.ToolRequest`, returns `core.schemas.ToolResult`
+- Uses existing `core.errors` hierarchy without creating competing error classes
+- Registers via `registry.registry.ToolRegistry`

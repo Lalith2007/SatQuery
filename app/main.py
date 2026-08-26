@@ -44,6 +44,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Could not register real Division 2 specialist: {e}")
 
+    # Register real Division 3 specialist (BiTemporalChangeSpecialistTool)
+    try:
+        from specialists.temporal_change import register_temporal_change_specialist
+        div3_tool = register_temporal_change_specialist(default_registry)
+        logger.info(f"Registered real Division 3 specialist: '{div3_tool.name}' (v{div3_tool.version})")
+    except Exception as e:
+        logger.warning(f"Could not register real Division 3 specialist: {e}")
+
     # Ensure demo assets exist on disk for judging presets
     try:
         from app.demo_assets import ensure_demo_assets

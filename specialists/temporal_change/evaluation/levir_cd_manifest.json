@@ -1,0 +1,22 @@
+{
+  "manifest_version": "1.2.0",
+  "dataset_name": "LEVIR-CD",
+  "dataset_mode": "FULL",
+  "split_counts": {
+    "is_leakage_free": true,
+    "train_parent_count": 542,
+    "val_parent_count": 95,
+    "test_parent_count": 348,
+    "train_samples_count": 542,
+    "val_samples_count": 95,
+    "test_samples_count": 348,
+    "train_val_overlap_count": 0,
+    "train_test_overlap_count": 0,
+    "val_test_overlap_count": 0
+  },
+  "train_class_balance": {
+    "percentage_changed": 4.57,
+    "percentage_unchanged": 95.43,
+    "class_imbalance_ratio": "1 : 20.9"
+  }
+}
