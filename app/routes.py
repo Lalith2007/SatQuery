@@ -1,7 +1,8 @@
 """API Route handlers for SatQuery AI.
 
 Provides versioned REST endpoints for query submission, raster upload,
-tool inspection, task discovery, artifact access, and interactive presentation UI.
+tool inspection, task discovery, artifact access, interactive presentation UI,
+multi-format report generation, and modular benchmark evaluation.
 """
 
 from __future__ import annotations
@@ -11,10 +12,10 @@ import json
 import os
 from pathlib import Path
 import shutil
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 import uuid
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
@@ -22,6 +23,8 @@ from core.config import settings
 from core.errors import ErrorCode, SatQueryException
 from core.logging import get_logger
 from core.schemas import (
+    Artifact,
+    Evidence,
     ImageFormat,
     ImageInput,
     ImageModality,
@@ -40,6 +43,11 @@ from specialists.mock import (
 from validation.validator import ALLOWED_EXTENSIONS, RasterInspector
 from agent.controller import AgentController
 from app.ui import DEMO_HTML
+from presentation.confidence import ConfidencePresenter
+from presentation.evidence_renderer import EvidenceRenderer
+from presentation.trace_presenter import TracePresenter
+from reports.generator import ReportGenerator
+from evaluation.runner import BenchmarkRunner
 
 logger = get_logger("api_routes")
 router = APIRouter()
@@ -54,10 +62,31 @@ class ToolSwapRequest(BaseModel):
     use_alternate: bool = Field(default=True, description="True to swap in alternate mock, False to restore standard mock")
 
 
+class ReportGenerationRequest(BaseModel):
+    """Payload for report generation."""
+    response: QueryResponse = Field(description="Query response object to generate report from")
+    format: str = Field(default="html", description="Report format: 'html', 'markdown', or 'json'")
+
+
+class BenchmarkRunRequest(BaseModel):
+    """Payload for running benchmark evaluation."""
+    benchmark: str = Field(description="Target benchmark: 'vrsbench', 'rsvqa', 'cdvqa', or 'isro_sac'")
+    predictions: List[Dict[str, Any]] = Field(description="Model prediction items")
+    ground_truths: List[Dict[str, Any]] = Field(description="Ground truth reference items")
+    config: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Optional evaluation configuration")
+
+
+class EvidenceRenderRequest(BaseModel):
+    """Payload for manual evidence rendering."""
+    evidence_list: List[Evidence] = Field(description="List of evidence items to render")
+    image_paths: List[str] = Field(description="Paths to source raster images")
+    task_hint: Optional[str] = Field(default=None, description="Task context hint")
+
+
 @router.get("/", response_class=HTMLResponse, summary="SatQuery Interactive Presentation UI")
 @router.get("/demo", response_class=HTMLResponse, summary="SatQuery Interactive Presentation UI")
 async def get_demo_dashboard():
-    """Serves the rich, interactive agentic orchestration dashboard."""
+    """Serves the rich, interactive agentic orchestration and evidence dashboard."""
     return HTMLResponse(content=DEMO_HTML)
 
 
@@ -139,7 +168,6 @@ async def swap_specialist_tool(req: ToolSwapRequest):
             detail="Tool swapping endpoint is disabled in this environment configuration.",
         )
 
-    # Strictly allow swapping only between approved registered mock tools (no arbitrary class loading)
     if req.use_alternate:
         alternate_tool = AlternateMockSingleImageVQATool()
         old_tool = default_registry.swap_tool("single_image_vqa_mock", alternate_tool)
@@ -166,6 +194,21 @@ async def submit_query(request: QueryRequest) -> QueryResponse:
     req_id = str(uuid.uuid4())
     try:
         response = await controller.process_query(request, request_id=req_id)
+
+        # Division 5 Enhancement: Render spatial evidence into actual visual artifacts if present
+        if response.evidence and request.images:
+            try:
+                rendered_results = EvidenceRenderer.render_all_evidence(
+                    evidence_list=response.evidence,
+                    image_inputs=request.images,
+                    task_hint=response.resolved_task.value,
+                )
+                for r in rendered_results:
+                    if r.artifact and not any(a.artifact_id == r.artifact.artifact_id for a in response.artifacts):
+                        response.artifacts.append(r.artifact)
+            except Exception as ev_err:
+                logger.warning(f"Evidence rendering notice: {ev_err}")
+
         return response
     except Exception as err:
         logger.exception(f"Unhandled error in POST /api/v1/query: {err}")
@@ -256,6 +299,21 @@ async def submit_query_multipart(
         )
 
         response = await controller.process_query(query_req, request_id=req_id)
+
+        # Division 5 Enhancement: Render spatial evidence into actual visual artifacts
+        if response.evidence:
+            try:
+                rendered_results = EvidenceRenderer.render_all_evidence(
+                    evidence_list=response.evidence,
+                    image_inputs=image_inputs,
+                    task_hint=response.resolved_task.value,
+                )
+                for r in rendered_results:
+                    if r.artifact and not any(a.artifact_id == r.artifact.artifact_id for a in response.artifacts):
+                        response.artifacts.append(r.artifact)
+            except Exception as ev_err:
+                logger.warning(f"Evidence rendering notice: {ev_err}")
+
         return response
 
     except HTTPException:
@@ -289,10 +347,10 @@ async def submit_query_multipart(
 
 @router.get("/api/v1/artifacts/{artifact_id}", summary="Retrieve Generated Artifact")
 async def get_artifact(artifact_id: str):
-    """Retrieve an artifact file (change map, segmented mask, annotated visual) by ID."""
+    """Retrieve an artifact file (change map, segmented mask, annotated visual, report) by ID."""
     storage_root = settings.artifact_storage_path
     
-    # Search for matching artifact file
+    # Search for matching artifact file across all storage subdirectories
     matched = list(storage_root.rglob(f"*{artifact_id}*"))
     if not matched:
         matched = list(storage_root.rglob(artifact_id))
@@ -305,3 +363,112 @@ async def get_artifact(artifact_id: str):
 
     file_path = matched[0]
     return FileResponse(path=str(file_path), filename=file_path.name)
+
+
+# ---------------------------------------------------------------------------
+# Division 5 Endpoints: Report Generation & Benchmark Evaluation
+# ---------------------------------------------------------------------------
+
+@router.post("/api/v1/reports/generate", summary="Generate Downloadable Intelligence Report")
+async def generate_report(req: ReportGenerationRequest):
+    """Generate and persist a downloadable intelligence report in HTML, Markdown, or JSON."""
+    fmt = req.format.lower().strip()
+    if fmt == "html":
+        report = ReportGenerator.generate_html_report(req.response)
+    elif fmt in {"md", "markdown"}:
+        report = ReportGenerator.generate_markdown_report(req.response)
+    elif fmt == "json":
+        report = ReportGenerator.generate_json_report(req.response)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported report format '{req.format}'. Supported: 'html', 'markdown', 'json'.",
+        )
+
+    return {
+        "status": "success",
+        "report_id": report.report_id,
+        "format": report.format_type,
+        "download_url": f"/api/v1/reports/{report.report_id}",
+        "file_name": report.artifact.name,
+        "artifact": report.artifact.model_dump(),
+        "content_preview": report.content[:500] if len(report.content) > 500 else report.content,
+    }
+
+
+@router.get("/api/v1/reports/{report_id}", summary="Download Generated Report File")
+async def download_report(report_id: str):
+    """Download a generated report file directly by ID."""
+    report_dir = ReportGenerator.get_report_storage_dir()
+    matched = list(report_dir.glob(f"*{report_id}*"))
+
+    if not matched or not matched[0].is_file():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Report with identifier '{report_id}' not found.",
+        )
+
+    file_path = matched[0]
+    media_type = "text/html" if file_path.suffix == ".html" else "application/json" if file_path.suffix == ".json" else "text/markdown"
+    return FileResponse(path=str(file_path), filename=file_path.name, media_type=media_type)
+
+
+@router.get("/api/v1/evaluation/benchmarks", summary="List Supported Evaluation Benchmarks")
+async def list_evaluation_benchmarks():
+    """List available benchmark evaluation suites and supported metrics."""
+    return {
+        "supported_benchmarks": [
+            {
+                "id": "vrsbench",
+                "name": "VRSBench (VQA & Grounding)",
+                "description": "Visual question answering and bounding-box spatial grounding on high-resolution optical imagery.",
+                "metrics": ["vqa_accuracy", "vqa_token_f1", "grounding_miou", "grounding_p_at_05", "grounding_p_at_75"],
+            },
+            {
+                "id": "rsvqa",
+                "name": "RSVQA (LR & HR)",
+                "description": "Remote-sensing VQA across low and high resolution datasets covering presence, count, and comparison questions.",
+                "metrics": ["overall_accuracy", "presence_accuracy", "comparison_accuracy", "count_rmse"],
+            },
+            {
+                "id": "cdvqa",
+                "name": "CDVQA (Change Detection VQA)",
+                "description": "Bi-temporal change detection VQA, change description quality, and changed feature localization.",
+                "metrics": ["binary_change_accuracy", "change_description_bleu1", "change_description_bleu4", "change_description_rouge_l"],
+            },
+            {
+                "id": "isro_sac",
+                "name": "ISRO/SAC Generic Benchmark",
+                "description": "Generic multi-sensor evaluation for Cartosat-2S optical and RISAT SAR test sets without hardcoded references.",
+                "metrics": ["isro_sac_vqa_accuracy", "isro_sac_token_f1", "isro_sac_grounding_miou", "isro_sac_grounding_p50"],
+            },
+        ]
+    }
+
+
+@router.post("/api/v1/evaluation/run", summary="Execute Benchmark Evaluation Suite")
+async def run_benchmark_evaluation(req: BenchmarkRunRequest):
+    """Execute reproducible benchmark evaluation and return structured metrics and scoreboard."""
+    try:
+        result = BenchmarkRunner.run_evaluation(
+            benchmark_name=req.benchmark,
+            predictions=req.predictions,
+            ground_truths=req.ground_truths,
+            config=req.config,
+        )
+        return {
+            "status": "success",
+            "benchmark": result.benchmark_name,
+            "samples_evaluated": result.total_samples,
+            "aggregate_normalized_score": result.aggregate_normalized_score,
+            "aggregate_raw_score": result.aggregate_raw_score,
+            "metrics": {k: v.model_dump() for k, v in result.metrics.items()},
+            "per_category_scores": result.per_category_scores,
+            "scoreboard_markdown": BenchmarkRunner.format_scoreboard_markdown(result),
+        }
+    except Exception as e:
+        logger.exception(f"Benchmark evaluation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Evaluation failed on benchmark '{req.benchmark}': {str(e)}",
+        )
