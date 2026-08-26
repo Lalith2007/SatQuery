@@ -1,14 +1,14 @@
 {
   "manifest_version": "1.2.0",
-  "generated_at": "2026-08-26T07:11:23Z",
+  "generated_at": "2026-08-26T11:44:57Z",
   "evaluation_classification": "CONTROLLED DEMONSTRATION-CORPUS EVALUATION",
   "scientific_status": "SCIENTIFIC RESULTS \u2014 PENDING REAL IMAGE EVALUATION (REAL_BENCHMARK_IMAGES_UNAVAILABLE)",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "1cbbd67d6b448dddd2fbe4888cbe527206b3ae0c",
-    "branch": "feature/dheeraj-change",
-    "author": "dheeraj-7ty",
-    "email": "dheeraj12237@gmail.com"
+    "commit_hash": "a79d8062da0317f9c702a6e1f6575808f39e784f",
+    "branch": "main",
+    "author": "Lalith2007",
+    "email": "lalithpraveenaradhyulaedu@gmail.com"
   },
   "base_model": {
     "model_id": "google/paligemma-3b-pt-224",

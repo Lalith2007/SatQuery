@@ -42,26 +42,35 @@ def save_change_map_artifact(
     binary_vis = (binary_map * 255).astype(np.uint8)
     binary_path = output_dir / f"{request_id}_change_mask.png"
     Image.fromarray(binary_vis).save(str(binary_path))
-    artifacts.append(Artifact(
+    mask_artifact = Artifact(
         name="binary_change_mask.png",
         type="change_map",
         uri_or_path=str(binary_path),
         description="Binary change detection mask (white=changed, black=unchanged).",
         mime_type="image/png",
-    ))
+    )
+    artifacts.append(mask_artifact)
 
     # Color-coded probability overlay
     if prob_map is not None:
         color_map = _probability_to_colormap(prob_map)
         color_path = output_dir / f"{request_id}_change_heatmap.png"
         Image.fromarray(color_map).save(str(color_path))
-        artifacts.append(Artifact(
+        hm_artifact = Artifact(
             name="change_probability_heatmap.png",
             type="change_map",
             uri_or_path=str(color_path),
             description="Change probability heatmap (blue=low, red=high probability).",
             mime_type="image/png",
-        ))
+        )
+        artifacts.append(hm_artifact)
+
+    try:
+        from presentation.evidence_renderer import ArtifactRegistry
+        for art in artifacts:
+            ArtifactRegistry.register(art.artifact_id, art.uri_or_path, name=art.name)
+    except Exception:
+        pass
 
     return artifacts
 

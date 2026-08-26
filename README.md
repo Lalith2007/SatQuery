@@ -6,7 +6,8 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](pyproject.toml)
 [![FastAPI](https://img.shields.io/badge/Framework-FastAPI-009688.svg)](https://fastapi.tiangolo.com)
 [![PyTorch](https://img.shields.io/badge/Backend-PyTorch-EE4C2C.svg)](https://pytorch.org)
-[![Tests Passing](https://img.shields.io/badge/Tests-177%2F177%20Passing-brightgreen.svg)](tests/)
+[![React](https://img.shields.io/badge/Frontend-React%20%2B%20TypeScript-61DAFB.svg)](frontend/)
+[![Tests Passing](https://img.shields.io/badge/Tests-179%2F179%20Passing-brightgreen.svg)](tests/)
 
 ---
 
@@ -231,16 +232,27 @@ uv pip install -e ".[dev]"
 ---
 
 ## 6. Running the Application
-
-### Start the FastAPI Server
+ 
+### 1. Start the FastAPI Backend
 ```bash
+# In Terminal 1 (from repository root)
+source .venv/bin/activate
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Once started, the following web interfaces are available:
-* **Interactive Presentation UI**: [http://127.0.0.1:8000/demo](http://127.0.0.1:8000/demo) or [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+### 2. Start the Modern React Frontend (Primary UI)
+```bash
+# In Terminal 2
+cd frontend
+npm install
+npm run dev
+```
+
+Once started, access the interfaces:
+* **Primary Modern Web UI**: [http://127.0.0.1:5173](http://127.0.0.1:5173)
 * **Interactive OpenAPI Swagger Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-* **ReDoc Documentation**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+* **ReDoc API Documentation**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+* **Legacy Presentation Route (Backward Compatibility)**: [http://127.0.0.1:8000/demo](http://127.0.0.1:8000/demo)
 
 ---
 
@@ -314,7 +326,7 @@ SatQuery adheres to strict non-fabrication principles:
 
 ## 10. Automated Testing
 
-The repository contains **177 automated tests** across all divisions:
+The repository contains **179 automated tests** across all divisions:
 
 ```bash
 # Run the complete test suite
@@ -322,7 +334,7 @@ pytest -v --tb=short
 ```
 
 ```text
-======================= 177 passed, 3 warnings in 10.26s =======================
+======================= 179 passed, 3 warnings in 9.61s ========================
 ```
 
 ### Test Suite Breakdown:

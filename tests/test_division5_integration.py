@@ -94,7 +94,7 @@ def test_api_presentation_dashboard_accessible(client):
     assert res_root.status_code == 200
     assert "SatQuery AI" in res_root.text
     assert "Benchmark Evaluation & Scoreboards" in res_root.text
-    assert "Developer: Laksh" in res_root.text
+    assert "Production Platform" in res_root.text
 
     res_demo = client.get("/demo")
     assert res_demo.status_code == 200

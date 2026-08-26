@@ -59,6 +59,10 @@ def register_temporal_change_specialist(
             except Exception:
                 change_model = None
 
+    if semantic_reasoner is None and change_model is not None and not isinstance(change_model, MockChangeModel):
+        from specialists.temporal_change.semantic_reasoning import SpatialMetricSynthesizer
+        semantic_reasoner = SpatialMetricSynthesizer()
+
     reg = registry or def_reg
     tool = SpecTool(
         change_model=change_model,

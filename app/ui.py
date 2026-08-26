@@ -373,11 +373,11 @@ DEMO_HTML = """<!DOCTYPE html>
       <span class="brand-icon">🛰️</span>
       <div>
         <div class="brand-title">SatQuery AI</div>
-        <div style="font-size: 11px; color: var(--text-muted);">Division 5: Evidence, Evaluation & Presentation Layer</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Interactive Multimodal Remote Sensing Intelligence</div>
       </div>
     </div>
     <div style="display: flex; gap: 10px; align-items: center;">
-      <span class="badge badge-dev5">Developer: Laksh</span>
+      <span class="badge badge-dev5">Production Platform</span>
       <span id="health-badge" class="badge badge-health">● Backend Live</span>
       <button class="report-btn" onclick="toggleToolSwap()">⚡ Swap Specialist (Demo)</button>
     </div>
@@ -756,8 +756,21 @@ DEMO_HTML = """<!DOCTYPE html>
       const artList = data.artifacts || [];
       evCountBadge.innerText = `${evList.length + artList.length} items`;
 
-      // Look for visual artifacts
-      const visualArt = artList.find(a => a.name.endsWith('.png') || a.name.endsWith('.jpg'));
+      // Look for visual artifacts with priority: 3-panel composite / fusion / annotated grounding > heatmap > crop > mask
+      const visualPriority = (name) => {
+        const n = (name || '').toLowerCase();
+        if (n.includes('bitemporal_change_composite') || n.includes('optical_sar_fusion')) return 10;
+        if (n.includes('annotated_grounding')) return 8;
+        if (n.includes('heatmap')) return 6;
+        if (n.includes('crop')) return 4;
+        if (n.includes('mask')) return 2;
+        return 1;
+      };
+
+      const imageArtifacts = artList.filter(a => a.name && (a.name.endsWith('.png') || a.name.endsWith('.jpg') || a.name.endsWith('.jpeg')));
+      imageArtifacts.sort((a, b) => visualPriority(b.name) - visualPriority(a.name));
+      const visualArt = imageArtifacts[0];
+
       if (visualArt) {
         placeholder.style.display = 'none';
         canvasContainer.style.display = 'block';
@@ -768,7 +781,7 @@ DEMO_HTML = """<!DOCTYPE html>
       } else {
         canvasContainer.style.display = 'none';
         placeholder.style.display = 'block';
-        placeholder.innerText = evList.length > 0 ? 'Grounding evidence localized below.' : 'No visual bounding boxes generated for this query.';
+        placeholder.innerText = evList.length > 0 ? 'Grounding evidence localized below.' : 'No spatial bounding boxes or visual artifacts generated for this query.';
       }
 
       // Render structured evidence list

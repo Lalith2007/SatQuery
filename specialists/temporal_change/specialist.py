@@ -95,7 +95,7 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
 
         if semantic_reasoner is not None:
             self._semantic_reasoner = semantic_reasoner
-        elif self._config.use_mock_model:
+        elif isinstance(self._change_model, MockChangeModel) or self._config.use_mock_model:
             self._semantic_reasoner = MockSemanticReasoner()
         else:
             self._semantic_reasoner = SpatialMetricSynthesizer()

@@ -581,3 +581,24 @@ class TestGate6Integration:
         assert len(results) == 1
         assert results[0].status == ToolStatus.SUCCESS
         assert results[0].task == TaskType.CHANGE_ANALYSIS
+
+    @pytest.mark.asyncio
+    async def test_tinycd_neural_execution_no_mock_label(self, change_request):
+        """Verify that when trained TinyCD checkpoint is present, real execution is used without [Mock] prefix."""
+        import os
+        from registry.registry import ToolRegistry
+        from specialists.temporal_change import register_temporal_change_specialist
+
+        ckpt = "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth"
+        if not os.path.exists(ckpt):
+            pytest.skip("TinyCD checkpoint not present on disk")
+
+        reg = ToolRegistry()
+        tool = register_temporal_change_specialist(reg)
+        res = await tool.execute(change_request)
+
+        assert res.status == ToolStatus.SUCCESS
+        assert "[Mock]" not in res.answer
+        assert "surface changes" in res.answer
+        assert res.model_info.get("change_model") == "ChangeDetector-TinyCD"
+        assert res.model_info.get("semantic_reasoner") == "SpatialMetricSynthesizer"

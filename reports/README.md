@@ -1,6 +1,5 @@
-# SatQuery AI — Division 5: Report Generation Engine (`reports/`)
+# SatQuery AI — Report Generation Engine (`reports/`)
 
-**Owner**: Laksh  
 **Module**: `reports/`  
 **Shared Contract**: `core.schemas.QueryResponse`, `core.schemas.Artifact`
 

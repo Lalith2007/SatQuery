@@ -63,7 +63,7 @@ class TemporalChangeConfig:
 
         # --- Mock/production mode ---
         self.use_mock_model: bool = os.environ.get(
-            "SATQUERY_TC_USE_MOCK", "true"
+            "SATQUERY_TC_USE_MOCK", "false"
         ).lower() in ("true", "1", "yes")
 
     def resolve_device(self) -> str:
