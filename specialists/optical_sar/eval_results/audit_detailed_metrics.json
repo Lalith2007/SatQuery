@@ -1,0 +1,149 @@
+{
+  "checkpoint": {
+    "path": "D:\\SatQuery\\SatQuery\\specialists\\optical_sar\\checkpoints\\cmaf_landcover_best.pth",
+    "sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9",
+    "size_bytes": 79473698,
+    "size_mb": 75.79202461242676,
+    "saved_epoch": 15,
+    "val_loss": 2.255276786047837,
+    "saved_val_metrics": {
+      "pixel_acc": 0.26537249050313555,
+      "iou_background": 0.0,
+      "iou_farmland": 0.14526532811827225,
+      "iou_city": 0.034151528028471746,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.24060899206773043,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.0525032310268093
+    },
+    "total_model_parameters": 19755144,
+    "optical_encoder_parameters": 8543296,
+    "sar_encoder_parameters": 8540160,
+    "fusion_neck_parameters": 2297344,
+    "task_head_parameters": 374344
+  },
+  "full_test_set_benchmark_2970_tiles": {
+    "total_valid_pixels": 185214816,
+    "pixel_accuracy": 0.2755947720726618,
+    "macro_miou": 0.055300175829166034,
+    "per_class_iou": {
+      "Background": 0.0,
+      "Farmland": 0.1421883113903563,
+      "City": 0.04179292460856393,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.2584201706344081,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "gt_pixel_distribution": {
+      "Background": 659,
+      "Farmland": 74602255,
+      "City": 10358396,
+      "Village": 12522229,
+      "Water": 26681784,
+      "Forest": 56074400,
+      "Road": 1318305,
+      "Others": 3656788
+    },
+    "pred_pixel_distribution": {
+      "Background": 0,
+      "Farmland": 31663150,
+      "City": 34177341,
+      "Village": 0,
+      "Water": 0,
+      "Forest": 119374325,
+      "Road": 0,
+      "Others": 0
+    }
+  },
+  "ablation_divergence": {
+    "norm_fused_minus_opt": 20.516799926757812,
+    "norm_fused_minus_sar": 1035.897705078125,
+    "norm_opt_minus_sar": 1052.81396484375
+  },
+  "confusion_matrix": [
+    [
+      0,
+      163,
+      115,
+      0,
+      0,
+      381,
+      0,
+      0
+    ],
+    [
+      0,
+      13228728,
+      13414226,
+      0,
+      0,
+      47959301,
+      0,
+      0
+    ],
+    [
+      0,
+      1401331,
+      1786611,
+      0,
+      0,
+      7170454,
+      0,
+      0
+    ],
+    [
+      0,
+      2181700,
+      2331772,
+      0,
+      0,
+      8008757,
+      0,
+      0
+    ],
+    [
+      0,
+      4718145,
+      4845141,
+      0,
+      0,
+      17118498,
+      0,
+      0
+    ],
+    [
+      0,
+      9196327,
+      10849177,
+      0,
+      0,
+      36028896,
+      0,
+      0
+    ],
+    [
+      0,
+      249767,
+      246045,
+      0,
+      0,
+      822493,
+      0,
+      0
+    ],
+    [
+      0,
+      686989,
+      704254,
+      0,
+      0,
+      2265545,
+      0,
+      0
+    ]
+  ]
+}

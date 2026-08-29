@@ -52,6 +52,15 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Could not register real Division 3 specialist: {e}")
 
+    # Register real Division 4 specialist (OpticalSarSpecialist)
+    try:
+        from specialists.optical_sar.service import OpticalSarSpecialist
+        div4_tool = OpticalSarSpecialist()
+        default_registry.register(div4_tool, overwrite=True)
+        logger.info(f"Registered real Division 4 specialist: '{div4_tool.name}' (v{div4_tool.version})")
+    except Exception as e:
+        logger.warning(f"Could not register real Division 4 specialist: {e}")
+
     # Ensure demo assets exist on disk for judging presets
     try:
         from app.demo_assets import ensure_demo_assets
