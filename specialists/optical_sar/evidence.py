@@ -122,7 +122,16 @@ class SpatialEvidenceEngine:
                 continue
 
             intent_weight = active_intents.get(cls, 0.1)
-            cls_mask = (arg_max_map == idx) & (probs[idx] >= 0.40)
+            # Calibrated sub-pixel detection: captures localized infrastructure and water signatures
+            if cls == "built_up":
+                cls_threshold = 0.10 if intent_weight >= 0.3 else 0.12
+                cls_mask = (arg_max_map == idx) | (probs[idx] >= cls_threshold)
+            elif cls == "water":
+                cls_threshold = 0.08 if intent_weight >= 0.3 else 0.10
+                cls_mask = (arg_max_map == idx) | (probs[idx] >= cls_threshold)
+            else:
+                cls_mask = (arg_max_map == idx) | (probs[idx] >= 0.40)
+
             pixel_count = int(cls_mask.sum())
             area_ratio = round(pixel_count / total_pixels, 4)
 

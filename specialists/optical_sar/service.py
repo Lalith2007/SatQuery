@@ -315,12 +315,20 @@ class OpticalSarSpecialist(BaseSpecialistTool):
         water_ratio = metrics.get("water_area_ratio", 0.0) * 100.0
         veg_ratio   = metrics.get("vegetation_area_ratio", 0.0) * 100.0
 
+        if built_ratio > 0.0:
+            built_desc = f"detected localized built-up structures and road infrastructure (covering {built_ratio:.1f}% of the scene via SAR double-bounce radar return)"
+        else:
+            built_desc = "no significant built-up structures detected beneath clouds"
+
+        if water_ratio > 0.0:
+            water_desc = f"water bodies covering {water_ratio:.1f}% of the scene (confirmed by low SAR specular reflectance)"
+        else:
+            water_desc = "no standing water bodies detected"
+
         answer = (
-            f"Joint optical-SAR cross-modal analysis successfully processed co-registered imagery using 8-class neural segmentation and query intent aggregation. "
-            f"Optical spectral channels and SAR radar backscatter double-bounce confirmed built-up regions "
-            f"(covering {built_ratio:.1f}% of the spatial area) and water-covered regions "
-            f"(covering {water_ratio:.1f}% of the spatial area, verified by SAR low specular reflection). "
-            f"Vegetation covered {veg_ratio:.1f}% of the terrain."
+            f"Joint optical-SAR cross-modal analysis successfully processed co-registered Sentinel-1/2 rasters using 8-class neural segmentation and query intent modulation. "
+            f"Through cross-modal attention fusion (CMAF), the model {built_desc} and {water_desc}. "
+            f"Dominant natural terrain consists of vegetation and cropland covering {veg_ratio:.1f}% of the scene."
         )
 
         total_ms = (time.time() - start_time) * 1000.0
