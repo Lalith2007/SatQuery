@@ -6,6 +6,7 @@ Division 1: Agent Core + Backend + Orchestration.
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -103,6 +104,22 @@ async def satquery_exception_handler(request: Request, exc: SatQueryException):
         status_code=exc.status_code,
         content={"error": exc.to_error_detail().model_dump()},
     )
+
+
+from fastapi.staticfiles import StaticFiles
+
+# Mount static asset directories
+frontend_dist = Path("frontend/dist")
+if (frontend_dist / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+
+demo_assets = Path("demo_assets")
+if demo_assets.exists():
+    app.mount("/demo_assets", StaticFiles(directory=str(demo_assets)), name="demo_assets")
+
+artifacts_storage = Path("artifacts_storage")
+if artifacts_storage.exists():
+    app.mount("/artifacts_storage", StaticFiles(directory=str(artifacts_storage)), name="artifacts_storage")
 
 
 # Include API routes
