@@ -3,7 +3,7 @@
 **Validation Execution Date:** 2026-08-29  
 **Target Specialist:** Division 4 Optical-SAR Cross-Modal Land-Cover Intelligence  
 **Hardware Platform:** NVIDIA GeForce RTX 4060 Laptop GPU (8.0 GB GDDR6, CUDA 12.4)  
-**Trained Checkpoint Path:** `D:\SatQuery\SatQuery\specialists\optical_sar\checkpoints\cmaf_landcover_best.pth`  
+**Trained Checkpoint Path:** `specialists/optical_sar/checkpoints/cmaf_landcover_best.pth`
 **Checkpoint SHA-256:** `8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9`  
 
 ---

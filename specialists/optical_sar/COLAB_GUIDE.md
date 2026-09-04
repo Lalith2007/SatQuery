@@ -4,8 +4,8 @@
 **System:** SatQuery AI  
 **Dataset Version:** Official WHU-OPT-SAR 52-Pair Development Subset (**17,160 paired 256x256 tiles**)  
 **Benchmark Note:** *Development training run on 52 official pairs (17,160 tiles); not claimed as the final 100-pair benchmark.*  
-**Notebook Location:** [`specialists/optical_sar/run_colab_training.ipynb`](file:///c:/Users/manoj/Desktop/SatQuery/specialists/optical_sar/run_colab_training.ipynb)  
-**Training Script:** [`specialists/optical_sar/train_colab.py`](file:///c:/Users/manoj/Desktop/SatQuery/specialists/optical_sar/train_colab.py)  
+**Notebook Location:** [`specialists/optical_sar/run_colab_training.ipynb`](run_colab_training.ipynb)
+**Training Script:** [`specialists/optical_sar/train_colab.py`](train_colab.py)
 
 ---
 
@@ -22,7 +22,7 @@ This Google Colab GPU package provides everything needed to train the custom **C
 ## 2. Quickstart Instructions for Google Colab
 
 ### Step 1: Open Notebook in Google Colab
-Upload [`run_colab_training.ipynb`](file:///c:/Users/manoj/Desktop/SatQuery/specialists/optical_sar/run_colab_training.ipynb) to Google Colab ([colab.research.google.com](https://colab.research.google.com)).
+Upload [`run_colab_training.ipynb`](run_colab_training.ipynb) to Google Colab ([colab.research.google.com](https://colab.research.google.com)).
 
 ### Step 2: Enable GPU Accelerator
 In Colab, go to:
