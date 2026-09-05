@@ -1,0 +1,46 @@
+{
+  "workspace_checkpoints": [
+    {
+      "path": "scratch\\test_epoch1_checkpoint.pth",
+      "size_mb": 75.78,
+      "size_bytes": 79461977,
+      "mtime": "2026-08-28T11:10:51.770151+00:00",
+      "sha256": "7dd78783e73258e6a0feef057b4f0139b56370009dc66996b4d104fc1886e66e",
+      "classes": 8,
+      "params": "19,817,826",
+      "epoch": 1,
+      "metric": "mIoU=0.0000, Loss=2.4153",
+      "status": "Active 8-Class Trained Candidate",
+      "type": "Division 4 Optical-SAR CMAF Checkpoint"
+    },
+    {
+      "path": "specialists\\optical_sar\\checkpoints\\cmaf_landcover_best.pth",
+      "size_mb": 75.79,
+      "size_bytes": 79473698,
+      "mtime": "2026-08-28T18:09:00.753788+00:00",
+      "sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9",
+      "classes": 8,
+      "params": "19,817,826",
+      "epoch": 15,
+      "metric": "mIoU=0.0525, Loss=2.2553",
+      "status": "Active 8-Class Trained Candidate",
+      "type": "Division 4 Optical-SAR CMAF Checkpoint"
+    }
+  ],
+  "runtime_trace": {
+    "specialist_class": "OpticalSarSpecialist",
+    "specialist_name": "optical_sar_cross_modal_specialist",
+    "configured_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+    "resolved_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+    "active_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9",
+    "device": "cuda",
+    "total_parameters": 19755144,
+    "output_classes": 8
+  },
+  "live_inference": {
+    "status": "success",
+    "latency_ms": 344.3680999916978,
+    "confidence": 0.1,
+    "artifacts_count": 5
+  }
+}

@@ -70,17 +70,20 @@ venv.bak/
 *.pth
 *.bin
 *.onnx
-*.safetensors
-!specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors
-!specialists/temporal_change/weights/ChangeDetector-TinyCD.pth
 *.ckpt
 *.tar.gz
-checkpoints/
-models/
+/checkpoints/
+/models/
+!specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors
+!specialists/temporal_change/weights/ChangeDetector-TinyCD.pth
+!specialists/optical_sar/checkpoints/
+!specialists/optical_sar/checkpoints/cmaf_landcover_best.pth
 
 # Scratch and uploaded rasters
 scratch/
 uploads/
 artifacts_storage/
 tmp/
+data/
+*.zip
 .DS_Store

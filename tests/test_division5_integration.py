@@ -89,16 +89,16 @@ def test_api_generate_and_download_report(client):
 
 
 def test_api_presentation_dashboard_accessible(client):
-    """Verify GET / and GET /demo return the presentation dashboard with Division 5 components."""
+    """Verify GET / returns modern React UI and GET /demo returns legacy presentation dashboard."""
     res_root = client.get("/")
     assert res_root.status_code == 200
     assert "SatQuery AI" in res_root.text
-    assert "Benchmark Evaluation & Scoreboards" in res_root.text
-    assert "Production Platform" in res_root.text
 
     res_demo = client.get("/demo")
     assert res_demo.status_code == 200
     assert "SatQuery AI" in res_demo.text
+    assert "Benchmark Evaluation & Scoreboards" in res_demo.text
+    assert "Production Platform" in res_demo.text
 
 
 # ---------------------------------------------------------------------------

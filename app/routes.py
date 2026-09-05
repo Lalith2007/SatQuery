@@ -83,10 +83,18 @@ class EvidenceRenderRequest(BaseModel):
     task_hint: Optional[str] = Field(default=None, description="Task context hint")
 
 
-@router.get("/", response_class=HTMLResponse, summary="SatQuery Interactive Presentation UI")
-@router.get("/demo", response_class=HTMLResponse, summary="SatQuery Interactive Presentation UI")
-async def get_demo_dashboard():
-    """Serves the rich, interactive agentic orchestration and evidence dashboard."""
+@router.get("/", summary="SatQuery Primary Modern React UI")
+async def get_react_frontend():
+    """Serves the primary modern React + TypeScript + Vite single-page application."""
+    react_index = Path("frontend/dist/index.html")
+    if react_index.exists():
+        return FileResponse(path=str(react_index), media_type="text/html")
+    return HTMLResponse(content=DEMO_HTML)
+
+
+@router.get("/demo", response_class=HTMLResponse, summary="SatQuery Legacy Compatibility Presentation UI")
+async def get_legacy_demo_dashboard():
+    """Serves the legacy single-file dashboard for backward test compatibility."""
     return HTMLResponse(content=DEMO_HTML)
 
 
@@ -552,3 +560,14 @@ async def run_benchmark_evaluation(req: BenchmarkRunRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Evaluation failed on benchmark '{req.benchmark}': {str(e)}",
         )
+
+
+@router.get("/{full_path:path}", include_in_schema=False)
+async def spa_catch_all(full_path: str):
+    """Catch-all route for Single Page Application client-side routing."""
+    if full_path.startswith(("api/", "health", "docs", "openapi.json", "demo", "demo_assets", "artifacts_storage", "assets")):
+        raise HTTPException(status_code=404, detail="Resource not found")
+    react_index = Path("frontend/dist/index.html")
+    if react_index.exists():
+        return FileResponse(path=str(react_index), media_type="text/html")
+    return HTMLResponse(content=DEMO_HTML)

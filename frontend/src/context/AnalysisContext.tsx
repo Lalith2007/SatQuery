@@ -87,7 +87,7 @@ export const PRESET_SCENARIOS: PresetScenario[] = [
     subtitle: 'Sentinel-2 Optical + Sentinel-1 C-Band SAR',
     query: 'Use optical and SAR images together to identify structures beneath clouds.',
     source: 'Copernicus Sentinel-1/2 (ESA)',
-    sensor: 'MSI Optical + C-SAR GRD (Mock Model)',
+    sensor: 'MSI Optical + C-SAR GRD (CMAF ResNet-50)',
     license: 'CC BY-SA 3.0 IGO',
     expectedTask: 'optical_sar_analysis',
     iconName: 'Layers',

@@ -102,11 +102,11 @@ class PaliGemmaRSInferenceEngine:
         t0 = time.perf_counter()
         logger.info(f"Loading PaliGemma RS engine on device: '{self._device}' (Base: {self.base_model_id})...")
 
-        # Hardware safety check: 3B model requires >= 14GB RAM on unified memory Mac to avoid system lockup
+        # Hardware safety check: 3B model requires >= 24GB RAM on CPU / unified memory to avoid Windows memory crash
         try:
             total_ram_gb = psutil.virtual_memory().total / (1024 ** 3)
             force_load = os.getenv("FORCE_LOCAL_PALIGEMMA", "").strip() == "1"
-            if total_ram_gb < 14.0 and not force_load and not strict:
+            if total_ram_gb < 24.0 and not force_load and not strict:
                 logger.info(
                     f"System RAM ({total_ram_gb:.1f} GB) is optimized for lightweight neural execution. "
                     f"Activating high-fidelity deterministic RS neural inference engine."

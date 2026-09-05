@@ -1,0 +1,50 @@
+{
+  "Background": {
+    "mean_iou": 0.8888888888888888,
+    "mean_dice": 0.8888888888888888,
+    "total_pixels_in_ground_truth": 54272,
+    "total_pixels_predicted": 0
+  },
+  "Farmland": {
+    "mean_iou": 0.05555555555555555,
+    "mean_dice": 0.05555555555555555,
+    "total_pixels_in_ground_truth": 445514,
+    "total_pixels_predicted": 0
+  },
+  "City": {
+    "mean_iou": 0.5555555555555556,
+    "mean_dice": 0.5555555555555556,
+    "total_pixels_in_ground_truth": 166484,
+    "total_pixels_predicted": 0
+  },
+  "Village": {
+    "mean_iou": 0.05555555555555555,
+    "mean_dice": 0.05555555555555555,
+    "total_pixels_in_ground_truth": 91878,
+    "total_pixels_predicted": 0
+  },
+  "Water": {
+    "mean_iou": 0.0,
+    "mean_dice": 0.0,
+    "total_pixels_in_ground_truth": 97760,
+    "total_pixels_predicted": 0
+  },
+  "Forest": {
+    "mean_iou": 0.2432462904188368,
+    "mean_dice": 0.3133459622799097,
+    "total_pixels_in_ground_truth": 286945,
+    "total_pixels_predicted": 1179648
+  },
+  "Road": {
+    "mean_iou": 0.6111111111111112,
+    "mean_dice": 0.6111111111111112,
+    "total_pixels_in_ground_truth": 9417,
+    "total_pixels_predicted": 0
+  },
+  "Others": {
+    "mean_iou": 0.2222222222222222,
+    "mean_dice": 0.2222222222222222,
+    "total_pixels_in_ground_truth": 27378,
+    "total_pixels_predicted": 0
+  }
+}
