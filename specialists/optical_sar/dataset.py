@@ -71,9 +71,12 @@ class OpticalSarPairedDataset(Dataset):
         split: str = "train",
         num_classes: int = 8,
         preprocessing_config: Optional[PreprocessingConfig] = None,
+        augment: Optional[bool] = None,
     ) -> None:
         self.root_dir = Path(root_dir) / split
+        self.split = split
         self.num_classes = num_classes
+        self.augment = (split == "train") if augment is None else augment
         self.preprocessor = OpticalSarPreprocessor(preprocessing_config or PreprocessingConfig())
         self.query_interpreter = QueryIntentInterpreter()
 
@@ -95,7 +98,7 @@ class OpticalSarPairedDataset(Dataset):
             raise ValueError(f"No valid image files found in '{self.opt_dir}'")
 
         self._verify_triplets()
-        logger.info(f"Loaded OpticalSarPairedDataset split='{split}' ({self.num_classes}-class mode): {len(self.samples)} verified paired tiles.")
+        logger.info(f"Loaded OpticalSarPairedDataset split='{split}' ({self.num_classes}-class mode, augment={self.augment}): {len(self.samples)} verified paired tiles.")
 
     def _verify_triplets(self) -> None:
         """Verify that every optical sample has a corresponding SAR and label file."""
@@ -118,6 +121,58 @@ class OpticalSarPairedDataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.samples)
+
+    def compute_class_frequencies(self, max_samples: Optional[int] = None) -> np.ndarray:
+        """Compute exact pixel counts per class across the dataset split (ignoring 255 border)."""
+        if max_samples is None:
+            cache_file = self.root_dir / f"{self.split}_class_frequencies.json"
+            if not cache_file.exists():
+                cache_file = self.root_dir / "class_frequencies.json"
+            if cache_file.exists():
+                import json
+                with open(cache_file, "r") as f:
+                    return np.array(json.load(f), dtype=np.int64)
+        counts = np.zeros(self.num_classes, dtype=np.int64)
+        num_to_scan = len(self.samples) if max_samples is None else min(len(self.samples), max_samples)
+        for i in range(num_to_scan):
+            filename = self.samples[i]
+            stem = Path(filename).stem
+            label_file = self.label_dir / f"{stem}_mask.png"
+            if not label_file.exists():
+                label_file = self.label_dir / f"{stem}.png"
+            with Image.open(label_file) as img:
+                arr = np.array(img, dtype=np.int64)
+                if arr.ndim == 3:
+                    arr = arr[:, :, 0]
+            for val, idx in LABEL_VALUE_TO_INDEX.items():
+                if idx < self.num_classes:
+                    counts[idx] += int((arr == val).sum())
+        return counts
+
+    def get_tile_class_presence(self, max_samples: Optional[int] = None) -> np.ndarray:
+        """Compute boolean presence of each class per tile: shape (N, num_classes)."""
+        if max_samples is None:
+            cache_file = self.root_dir / f"{self.split}_tile_presence.npy"
+            if cache_file.exists():
+                arr = np.load(cache_file)
+                if len(arr) == len(self.samples):
+                    return arr
+        num_to_scan = len(self.samples) if max_samples is None else min(len(self.samples), max_samples)
+        presence = np.zeros((num_to_scan, self.num_classes), dtype=bool)
+        for i in range(num_to_scan):
+            filename = self.samples[i]
+            stem = Path(filename).stem
+            label_file = self.label_dir / f"{stem}_mask.png"
+            if not label_file.exists():
+                label_file = self.label_dir / f"{stem}.png"
+            with Image.open(label_file) as img:
+                arr = np.array(img, dtype=np.int64)
+                if arr.ndim == 3:
+                    arr = arr[:, :, 0]
+            for val, idx in LABEL_VALUE_TO_INDEX.items():
+                if idx < self.num_classes and (arr == val).any():
+                    presence[i, idx] = True
+        return presence
 
     def __getitem__(self, idx: int) -> Dict[str, Any]:
         filename = self.samples[idx]
@@ -164,7 +219,31 @@ class OpticalSarPairedDataset(Dataset):
         # Preserve border ignore_index = 255
         target_index_mask[label_tensor == 255] = 255
 
-        # 3. Load Query Intent
+        # 3. Synchronized Spatial Remote-Sensing Augmentations (TRAIN ONLY)
+        if self.augment:
+            # Random Horizontal Flip (p=0.5)
+            if torch.rand(1).item() < 0.5:
+                opt_aligned = torch.flip(opt_aligned, dims=[-1])
+                sar_aligned = torch.flip(sar_aligned, dims=[-1])
+                target_index_mask = torch.flip(target_index_mask, dims=[-1])
+                label_tensor = torch.flip(label_tensor, dims=[-1])
+
+            # Random Vertical Flip (p=0.5)
+            if torch.rand(1).item() < 0.5:
+                opt_aligned = torch.flip(opt_aligned, dims=[-2])
+                sar_aligned = torch.flip(sar_aligned, dims=[-2])
+                target_index_mask = torch.flip(target_index_mask, dims=[-2])
+                label_tensor = torch.flip(label_tensor, dims=[-2])
+
+            # Random 90-degree Rotations (k in {0, 1, 2, 3})
+            k_rot = int(torch.randint(0, 4, (1,)).item())
+            if k_rot > 0:
+                opt_aligned = torch.rot90(opt_aligned, k=k_rot, dims=[-2, -1])
+                sar_aligned = torch.rot90(sar_aligned, k=k_rot, dims=[-2, -1])
+                target_index_mask = torch.rot90(target_index_mask, k=k_rot, dims=[-2, -1])
+                label_tensor = torch.rot90(label_tensor, k=k_rot, dims=[-2, -1])
+
+        # 4. Load Query Intent
         query_str = "Use optical and SAR images together to identify built-up and water-covered regions."
         meta_file = self.meta_dir / f"{stem}.json"
         if meta_file.exists():

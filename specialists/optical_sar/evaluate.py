@@ -100,10 +100,10 @@ class OpticalSarEvaluator:
             fp = (pred_k & ~target_k).sum()
             fn = (~pred_k & target_k).sum()
 
-            iou = tp / (tp + fp + fn) if (tp + fp + fn) > 0 else 1.0
-            precision = tp / (tp + fp) if (tp + fp) > 0 else 1.0
-            recall = tp / (tp + fn) if (tp + fn) > 0 else 1.0
-            f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+            iou = float(tp / (tp + fp + fn)) if (tp + fp + fn) > 0 else 0.0
+            precision = float(tp / (tp + fp)) if (tp + fp) > 0 else 0.0
+            recall = float(tp / (tp + fn)) if (tp + fn) > 0 else 0.0
+            f1 = float(2.0 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
 
             ious.append(iou)
             precisions.append(precision)
