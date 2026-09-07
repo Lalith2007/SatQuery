@@ -1,0 +1,606 @@
+{
+  "location": {
+    "path": "D:\\official_whu_opt_sar_dataset\\official_whu_opt_sar",
+    "total_size_bytes": 5421042737,
+    "total_size_gb": 5.05,
+    "file_counts": {
+      ".png": 51480,
+      ".json": 17160
+    },
+    "zero_byte_files": 0,
+    "tmp_files": 0
+  },
+  "scene_completeness": {
+    "manifest_total_expected": 100,
+    "local_total_present": 52,
+    "present_scenes": [
+      "NH49E001013",
+      "NH49E001014",
+      "NH49E001017",
+      "NH49E002012",
+      "NH49E002014",
+      "NH49E002016",
+      "NH49E003014",
+      "NH49E003024",
+      "NH49E004011",
+      "NH49E004013",
+      "NH49E004021",
+      "NH49E005011",
+      "NH49E005014",
+      "NH49E005019",
+      "NH49E005023",
+      "NH49E005024",
+      "NH49E006011",
+      "NH49E006014",
+      "NH49E006017",
+      "NH49E006019",
+      "NH49E006022",
+      "NH49E006024",
+      "NH49E007013",
+      "NH49E007014",
+      "NH49E007017",
+      "NH49E007023",
+      "NH49E007024",
+      "NH49E008013",
+      "NH49E008014",
+      "NH49E008017",
+      "NH49E008024",
+      "NH49E009012",
+      "NH49E009014",
+      "NH49E009017",
+      "NH49E009023",
+      "NH49E009024",
+      "NH49E010014",
+      "NH49E010015",
+      "NH49E010016",
+      "NH49E010020",
+      "NH49E010022",
+      "NH49E011011",
+      "NH49E011017",
+      "NH49E011024",
+      "NH49E012009",
+      "NH49E012017",
+      "NH49E012018",
+      "NH49E012020",
+      "NH49E012022",
+      "NH49E013007",
+      "NH49E013010",
+      "NH49E013018"
+    ],
+    "missing_scenes": [
+      "NH49E013021",
+      "NH49E013023",
+      "NH49E014007",
+      "NH49E014017",
+      "NH49E014021",
+      "NH49E014022",
+      "NH49E014024",
+      "NH50E003001",
+      "NH50E006001",
+      "NH50E006007",
+      "NH50E007001",
+      "NH50E007002",
+      "NH50E007003",
+      "NH50E007004",
+      "NH50E008003",
+      "NH50E009001",
+      "NH50E009003",
+      "NH50E009004",
+      "NH50E009006",
+      "NH50E010001",
+      "NH50E010003",
+      "NH50E010004",
+      "NH50E011002",
+      "NH50E011004",
+      "NH50E011005",
+      "NH50E012001",
+      "NH50E012004",
+      "NH50E012005",
+      "NH50E012008",
+      "NH50E013001",
+      "NH50E013002",
+      "NH50E013005",
+      "NH50E014003",
+      "NH50E016002",
+      "NI49E021010",
+      "NI49E021011",
+      "NI49E021012",
+      "NI49E022010",
+      "NI49E022011",
+      "NI49E022013",
+      "NI49E022014",
+      "NI49E022015",
+      "NI49E023017",
+      "NI49E024013",
+      "NI49E024017",
+      "NI49E024018",
+      "NI49E024019",
+      "NI49E024020"
+    ],
+    "present_by_split": {
+      "train": [
+        "NH49E001013",
+        "NH49E001014",
+        "NH49E002012",
+        "NH49E002014",
+        "NH49E002016",
+        "NH49E003014",
+        "NH49E004011",
+        "NH49E004013",
+        "NH49E005011",
+        "NH49E005014",
+        "NH49E005019",
+        "NH49E005024",
+        "NH49E006011",
+        "NH49E006014",
+        "NH49E006019",
+        "NH49E007017",
+        "NH49E007023",
+        "NH49E007024",
+        "NH49E008013",
+        "NH49E008017",
+        "NH49E008024",
+        "NH49E009012",
+        "NH49E009014",
+        "NH49E009017",
+        "NH49E009023",
+        "NH49E010014",
+        "NH49E010015",
+        "NH49E010020",
+        "NH49E011011",
+        "NH49E011024",
+        "NH49E012009",
+        "NH49E012017",
+        "NH49E012018",
+        "NH49E012020",
+        "NH49E013007",
+        "NH49E013010"
+      ],
+      "val": [
+        "NH49E001017",
+        "NH49E004021",
+        "NH49E006024",
+        "NH49E007014",
+        "NH49E009024",
+        "NH49E010022",
+        "NH49E012022"
+      ],
+      "test": [
+        "NH49E003024",
+        "NH49E005023",
+        "NH49E006017",
+        "NH49E006022",
+        "NH49E007013",
+        "NH49E008014",
+        "NH49E010016",
+        "NH49E011017",
+        "NH49E013018"
+      ]
+    },
+    "tiles_by_split": {
+      "train": 11880,
+      "val": 2310,
+      "test": 2970
+    }
+  },
+  "scene_reports": {
+    "NH49E001013": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E001014": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E002012": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E002014": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E002016": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E003014": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E004011": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E004013": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E005011": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E005014": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E005019": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E005024": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E006011": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E006014": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E006019": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E007017": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E007023": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E007024": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E008013": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E008017": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E008024": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E009012": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E009014": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E009017": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E009023": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E010014": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E010015": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E010020": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E011011": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E011024": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E012009": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E012017": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E012018": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E012020": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E013007": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E013010": {
+      "split": "train",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E001017": {
+      "split": "val",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E004021": {
+      "split": "val",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E006024": {
+      "split": "val",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E007014": {
+      "split": "val",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E009024": {
+      "split": "val",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E010022": {
+      "split": "val",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E012022": {
+      "split": "val",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E003024": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E005023": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E006017": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E006022": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E007013": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E008014": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E010016": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E011017": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    },
+    "NH49E013018": {
+      "split": "test",
+      "tile_count": 330,
+      "expected_tile_count": 330,
+      "is_complete_330": true,
+      "duplicate_coordinates": []
+    }
+  },
+  "triplets": {
+    "total_triplets": 17160,
+    "broken_triplets": 0
+  },
+  "file_health": {
+    "corrupt_files": 0,
+    "dimension_mismatches": 0,
+    "channel_mismatches": 0
+  },
+  "label_distribution": {
+    "train_valid_pixels": 740848152,
+    "train_ignore_pixels": 37719528,
+    "class_pixels": [
+      3294,
+      240045407,
+      21216955,
+      37565006,
+      70863091,
+      357407536,
+      4422234,
+      9324629
+    ],
+    "class_percentages": [
+      0.0004,
+      32.4014,
+      2.8639,
+      5.0705,
+      9.5651,
+      48.243,
+      0.5969,
+      1.2586
+    ],
+    "all_ignore_masks": 0
+  },
+  "split_leakage": {
+    "train_val_overlap": 0,
+    "train_test_overlap": 0,
+    "val_test_overlap": 0
+  },
+  "registration": {
+    "pixel_dimensions_match": true,
+    "grid_alignment_verified": true,
+    "raw_crs_proven_in_tiled_png": false,
+    "status": "PROVEN AT RASTER GRID LEVEL; RAW CRS EMBEDDED IN UPSTREAM GEOTIFFS"
+  },
+  "precomputed_stats": {
+    "shape": [
+      11880,
+      9
+    ],
+    "spot_check_samples": 200,
+    "mismatches": 0,
+    "is_exact_match": true
+  }
+}

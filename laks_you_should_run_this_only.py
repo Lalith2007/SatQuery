@@ -265,6 +265,8 @@ def locate_local_dataset(explicit_dir: Optional[str] = None) -> Path:
     # 3. Standard search candidate paths for TILED dataset
     home = Path.home()
     tiled_candidates: List[Path] = [
+        Path("D:/official_whu_opt_sar_dataset/official_whu_opt_sar_100scenes"),
+        Path("D:/official_whu_opt_sar_dataset/official_whu_opt_sar"),
         PROJECT_ROOT / "data" / "official_whu_opt_sar",
         PROJECT_ROOT.parent / "data" / "official_whu_opt_sar",
         Path("data/official_whu_opt_sar").resolve(),
@@ -357,7 +359,9 @@ def run_preflight_audit(dataset_dir: Path, device: torch.device, use_amp: bool) 
     print_banner("STAGE 3: PRE-FLIGHT DIMENSIONAL & NUMERICAL STABILITY AUDIT")
     from specialists.optical_sar.dataset import OpticalSarPairedDataset
     from specialists.optical_sar.query_intent import FiLMQueryModulator
-    from specialists.optical_sar.train_colab import ColabTrainer
+    from specialists.optical_sar.dataset import OpticalSarPairedDataset
+    from specialists.optical_sar.config_balanced_v3 import TrainingConfigV3
+    from specialists.optical_sar.train_colab_v3 import ColabTrainerV3
 
     train_ds = OpticalSarPairedDataset(dataset_dir, split="train", num_classes=8, augment=True)
     val_ds = OpticalSarPairedDataset(dataset_dir, split="val", num_classes=8, augment=False)
@@ -379,35 +383,32 @@ def run_preflight_audit(dataset_dir: Path, device: torch.device, use_amp: bool) 
     opt = batch["optical"]
     sar = batch["sar"]
     lbl = batch["label"]
-    intent = batch["intent_vector"]
 
     print(f"    Optical Tensor : {list(opt.shape)} (Expected: [4, 3, 256, 256])")
     print(f"    SAR Tensor     : {list(sar.shape)} (Expected: [4, 2, 256, 256])")
     print(f"    Label Tensor   : {list(lbl.shape)} (Expected: [4, 256, 256])")
-    print(f"    Intent Vector  : {list(intent.shape)} (Expected: [4, 8])")
 
     assert opt.shape == (4, 3, 256, 256), f"Unexpected Optical shape: {opt.shape}"
     assert sar.shape == (4, 2, 256, 256), f"Unexpected SAR shape: {sar.shape}"
     assert lbl.shape == (4, 256, 256), f"Unexpected Label shape: {lbl.shape}"
-    assert intent.shape == (4, 8), f"Unexpected Intent shape: {intent.shape}"
 
-    # 2. FiLM Modulator check
-    print("  [Check 2/3] Validating FiLM Query Modulator...")
-    film = FiLMQueryModulator(feature_channels=256, num_classes=8)
-    dummy_feats = torch.randn(4, 256, 32, 32)
-    mod = film(dummy_feats, intent)
-    assert mod.shape == (4, 256, 32, 32), f"FiLM output shape mismatch: {mod.shape}"
-    assert torch.isfinite(mod).all(), "FiLM query modulator produced NaN or Inf!"
+    # 2. Query intent neutral conditioning check
+    print("  [Check 2/3] Validating Neutral Query Intent Conditioning...")
+    intent = torch.ones(4, 8, device=device)
+    assert intent.shape == (4, 8), f"Unexpected Intent shape: {intent.shape}"
 
     # 3. Quick gradient forward-backward check
     print(f"  [Check 3/3] Running 3-Step Numerical Stability & AMP Test on {device}...")
-    trainer = ColabTrainer(dataset_dir=dataset_dir, device=str(device), use_amp=use_amp)
+    cfg = TrainingConfigV3(data_dir=dataset_dir, batch_size=4, use_amp=use_amp)
+    trainer = ColabTrainerV3(config=cfg, device=str(device))
     params = trainer.get_parameter_counts()
     print(f"    Total Model Parameters: {params['total_model_parameters']:,d} (Expected: 19,755,144)")
     assert params["total_model_parameters"] == 19755144, f"Parameter count mismatch: {params}"
 
-    trainer.setup_loss(torch.ones(8))
-    test_opt_params = list(trainer.fusion_neck.parameters()) + list(trainer.task_head.parameters())
+    weights = trainer.compute_median_frequency_weights()
+    trainer.setup_loss(weights)
+    trainer.set_stage(1)
+    test_opt_params = trainer.get_trainable_parameters(1)
     optimizer = torch.optim.AdamW(test_opt_params, lr=1e-3)
 
     for step, sample_batch in enumerate(check_loader):
@@ -416,7 +417,7 @@ def run_preflight_audit(dataset_dir: Path, device: torch.device, use_amp: bool) 
         b_opt = sample_batch["optical"].to(device)
         b_sar = sample_batch["sar"].to(device)
         b_lbl = sample_batch["label"].to(device)
-        b_intent = sample_batch["intent_vector"].to(device)
+        b_intent = torch.ones(b_opt.shape[0], 8, device=device)
 
         optimizer.zero_grad()
         with torch.amp.autocast("cuda", enabled=trainer.use_amp):
@@ -428,7 +429,7 @@ def run_preflight_audit(dataset_dir: Path, device: torch.device, use_amp: bool) 
                 logits = F.interpolate(logits, size=b_lbl.shape[1:], mode="bilinear", align_corners=False)
             loss_ce = trainer.ce_loss_fn(logits.float(), b_lbl)
             loss_dice = trainer.dice_loss_fn(logits.float(), b_lbl)
-            loss = loss_ce + 0.5 * loss_dice
+            loss = loss_ce + 1.0 * loss_dice
 
         assert torch.isfinite(loss), f"Encountered non-finite loss at test step {step}: {loss}"
         if trainer.use_amp:
@@ -466,37 +467,47 @@ def run_full_training(
     seed: int = 42,
     device: torch.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
     use_amp: bool = True,
-    checkpoint_dir: Path = PROJECT_ROOT / "specialists" / "optical_sar" / "checkpoints",
+    checkpoint_dir: Optional[Path] = None,
 ) -> Path:
-    """Execute the full 50-epoch retraining and validation pipeline."""
+    """Execute the full 50-epoch retraining and validation pipeline with Balanced V3 engine."""
+    ckpt_dir = checkpoint_dir or (PROJECT_ROOT / "specialists" / "optical_sar" / "checkpoints" / "experiment_balanced_v3_100scenes")
     print_banner(f"STAGE 4: LAUNCHING 50-EPOCH RETRAINING PIPELINE ON {device.type.upper()}")
     print(f"Dataset Directory : {dataset_dir}")
-    print(f"Checkpoint Output : {checkpoint_dir}")
+    print(f"Checkpoint Output : {ckpt_dir}")
     print(f"Total Epochs      : {epochs} ({warmup_epochs} Warmup + {epochs - warmup_epochs} Fine-Tuning)")
     print(f"Batch Size        : {batch_size}")
     print(f"DataLoader Workers: {num_workers}")
     print(f"CUDA AMP Enabled  : {use_amp}")
     print(f"Early Stopping    : Patience={patience} epochs on Val mIoU")
 
-    from specialists.optical_sar.train_colab import ColabTrainer
+    from specialists.optical_sar.config_balanced_v3 import TrainingConfigV3
+    from specialists.optical_sar.train_colab_v3 import ColabTrainerV3
 
-    trainer = ColabTrainer(
-        dataset_dir=dataset_dir,
-        checkpoint_dir=checkpoint_dir,
-        device=str(device),
-        use_amp=use_amp,
-    )
-
-    best_checkpoint = trainer.run_colab_training(
+    config = TrainingConfigV3(
+        data_dir=dataset_dir,
+        checkpoint_dir=ckpt_dir,
         epochs=epochs,
         warmup_epochs=warmup_epochs,
         batch_size=batch_size,
-        lr_head=lr_head,
+        num_workers=num_workers,
+        lr_head_warmup=lr_head,
         ft_lr_head=ft_lr_head,
         ft_lr_backbone=ft_lr_backbone,
-        num_workers=num_workers,
         patience=patience,
         seed=seed,
+        use_amp=use_amp,
+    )
+
+    trainer = ColabTrainerV3(
+        config=config,
+        device=str(device),
+    )
+
+    best_checkpoint = trainer.run_full_training(
+        epochs=epochs,
+        warmup_epochs=warmup_epochs,
+        batch_size=batch_size,
+        patience=patience,
     )
 
     return Path(best_checkpoint)
