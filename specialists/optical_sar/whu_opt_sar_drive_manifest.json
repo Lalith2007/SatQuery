@@ -1,0 +1,1506 @@
+{
+  "total_pairs": 100,
+  "source": "https://drive.google.com/drive/folders/1W3iMpkehng7ADXmhz9pPvmgFQBayq22t",
+  "pairs": [
+    {
+      "pair_id": "NH49E001013",
+      "optical": {
+        "name": "NH49E001013.tif",
+        "id": "1Nw2KmJtuaj3bwtmp0KQipuDscYzX27gZ"
+      },
+      "sar": {
+        "name": "NH49E001013.tif",
+        "id": "14ZEHeaMmRzfHNM4cB5BRcYUvqfHQm3tY"
+      },
+      "lbl": {
+        "name": "NH49E001013.tif",
+        "id": "142L77XVH5-MEoMM2k5h7-1u7whkwTuWZ"
+      }
+    },
+    {
+      "pair_id": "NH49E001014",
+      "optical": {
+        "name": "NH49E001014.tif",
+        "id": "1GZTRjQCUMtCrf7R829b4INSdTUGm0Wqt"
+      },
+      "sar": {
+        "name": "NH49E001014.tif",
+        "id": "1I75axZj4F_D5jMtdScOkYAIsTBEenJlE"
+      },
+      "lbl": {
+        "name": "NH49E001014.tif",
+        "id": "1SrioFNZiPADrT67qQ03duZAWiOoMrB4b"
+      }
+    },
+    {
+      "pair_id": "NH49E001017",
+      "optical": {
+        "name": "NH49E001017.tif",
+        "id": "1YQlnD0YdEz9bfKWEPbzLiOEIShKU2hpV"
+      },
+      "sar": {
+        "name": "NH49E001017.tif",
+        "id": "1njraWgQ5yh9Wbr7fXZvg2Q4gvFkjS4x7"
+      },
+      "lbl": {
+        "name": "NH49E001017.tif",
+        "id": "1AhcA3TxIZB-w4_ZWjaUCkQ1a5OZOIcQc"
+      }
+    },
+    {
+      "pair_id": "NH49E002012",
+      "optical": {
+        "name": "NH49E002012.tif",
+        "id": "1uuazEpzJiKinmnvktVMb2Sd_jHAF3Gw7"
+      },
+      "sar": {
+        "name": "NH49E002012.tif",
+        "id": "1vSasgCR6iEyiruQu46vruTAZ27yVu_Oq"
+      },
+      "lbl": {
+        "name": "NH49E002012.tif",
+        "id": "1lW2R25R-kEBr1Trv0uiLdu5eIIEcsYeM"
+      }
+    },
+    {
+      "pair_id": "NH49E002014",
+      "optical": {
+        "name": "NH49E002014.tif",
+        "id": "10kcMpnA_ClI5xQbW7hlgklOShHUrW5kM"
+      },
+      "sar": {
+        "name": "NH49E002014.tif",
+        "id": "18e7LOid1qNHDV7wTxGFVxdATEmD829NM"
+      },
+      "lbl": {
+        "name": "NH49E002014.tif",
+        "id": "1Ha0QHIAwBTbpHqx7oJcvmvY4tvV2SdvX"
+      }
+    },
+    {
+      "pair_id": "NH49E002016",
+      "optical": {
+        "name": "NH49E002016.tif",
+        "id": "1Etyhva6BH45iqzDsU-aLnPS6JvUMnVj7"
+      },
+      "sar": {
+        "name": "NH49E002016.tif",
+        "id": "1XVlkAwybdLRkcJecviMeMKIxFTPu-xU1"
+      },
+      "lbl": {
+        "name": "NH49E002016.tif",
+        "id": "1_BE-R8uKep_uP5W3co3DaYEbLafWF9FW"
+      }
+    },
+    {
+      "pair_id": "NH49E003014",
+      "optical": {
+        "name": "NH49E003014.tif",
+        "id": "1Fpeym9yolXff4c6MqB5IbdnCiwekGC9A"
+      },
+      "sar": {
+        "name": "NH49E003014.tif",
+        "id": "1lcnZFEckqiSR08FGymetPt_uoE3dxE0W"
+      },
+      "lbl": {
+        "name": "NH49E003014.tif",
+        "id": "14PkKepzUcEQwFbsmjdSc13rJO1bnoIv6"
+      }
+    },
+    {
+      "pair_id": "NH49E003024",
+      "optical": {
+        "name": "NH49E003024.tif",
+        "id": "1xDhBop9eWb1_hENb56GmaWcpShpvtibK"
+      },
+      "sar": {
+        "name": "NH49E003024.tif",
+        "id": "1zc3Y8RDuvGq1KxcDWK_2OoNYqitd7u51"
+      },
+      "lbl": {
+        "name": "NH49E003024.tif",
+        "id": "1MGwHTYNUeGb_U4JJ7DEQb5hpDViU5kls"
+      }
+    },
+    {
+      "pair_id": "NH49E004011",
+      "optical": {
+        "name": "NH49E004011.tif",
+        "id": "1tIzHc3jroAPxhov7gT8GQ1ZCTE_Yu-as"
+      },
+      "sar": {
+        "name": "NH49E004011.tif",
+        "id": "1rQ91-Dr2HDhX3NDKSYqa-eSxC2E9-yQ3"
+      },
+      "lbl": {
+        "name": "NH49E004011.tif",
+        "id": "1tVPECIa4NCoOATbiHXhYQtMNUPcXQzQ-"
+      }
+    },
+    {
+      "pair_id": "NH49E004013",
+      "optical": {
+        "name": "NH49E004013.tif",
+        "id": "1LNZKdJ6pABD6KQTZS_JHrenMbyJA8lP_"
+      },
+      "sar": {
+        "name": "NH49E004013.tif",
+        "id": "1w3lIyV_lalEvYCCFXQX5J-OFSxfGPcnP"
+      },
+      "lbl": {
+        "name": "NH49E004013.tif",
+        "id": "1Zo4Yw1xBg1MAi6t2JAEFX8gA5lpbaqlQ"
+      }
+    },
+    {
+      "pair_id": "NH49E004021",
+      "optical": {
+        "name": "NH49E004021.tif",
+        "id": "1FwnYXvUHl_JZ7S72AP8NP4t8oEv9MZbq"
+      },
+      "sar": {
+        "name": "NH49E004021.tif",
+        "id": "1kV4yNr3FTDoS2Jl13v_fgf-2azthHwvf"
+      },
+      "lbl": {
+        "name": "NH49E004021.tif",
+        "id": "15EHCGslF9Gg2nX9QFj6_1Il1wQQD6LEz"
+      }
+    },
+    {
+      "pair_id": "NH49E005011",
+      "optical": {
+        "name": "NH49E005011.tif",
+        "id": "1ki7rYo4nk1VBahFzdJ3N20G9wxfapPpm"
+      },
+      "sar": {
+        "name": "NH49E005011.tif",
+        "id": "1JVMUArNIkqd-THEBsaqGgvlskXdDwB4n"
+      },
+      "lbl": {
+        "name": "NH49E005011.tif",
+        "id": "1cYZdwqVmwcH5vKuq4C9jJQ0t-GK8VTmB"
+      }
+    },
+    {
+      "pair_id": "NH49E005014",
+      "optical": {
+        "name": "NH49E005014.tif",
+        "id": "1nshoUp4x_NaCTyuwsGs9jvosWvvhfx00"
+      },
+      "sar": {
+        "name": "NH49E005014.tif",
+        "id": "1g9x362HLItkeBnCdzfES-QSqzO19B3nM"
+      },
+      "lbl": {
+        "name": "NH49E005014.tif",
+        "id": "1aRNgOP3lAbPy3-YYaaeBVGG7V5IZ97UW"
+      }
+    },
+    {
+      "pair_id": "NH49E005019",
+      "optical": {
+        "name": "NH49E005019.tif",
+        "id": "1frnS7YxpbAPkT3Y6rxFahbTaDsOZjajz"
+      },
+      "sar": {
+        "name": "NH49E005019.tif",
+        "id": "1qFQ0TniQd0bDV7FsSZcVqhh1_iDtrhpy"
+      },
+      "lbl": {
+        "name": "NH49E005019.tif",
+        "id": "1Va9eRfx5IjQ8KiiVQIVwiXkeoOSLEVLx"
+      }
+    },
+    {
+      "pair_id": "NH49E005023",
+      "optical": {
+        "name": "NH49E005023.tif",
+        "id": "1lvJwRxdRfIFlJkbzAOasoC79TQ_uG8hm"
+      },
+      "sar": {
+        "name": "NH49E005023.tif",
+        "id": "1E4xfoxJDLYrJ1E03JDcDuEBnAtJDsZdC"
+      },
+      "lbl": {
+        "name": "NH49E005023.tif",
+        "id": "1Kg0Re_ZMIMgMj0bHw4wqhFuxvQCWq9ze"
+      }
+    },
+    {
+      "pair_id": "NH49E005024",
+      "optical": {
+        "name": "NH49E005024.tif",
+        "id": "1xYthUqbuWHKn8isRJSgbnfb0EGRw9R63"
+      },
+      "sar": {
+        "name": "NH49E005024.tif",
+        "id": "1DmX8O1v-nzwO9-otiwl8tIdESEbubmq9"
+      },
+      "lbl": {
+        "name": "NH49E005024.tif",
+        "id": "1W_YT8HshG_TfCXTHpsV-D1xiQBduRZYt"
+      }
+    },
+    {
+      "pair_id": "NH49E006011",
+      "optical": {
+        "name": "NH49E006011.tif",
+        "id": "1B2Y9SsG3A7gHile7qQ2_2REkiEyJEBxs"
+      },
+      "sar": {
+        "name": "NH49E006011.tif",
+        "id": "1WPlcP0xhubPa2Q4pKAWZWY4VAe-aR07r"
+      },
+      "lbl": {
+        "name": "NH49E006011.tif",
+        "id": "1LQ4Hd6BoZxIpjPXAtnCDDAH7vy5q7rNx"
+      }
+    },
+    {
+      "pair_id": "NH49E006014",
+      "optical": {
+        "name": "NH49E006014.tif",
+        "id": "1xc-7dJwmrvLAOvmu7DfS4CVV-_idC3Fw"
+      },
+      "sar": {
+        "name": "NH49E006014.tif",
+        "id": "1vOjSyh7JU-nvQ-dn-A5gEKk7hECkjB4l"
+      },
+      "lbl": {
+        "name": "NH49E006014.tif",
+        "id": "15e91R0RqXQ5sJXPZmxVNkgskZG0Xby-s"
+      }
+    },
+    {
+      "pair_id": "NH49E006017",
+      "optical": {
+        "name": "NH49E006017.tif",
+        "id": "1B0ix3AL86PwNuvCxelNXuyk2igdJh79j"
+      },
+      "sar": {
+        "name": "NH49E006017.tif",
+        "id": "1x_tTvkeAYg46HdaLW3o1EfA0LhvipFqB"
+      },
+      "lbl": {
+        "name": "NH49E006017.tif",
+        "id": "18MG49zL75KNm5UqMSS7MTdijcKeTafY8"
+      }
+    },
+    {
+      "pair_id": "NH49E006019",
+      "optical": {
+        "name": "NH49E006019.tif",
+        "id": "1RAai7j9PPQDsFfrFiDMClb-Ke8cFxqDU"
+      },
+      "sar": {
+        "name": "NH49E006019.tif",
+        "id": "1uWbyXljLQhZTygDPRWuMpxtDjohhz3AR"
+      },
+      "lbl": {
+        "name": "NH49E006019.tif",
+        "id": "1TmCQ7_PDIF463HenyVrIMDC2HNv4g7e7"
+      }
+    },
+    {
+      "pair_id": "NH49E006022",
+      "optical": {
+        "name": "NH49E006022.tif",
+        "id": "1C_KRQUVg6yvaZoLVMf4Upcb2ICX9LkG6"
+      },
+      "sar": {
+        "name": "NH49E006022.tif",
+        "id": "1SclstGNufcfgR4hOZfBQzi8xki_QOkfg"
+      },
+      "lbl": {
+        "name": "NH49E006022.tif",
+        "id": "1rKDdtskNxQlsRrY0o6VNNvtA3Xx5uwXA"
+      }
+    },
+    {
+      "pair_id": "NH49E006024",
+      "optical": {
+        "name": "NH49E006024.tif",
+        "id": "1P3nOufkI1C0mGJoRfk1V9plRjuwCH7qD"
+      },
+      "sar": {
+        "name": "NH49E006024.tif",
+        "id": "1iUOWMS_RUPqiVqXLz1XXV35HAbJKp7UN"
+      },
+      "lbl": {
+        "name": "NH49E006024.tif",
+        "id": "1qLbVfjZEOrgKUFk0PHOzRuu18rAVKeFf"
+      }
+    },
+    {
+      "pair_id": "NH49E007013",
+      "optical": {
+        "name": "NH49E007013.tif",
+        "id": "1sDEUbA8lk5g-D0xcEk4SZ4hWh8nFB_jY"
+      },
+      "sar": {
+        "name": "NH49E007013.tif",
+        "id": "16ktco8Dbb4t7IZup_-4mImpFNbZrmokp"
+      },
+      "lbl": {
+        "name": "NH49E007013.tif",
+        "id": "1XHDoD5DiVsICrICKHaBuQC9hT2hqaB6e"
+      }
+    },
+    {
+      "pair_id": "NH49E007014",
+      "optical": {
+        "name": "NH49E007014.tif",
+        "id": "1Z8AexVthMRjFu3VKav8nG731X0jqx0JQ"
+      },
+      "sar": {
+        "name": "NH49E007014.tif",
+        "id": "1pZJsGKC4OjH0gXnWryyZWCLwpekqKI-v"
+      },
+      "lbl": {
+        "name": "NH49E007014.tif",
+        "id": "1SCj-wLqAv8QVd0UZ0ujnWdM--rilN67i"
+      }
+    },
+    {
+      "pair_id": "NH49E007017",
+      "optical": {
+        "name": "NH49E007017.tif",
+        "id": "133VnR3kXWEPc82XuEfZ9zBKVs0LPHQN5"
+      },
+      "sar": {
+        "name": "NH49E007017.tif",
+        "id": "1X__rwVt-gaTabsTtmCs3V3pl8exgWXOO"
+      },
+      "lbl": {
+        "name": "NH49E007017.tif",
+        "id": "1LqQxaoHrLkhTGqObJH2J-j5IFuTqd0rH"
+      }
+    },
+    {
+      "pair_id": "NH49E007023",
+      "optical": {
+        "name": "NH49E007023.tif",
+        "id": "1CyuyZ8dPuJ0D6_pCQMI5kery0SkT0j1j"
+      },
+      "sar": {
+        "name": "NH49E007023.tif",
+        "id": "19AJiGcyEZN1NmNglr5F6plemR6DwWgSW"
+      },
+      "lbl": {
+        "name": "NH49E007023.tif",
+        "id": "1ibE66M0Dd0t9eZmSV12RWXo3sWACrhwZ"
+      }
+    },
+    {
+      "pair_id": "NH49E007024",
+      "optical": {
+        "name": "NH49E007024.tif",
+        "id": "1RR_D70owdYADksqs32GYkAspUmK9cAVt"
+      },
+      "sar": {
+        "name": "NH49E007024.tif",
+        "id": "1r5YP6jh8LPEHJ5lAR7K7Nesg4P22LftV"
+      },
+      "lbl": {
+        "name": "NH49E007024.tif",
+        "id": "1JfIbWUE0dgAqQ-UVHRUVvGxMSaqjVXtA"
+      }
+    },
+    {
+      "pair_id": "NH49E008013",
+      "optical": {
+        "name": "NH49E008013.tif",
+        "id": "1e36rXEctyRxnWVz1Wd_4FQf0HxBQhW-D"
+      },
+      "sar": {
+        "name": "NH49E008013.tif",
+        "id": "10z9l53mGWhi-wHFmbgy0GW7ODQaiUHAH"
+      },
+      "lbl": {
+        "name": "NH49E008013.tif",
+        "id": "1XLOeQghobL2ZUdhOVPGpyZ1mJpvz4Q_7"
+      }
+    },
+    {
+      "pair_id": "NH49E008014",
+      "optical": {
+        "name": "NH49E008014.tif",
+        "id": "1xHGLKUSEEJpehtC4Wg07fX-EzNpTeBTE"
+      },
+      "sar": {
+        "name": "NH49E008014.tif",
+        "id": "1wVqGhLpJjUuB-JhBBEVvEXdaW9oLS3Xt"
+      },
+      "lbl": {
+        "name": "NH49E008014.tif",
+        "id": "1Nq3scLh1DVZkSpnNUj5poD7MnDyeIfKW"
+      }
+    },
+    {
+      "pair_id": "NH49E008017",
+      "optical": {
+        "name": "NH49E008017.tif",
+        "id": "1AwQajUOjLZWThkjWjL_bnBHEqxtNS0Tc"
+      },
+      "sar": {
+        "name": "NH49E008017.tif",
+        "id": "1RL2-20tFZXRI9rfFm2n-p6oChGNHmQlx"
+      },
+      "lbl": {
+        "name": "NH49E008017.tif",
+        "id": "1pCyHlpo-mkBPP4mBy90_D_n_g-6dyHjv"
+      }
+    },
+    {
+      "pair_id": "NH49E008024",
+      "optical": {
+        "name": "NH49E008024.tif",
+        "id": "1Nv3peCrAoyFXzqXPz_6aCqMS4mVLtEcq"
+      },
+      "sar": {
+        "name": "NH49E008024.tif",
+        "id": "1qh3Y07_qZazAvFMATPEgahLG7s6u2z7R"
+      },
+      "lbl": {
+        "name": "NH49E008024.tif",
+        "id": "1RM2BXh3_qZPEgUAb1gLrhrZdePTgvGes"
+      }
+    },
+    {
+      "pair_id": "NH49E009012",
+      "optical": {
+        "name": "NH49E009012.tif",
+        "id": "1YqZh1LU_Qyzgdfe-pRtn3o3lDFrf9u1q"
+      },
+      "sar": {
+        "name": "NH49E009012.tif",
+        "id": "1EaDTkfZtpAqpV8rZoklS_nwfSs8ko59R"
+      },
+      "lbl": {
+        "name": "NH49E009012.tif",
+        "id": "1hivsVCjrSfr1sNs515HlJJpBOz81fMOs"
+      }
+    },
+    {
+      "pair_id": "NH49E009014",
+      "optical": {
+        "name": "NH49E009014.tif",
+        "id": "1CKbRSelHmvArkKWit-FJWt72J1OCm_yj"
+      },
+      "sar": {
+        "name": "NH49E009014.tif",
+        "id": "1xZeFVA5-u5SNYLdlezYqapRixeON657M"
+      },
+      "lbl": {
+        "name": "NH49E009014.tif",
+        "id": "1gfU2B1pGfbN4wkW-l9TlL5p-GWkwLxeH"
+      }
+    },
+    {
+      "pair_id": "NH49E009017",
+      "optical": {
+        "name": "NH49E009017.tif",
+        "id": "1oXSlU82PvE929ykrm39nhekBGLnZ6hNs"
+      },
+      "sar": {
+        "name": "NH49E009017.tif",
+        "id": "1ED9ODQAa0oooe_MdJ0fIUnku8BipZQv_"
+      },
+      "lbl": {
+        "name": "NH49E009017.tif",
+        "id": "1dyNCZHJ4q7EUH7daCI4OFw7orIfryI-v"
+      }
+    },
+    {
+      "pair_id": "NH49E009023",
+      "optical": {
+        "name": "NH49E009023.tif",
+        "id": "1D1T3HDQu8U9USIYno_FE0ck710av-dFh"
+      },
+      "sar": {
+        "name": "NH49E009023.tif",
+        "id": "17rhHG6FO0liLQONlaBAmyqKECCR0vT3x"
+      },
+      "lbl": {
+        "name": "NH49E009023.tif",
+        "id": "1bZjIMURfAkafaitcC9ScCP2gT4wajis6"
+      }
+    },
+    {
+      "pair_id": "NH49E009024",
+      "optical": {
+        "name": "NH49E009024.tif",
+        "id": "1NgrI0H5jApeFUqWQUuJP0mO8F-G4v7aZ"
+      },
+      "sar": {
+        "name": "NH49E009024.tif",
+        "id": "1YdKuboV-IB-EWmngDwtOyRVamX1qWPRz"
+      },
+      "lbl": {
+        "name": "NH49E009024.tif",
+        "id": "15RA-Q9IJAS2y8VdwRnlIAEx_BeLnFq0j"
+      }
+    },
+    {
+      "pair_id": "NH49E010014",
+      "optical": {
+        "name": "NH49E010014.tif",
+        "id": "11S9_2W1xPg_GnhBtIE7eQJKhnvg1iU-B"
+      },
+      "sar": {
+        "name": "NH49E010014.tif",
+        "id": "1ehAxFxDfbjekoBkG7bi1fDsl0hV7zCl_"
+      },
+      "lbl": {
+        "name": "NH49E010014.tif",
+        "id": "1wsA0FHCLAvShWHzXWFOlL8nJea5TJcJj"
+      }
+    },
+    {
+      "pair_id": "NH49E010015",
+      "optical": {
+        "name": "NH49E010015.tif",
+        "id": "12yTNC7Ehn2mHzm2eY2MKAfzqwZWcHwwb"
+      },
+      "sar": {
+        "name": "NH49E010015.tif",
+        "id": "1KcF_r1uTBkscTyGkW33pFuRRaYeBxB4_"
+      },
+      "lbl": {
+        "name": "NH49E010015.tif",
+        "id": "1OLvmHVQyEa1NDEJyGDtKzHlA8RJ-QDyy"
+      }
+    },
+    {
+      "pair_id": "NH49E010016",
+      "optical": {
+        "name": "NH49E010016.tif",
+        "id": "1opVpqC4vhc-IWTelWBUe2QTqcWu2AkVz"
+      },
+      "sar": {
+        "name": "NH49E010016.tif",
+        "id": "1HB-a6ntJhFYQD9cFoArLBMNVo8YL07KF"
+      },
+      "lbl": {
+        "name": "NH49E010016.tif",
+        "id": "1KFBh8cNTWxyMUsaWLNj7o75tn1SBjdpl"
+      }
+    },
+    {
+      "pair_id": "NH49E010020",
+      "optical": {
+        "name": "NH49E010020.tif",
+        "id": "10KWesPAFEJ4njSODruvSiXyASbQyWKqt"
+      },
+      "sar": {
+        "name": "NH49E010020.tif",
+        "id": "1gScJ6b8XUlpx7feEfSuLnYqxKxawoLSg"
+      },
+      "lbl": {
+        "name": "NH49E010020.tif",
+        "id": "1ecCehRnpDssjBW7rSkmOd6Aq9Uz0EZkf"
+      }
+    },
+    {
+      "pair_id": "NH49E010022",
+      "optical": {
+        "name": "NH49E010022.tif",
+        "id": "1wCblrhpGRBOYbbyAvPO7UQjZnCXLqXiI"
+      },
+      "sar": {
+        "name": "NH49E010022.tif",
+        "id": "1UNok5IY8giVsyssgl1trL_VlFC20xOIv"
+      },
+      "lbl": {
+        "name": "NH49E010022.tif",
+        "id": "1UWQ8Ca2lmDFlL6yDDF5-so2NwXv8A9ym"
+      }
+    },
+    {
+      "pair_id": "NH49E011011",
+      "optical": {
+        "name": "NH49E011011.tif",
+        "id": "1VpEZhT1WNQJ1f8SUErgKf_bjeynHek85"
+      },
+      "sar": {
+        "name": "NH49E011011.tif",
+        "id": "1hCAIAPMDrc_ZbRI4OvRkWLWoZlLtD33u"
+      },
+      "lbl": {
+        "name": "NH49E011011.tif",
+        "id": "1t0_9xTYo3z9hmnEESKe_LpRr8iWbcH5H"
+      }
+    },
+    {
+      "pair_id": "NH49E011017",
+      "optical": {
+        "name": "NH49E011017.tif",
+        "id": "1sPozEIbWYoJOcIxAGftON_McJ_CQUtAO"
+      },
+      "sar": {
+        "name": "NH49E011017.tif",
+        "id": "1gLgCzHRgclb42EDnQX5HcQOTCV-EvF5x"
+      },
+      "lbl": {
+        "name": "NH49E011017.tif",
+        "id": "1rv2ZZ4LSsVuP76aZX6G4QZ4XQwpR5d5v"
+      }
+    },
+    {
+      "pair_id": "NH49E011024",
+      "optical": {
+        "name": "NH49E011024.tif",
+        "id": "1bN9V1mBOWu0iX84MNjazKbKlS1N304ZX"
+      },
+      "sar": {
+        "name": "NH49E011024.tif",
+        "id": "1MK3bCsjeZsTfqQQdho54n599xgSECg8t"
+      },
+      "lbl": {
+        "name": "NH49E011024.tif",
+        "id": "14-N5Uk9jk9ZJ5itbieAf2ynSrWO6hqAF"
+      }
+    },
+    {
+      "pair_id": "NH49E012009",
+      "optical": {
+        "name": "NH49E012009.tif",
+        "id": "1pcsL7Jypg_8zCHRi5xuFtyuytbU8oTqj"
+      },
+      "sar": {
+        "name": "NH49E012009.tif",
+        "id": "179aqrnaCTqOhOnVa2IrNKJ9-RzJDVMKe"
+      },
+      "lbl": {
+        "name": "NH49E012009.tif",
+        "id": "1MTfKVjby2qGqp4xWrAAWTiN2MorxyoWQ"
+      }
+    },
+    {
+      "pair_id": "NH49E012017",
+      "optical": {
+        "name": "NH49E012017.tif",
+        "id": "1mdRTo3VI3XZ_JwWJsJL4sZG80aQcq10m"
+      },
+      "sar": {
+        "name": "NH49E012017.tif",
+        "id": "1rOYusQculVDL9FZXN0DvsqgzWcfiZ4W2"
+      },
+      "lbl": {
+        "name": "NH49E012017.tif",
+        "id": "1GESR5BSzAcSQjfwjJmX9xPMRw-Ru_Tpr"
+      }
+    },
+    {
+      "pair_id": "NH49E012018",
+      "optical": {
+        "name": "NH49E012018.tif",
+        "id": "1qiRJXXisu5JpcQMgT6Fzcd7imzCQm801"
+      },
+      "sar": {
+        "name": "NH49E012018.tif",
+        "id": "1LwzYVXF09Ehf78X5cVl9WByPbZw8Bx-n"
+      },
+      "lbl": {
+        "name": "NH49E012018.tif",
+        "id": "1Rv-iYEREE88yNRiMy9n5PEKc8WAqncYv"
+      }
+    },
+    {
+      "pair_id": "NH49E012020",
+      "optical": {
+        "name": "NH49E012020.tif",
+        "id": "1Dk6c7jAJ4F9lHj_t5-_B75JzLWKdDj3q"
+      },
+      "sar": {
+        "name": "NH49E012020.tif",
+        "id": "1xYaucMJxpgoPNVUQh-9IIxyu-7UHFM75"
+      },
+      "lbl": {
+        "name": "NH49E012020.tif",
+        "id": "1r9EIYgGDq3wkaLrNWPyI7E7mKweqr5k9"
+      }
+    },
+    {
+      "pair_id": "NH49E012022",
+      "optical": {
+        "name": "NH49E012022.tif",
+        "id": "1pjS0dc5mc4K2OLo3m13lgU815ZmimmZn"
+      },
+      "sar": {
+        "name": "NH49E012022.tif",
+        "id": "1AXwtRRZOAOcyYMUIcfv38wlnJZ4xs3ws"
+      },
+      "lbl": {
+        "name": "NH49E012022.tif",
+        "id": "1iA-_7AoR6TjVM6oxJXPHCIxk6HmweS3j"
+      }
+    },
+    {
+      "pair_id": "NH49E013007",
+      "optical": {
+        "name": "NH49E013007.tif",
+        "id": "1GXy33PCUu68S0M6L2zQ-UeAAwA9Y5NFl"
+      },
+      "sar": {
+        "name": "NH49E013007.tif",
+        "id": "1XjdPX-UzTNwKRWShiIusb1_SIyScypg3"
+      },
+      "lbl": {
+        "name": "NH49E013007.tif",
+        "id": "1Qd8MEK8hh-RMY5PUEx_H4e7aKfSzJxmZ"
+      }
+    },
+    {
+      "pair_id": "NH49E013010",
+      "optical": {
+        "name": "NH49E013010.tif",
+        "id": "1dTS9Hg9R1oX1pZklpBESmoFd8VrpGVUn"
+      },
+      "sar": {
+        "name": "NH49E013010.tif",
+        "id": "1UFlJ5HkPKcQk_SxHO-083xPqacED9V2y"
+      },
+      "lbl": {
+        "name": "NH49E013010.tif",
+        "id": "1HcXu-l6fuAzOSK3lV73yc3cQXLBddQws"
+      }
+    },
+    {
+      "pair_id": "NH49E013018",
+      "optical": {
+        "name": "NH49E013018.tif",
+        "id": "1nhGpxI53MD36sy0Mpws2sg95xjRPE1ti"
+      },
+      "sar": {
+        "name": "NH49E013018.tif",
+        "id": "1iJRfltXlkdX27GZiRc4uYXXxK6gIG7OA"
+      },
+      "lbl": {
+        "name": "NH49E013018.tif",
+        "id": "19V34IIRUKzKsZqEL8aI7AI3rO1xkCK8H"
+      }
+    },
+    {
+      "pair_id": "NH49E013021",
+      "optical": {
+        "name": "NH49E013021.tif",
+        "id": "1dwWto8jwd5jBchaUgF4uTjKM77CmXXH7"
+      },
+      "sar": {
+        "name": "NH49E013021.tif",
+        "id": "1sAKFVjKgkuNjQ-u-ZmrR2rB0dXjj1kPB"
+      },
+      "lbl": {
+        "name": "NH49E013021.tif",
+        "id": "1b06vWL7AsYGBfSW5Rl1MJPLfSx8EPj70"
+      }
+    },
+    {
+      "pair_id": "NH49E013023",
+      "optical": {
+        "name": "NH49E013023.tif",
+        "id": "1nCDd2gjK6exq6ziWba4lMAFknJ6tMvOE"
+      },
+      "sar": {
+        "name": "NH49E013023.tif",
+        "id": "1KbvSizaIOzBxqpq8eylIAhq9JzzFPMAT"
+      },
+      "lbl": {
+        "name": "NH49E013023.tif",
+        "id": "1tGWhrZrQmH9ZaAifYgLjAs6tIEDnjXXz"
+      }
+    },
+    {
+      "pair_id": "NH49E014007",
+      "optical": {
+        "name": "NH49E014007.tif",
+        "id": "1fq01AvoFzIokemMrCgI8vLmXGGfjnfoB"
+      },
+      "sar": {
+        "name": "NH49E014007.tif",
+        "id": "1Rfjik9D6spcxhnpTqKhmDfIQUodIuhT0"
+      },
+      "lbl": {
+        "name": "NH49E014007.tif",
+        "id": "1V0xAhWEHf-ypdLcmXuTJsEHRw_SDtd4n"
+      }
+    },
+    {
+      "pair_id": "NH49E014017",
+      "optical": {
+        "name": "NH49E014017.tif",
+        "id": "1X9wBqIvaFYw7eoTmYPb-rneA_bu9xyv1"
+      },
+      "sar": {
+        "name": "NH49E014017.tif",
+        "id": "1wxf9vOm5hTxMJ9lj4kv2zyJYwlq0rO7u"
+      },
+      "lbl": {
+        "name": "NH49E014017.tif",
+        "id": "16L6JiHlOuAR8Q5eW_VZ575Uk5Ki7S_vN"
+      }
+    },
+    {
+      "pair_id": "NH49E014021",
+      "optical": {
+        "name": "NH49E014021.tif",
+        "id": "1aIVYeuLsf0bNpicnzfKFr5HPS3cH1ERk"
+      },
+      "sar": {
+        "name": "NH49E014021.tif",
+        "id": "1ifmqocw0DjJm44sun_ZIlh9yuEW-HVqz"
+      },
+      "lbl": {
+        "name": "NH49E014021.tif",
+        "id": "1qHSevG0LezFS5cDBsqM8oVo2qYFJWqjx"
+      }
+    },
+    {
+      "pair_id": "NH49E014022",
+      "optical": {
+        "name": "NH49E014022.tif",
+        "id": "1nFaSVWwVoBrZ23Sm1j_0oNvb71ouJfdx"
+      },
+      "sar": {
+        "name": "NH49E014022.tif",
+        "id": "14qkHYzuZ50o1L7B_PXl6UITnCWrSK83x"
+      },
+      "lbl": {
+        "name": "NH49E014022.tif",
+        "id": "1AQsnT9qxdmG5ZUwAjkFjGVIt-kghMypq"
+      }
+    },
+    {
+      "pair_id": "NH49E014024",
+      "optical": {
+        "name": "NH49E014024.tif",
+        "id": "1a4BQOXOjbxoPJS_snsCs-DLkbVUscMhM"
+      },
+      "sar": {
+        "name": "NH49E014024.tif",
+        "id": "1opQwCh6pbZsvFHPxzlnS11vb71ZWIE_a"
+      },
+      "lbl": {
+        "name": "NH49E014024.tif",
+        "id": "1IQ0Dvmq65NoXvlXIh0v2c-F7I8I7Ewcf"
+      }
+    },
+    {
+      "pair_id": "NH50E003001",
+      "optical": {
+        "name": "NH50E003001.tif",
+        "id": "1MQatPvbT-S0hCjwI2i5VgfhmzSkkZYUR"
+      },
+      "sar": {
+        "name": "NH50E003001.tif",
+        "id": "1BBoIa2xvdQxRF9h_UFgKzlTAvMob3Dl_"
+      },
+      "lbl": {
+        "name": "NH50E003001.tif",
+        "id": "1EilNCj_thT9eEmn1F09lkOoC0fQ80Pj1"
+      }
+    },
+    {
+      "pair_id": "NH50E006001",
+      "optical": {
+        "name": "NH50E006001.tif",
+        "id": "13bKOtleyPeRrcroZakQrv-J67DjioApH"
+      },
+      "sar": {
+        "name": "NH50E006001.tif",
+        "id": "1K2lKeTKZPt3zbHmn_gT5bmOBqJKHOmfE"
+      },
+      "lbl": {
+        "name": "NH50E006001.tif",
+        "id": "1yBrWfQcUU9sRYe3jJhHz75S-616lMdpq"
+      }
+    },
+    {
+      "pair_id": "NH50E006007",
+      "optical": {
+        "name": "NH50E006007.tif",
+        "id": "1GxDTqw16oi_HGQEl_XPwLpMLaranp8k7"
+      },
+      "sar": {
+        "name": "NH50E006007.tif",
+        "id": "1B20oqLdVFJuDH3Z0bSo1o4sdohqKaBam"
+      },
+      "lbl": {
+        "name": "NH50E006007.tif",
+        "id": "13K5t-6YRgHm2amzy7tW5hiY2A5XVqDBF"
+      }
+    },
+    {
+      "pair_id": "NH50E007001",
+      "optical": {
+        "name": "NH50E007001.tif",
+        "id": "1lN52J0pBbpjLxd8er7fc_LGQeLSrnh8D"
+      },
+      "sar": {
+        "name": "NH50E007001.tif",
+        "id": "1dW42DKwqq1Mjpa-ql82q09aChRHUd_2C"
+      },
+      "lbl": {
+        "name": "NH50E007001.tif",
+        "id": "1aK2XtDNkvDNKIst5x_Xd9S95yN3w0yey"
+      }
+    },
+    {
+      "pair_id": "NH50E007002",
+      "optical": {
+        "name": "NH50E007002.tif",
+        "id": "1FrqUrKjDhVf_D21Y0s2CIMaCQc2UrjtR"
+      },
+      "sar": {
+        "name": "NH50E007002.tif",
+        "id": "1e8S-gXiLPLFlD-6Gk-Av0lYrlLEL3tGs"
+      },
+      "lbl": {
+        "name": "NH50E007002.tif",
+        "id": "1cVjcNERMU7jEuWwJhWxNCRiSE2nkxdd1"
+      }
+    },
+    {
+      "pair_id": "NH50E007003",
+      "optical": {
+        "name": "NH50E007003.tif",
+        "id": "1ZlfEiz2oTYxnK5MMfaTyzcI5bHKxOWho"
+      },
+      "sar": {
+        "name": "NH50E007003.tif",
+        "id": "1aEz22P-VnmingJaH2wdc9xhoeJ82VxC_"
+      },
+      "lbl": {
+        "name": "NH50E007003.tif",
+        "id": "1jCbKyVxmM5LiaFxTgnq11B9BkT8YDeZi"
+      }
+    },
+    {
+      "pair_id": "NH50E007004",
+      "optical": {
+        "name": "NH50E007004.tif",
+        "id": "1aOh2sNb7lguu_dWOVNn_LzTos3PRq59s"
+      },
+      "sar": {
+        "name": "NH50E007004.tif",
+        "id": "1Fv4uCHlPrkL3P1IQ1XB14Qjw46MYPTt6"
+      },
+      "lbl": {
+        "name": "NH50E007004.tif",
+        "id": "1Y6AoxFEzrqsufHLujzeDSiqZROtW8ih4"
+      }
+    },
+    {
+      "pair_id": "NH50E008003",
+      "optical": {
+        "name": "NH50E008003.tif",
+        "id": "1hvp_74UfJgra9PLS1skbJ09jFRCQ26nI"
+      },
+      "sar": {
+        "name": "NH50E008003.tif",
+        "id": "16l2nkWw27V97El_DJ-L6a6bCM8Zxf1Sg"
+      },
+      "lbl": {
+        "name": "NH50E008003.tif",
+        "id": "1iK-MqyoQsfzwnJEbC1L5hdKz6UknYXA7"
+      }
+    },
+    {
+      "pair_id": "NH50E009001",
+      "optical": {
+        "name": "NH50E009001.tif",
+        "id": "1WiVYhyIiDXQeD3TbTrjf5bFcvafMjmdT"
+      },
+      "sar": {
+        "name": "NH50E009001.tif",
+        "id": "1ePilNvzoX2hA5FfXbzFUsrFHBwuqvphf"
+      },
+      "lbl": {
+        "name": "NH50E009001.tif",
+        "id": "1GWjTxYt50q0p-JGUZKxAOr3OWv90aMBr"
+      }
+    },
+    {
+      "pair_id": "NH50E009003",
+      "optical": {
+        "name": "NH50E009003.tif",
+        "id": "1P3Qdie4CZJGxdLqjfE-9Z4jHmV48CYHh"
+      },
+      "sar": {
+        "name": "NH50E009003.tif",
+        "id": "1-E-0EET_vwjVNj7oFJewN35t9JmEHVDq"
+      },
+      "lbl": {
+        "name": "NH50E009003.tif",
+        "id": "12U2piWbi8KRn1N77GJuhHvEdje_Xgnrh"
+      }
+    },
+    {
+      "pair_id": "NH50E009004",
+      "optical": {
+        "name": "NH50E009004.tif",
+        "id": "1NFAD94i73R-6JaPu0CQilOkybYkQ_Jve"
+      },
+      "sar": {
+        "name": "NH50E009004.tif",
+        "id": "1bR_1DjJSDTevOVN6UFe5a_mhorfGIQZB"
+      },
+      "lbl": {
+        "name": "NH50E009004.tif",
+        "id": "1pGsiL07ZZIhJxNwNDSw6ySSVzBsKGziC"
+      }
+    },
+    {
+      "pair_id": "NH50E009006",
+      "optical": {
+        "name": "NH50E009006.tif",
+        "id": "1m7GBcVkCwNlndIcsA4qgkeyMb9ZABxmr"
+      },
+      "sar": {
+        "name": "NH50E009006.tif",
+        "id": "1mg-and4XWIS-pY_4NSw09-cUVUzfe6Zg"
+      },
+      "lbl": {
+        "name": "NH50E009006.tif",
+        "id": "1LamKPjrOljmmLszEKqm-3qV-oHMYVzAz"
+      }
+    },
+    {
+      "pair_id": "NH50E010001",
+      "optical": {
+        "name": "NH50E010001.tif",
+        "id": "1nmkHRsrSorpMcI8y8mKBjPEf-TXxNQns"
+      },
+      "sar": {
+        "name": "NH50E010001.tif",
+        "id": "1hImYGRA7PADdvUxnVJIsgc_zZuZCgUU3"
+      },
+      "lbl": {
+        "name": "NH50E010001.tif",
+        "id": "1Li2a73NxuTZ5-2Cyjiksfmd5NT5Wwo8S"
+      }
+    },
+    {
+      "pair_id": "NH50E010003",
+      "optical": {
+        "name": "NH50E010003.tif",
+        "id": "1QYqNH-Tz6X_mcUfplrekVPgtJti4D4-C"
+      },
+      "sar": {
+        "name": "NH50E010003.tif",
+        "id": "1xi101RQVVWjaIiKuNM1e-Qx80Dr22T9Q"
+      },
+      "lbl": {
+        "name": "NH50E010003.tif",
+        "id": "16ljv_PyKEdpifPdU32V6EYKHF-dBIaGA"
+      }
+    },
+    {
+      "pair_id": "NH50E010004",
+      "optical": {
+        "name": "NH50E010004.tif",
+        "id": "1vbMZi2KllI7AXPUYQzhxefzSCx7X9Pjo"
+      },
+      "sar": {
+        "name": "NH50E010004.tif",
+        "id": "1K9poZPkdSxnRz_m0Snz1fMe_pu7U-ojp"
+      },
+      "lbl": {
+        "name": "NH50E010004.tif",
+        "id": "1YHUxSW35dNHGOEULoU5thUyHWXRh6R40"
+      }
+    },
+    {
+      "pair_id": "NH50E011002",
+      "optical": {
+        "name": "NH50E011002.tif",
+        "id": "1LUFcs3RysE77dE6c7djVeKTfI14qvCjN"
+      },
+      "sar": {
+        "name": "NH50E011002.tif",
+        "id": "1d3rsrVqLG6YowFSeZ2PIaVYR3mbam3fe"
+      },
+      "lbl": {
+        "name": "NH50E011002.tif",
+        "id": "1Q49NWyY4wJD6da4eBdJNFFCBqEyECveD"
+      }
+    },
+    {
+      "pair_id": "NH50E011004",
+      "optical": {
+        "name": "NH50E011004.tif",
+        "id": "1RvCbQK9GQRrQLmU01TUwkTUnAd-EmrZy"
+      },
+      "sar": {
+        "name": "NH50E011004.tif",
+        "id": "1J-6yFxqwaJQCowx1N5NLPjmYE3J_vD-d"
+      },
+      "lbl": {
+        "name": "NH50E011004.tif",
+        "id": "1Ma1_K4gbMLR4CNSXIEhPXRexQazcgpz0"
+      }
+    },
+    {
+      "pair_id": "NH50E011005",
+      "optical": {
+        "name": "NH50E011005.tif",
+        "id": "1FsB9740UFYoFaD-cgEHWE1j0iNijJIf0"
+      },
+      "sar": {
+        "name": "NH50E011005.tif",
+        "id": "1X8cu5MBU_wLBSMZy1qzqBRZvrLBY7P7Z"
+      },
+      "lbl": {
+        "name": "NH50E011005.tif",
+        "id": "1fJq7ZQXLEtSUmiE0gmzFKgv0yy7E312g"
+      }
+    },
+    {
+      "pair_id": "NH50E012001",
+      "optical": {
+        "name": "NH50E012001.tif",
+        "id": "1xAQQ77AvzMrZRwXOxa9zzF09z-eAsyCW"
+      },
+      "sar": {
+        "name": "NH50E012001.tif",
+        "id": "1-YwxKJ6Yw3VhB2h_kXkiAQ1qWM5OF89x"
+      },
+      "lbl": {
+        "name": "NH50E012001.tif",
+        "id": "1svwsWdZFZzXRX6PDfSQdKaDMSjHS6gUk"
+      }
+    },
+    {
+      "pair_id": "NH50E012004",
+      "optical": {
+        "name": "NH50E012004.tif",
+        "id": "1Udwz7DkgoTiNe3gcpESbKnY_yQuBw5Q5"
+      },
+      "sar": {
+        "name": "NH50E012004.tif",
+        "id": "1iCXuqD6XXdYPAACHqnKdVp-jDuqeSpIx"
+      },
+      "lbl": {
+        "name": "NH50E012004.tif",
+        "id": "1oGzy-vCpxx2MJaWNR4lgumvGA3Zt1V3r"
+      }
+    },
+    {
+      "pair_id": "NH50E012005",
+      "optical": {
+        "name": "NH50E012005.tif",
+        "id": "1OVoLBDorxuIuroCKpIRJBYRe48eIsFA7"
+      },
+      "sar": {
+        "name": "NH50E012005.tif",
+        "id": "1OO8n5JEpWUuT-ue8svmG_L7X6fqOaQtm"
+      },
+      "lbl": {
+        "name": "NH50E012005.tif",
+        "id": "1yV101cbfS8W1zrKd254en9BGcpBQpMbG"
+      }
+    },
+    {
+      "pair_id": "NH50E012008",
+      "optical": {
+        "name": "NH50E012008.tif",
+        "id": "1kA1A3yLWeg0zCn3Fd8OzY5bynmwfH8Fb"
+      },
+      "sar": {
+        "name": "NH50E012008.tif",
+        "id": "1nJqh58xvXKBaVbu56hohRcvk_Je0pQAQ"
+      },
+      "lbl": {
+        "name": "NH50E012008.tif",
+        "id": "1j0-8BApBvi2T_z6L6jRV6oCIWov7Om8I"
+      }
+    },
+    {
+      "pair_id": "NH50E013001",
+      "optical": {
+        "name": "NH50E013001.tif",
+        "id": "1p5-pJ7YR6jow9caZPDPlMAXESQueAWR5"
+      },
+      "sar": {
+        "name": "NH50E013001.tif",
+        "id": "1reGYpeJAkVb1vDklv11EnYeBCnP_wVYP"
+      },
+      "lbl": {
+        "name": "NH50E013001.tif",
+        "id": "1F78KkNaQTFmPQKX58CPRoCzdvxbOEja9"
+      }
+    },
+    {
+      "pair_id": "NH50E013002",
+      "optical": {
+        "name": "NH50E013002.tif",
+        "id": "1aVk4ho1OQBaRATtNG1r6qZqIOIurQQeW"
+      },
+      "sar": {
+        "name": "NH50E013002.tif",
+        "id": "1Z-7zF0Nizryv1RTiPIxKjtJF7iob72rR"
+      },
+      "lbl": {
+        "name": "NH50E013002.tif",
+        "id": "1f21ZhUj3jnnlFrPCNh3Yh5EuOT8dfxcW"
+      }
+    },
+    {
+      "pair_id": "NH50E013005",
+      "optical": {
+        "name": "NH50E013005.tif",
+        "id": "1tdyfAyhQqCIK0RHEjsvI-qCNRapcnw4Y"
+      },
+      "sar": {
+        "name": "NH50E013005.tif",
+        "id": "17n6Pl69mMGf17UzmuhGUhdU1ELOcfheA"
+      },
+      "lbl": {
+        "name": "NH50E013005.tif",
+        "id": "1sT1NPf4KF9C_YjaBJbAIknHT3Zn5dvCj"
+      }
+    },
+    {
+      "pair_id": "NH50E014003",
+      "optical": {
+        "name": "NH50E014003.tif",
+        "id": "11pw0lcTlJVfzeeddqzDwhZ54oekwISee"
+      },
+      "sar": {
+        "name": "NH50E014003.tif",
+        "id": "1OyBATXoEYNUkUQ8h6E68fFvateDYkW7S"
+      },
+      "lbl": {
+        "name": "NH50E014003.tif",
+        "id": "1bovm4qGOyE0QNeYMO4k3k2XXq9g5MhYD"
+      }
+    },
+    {
+      "pair_id": "NH50E016002",
+      "optical": {
+        "name": "NH50E016002.tif",
+        "id": "1G1UHFQnpXmhzU3gU0WukmTB_ngGYhisG"
+      },
+      "sar": {
+        "name": "NH50E016002.tif",
+        "id": "1RaWP0bkw4gGrvK-B-xgHrzqri_09LZcc"
+      },
+      "lbl": {
+        "name": "NH50E016002.tif",
+        "id": "1i88YBRGIEZEcK6zCWpm3yEnezEbp105b"
+      }
+    },
+    {
+      "pair_id": "NI49E021010",
+      "optical": {
+        "name": "NI49E021010.tif",
+        "id": "11NVtvNI1KFPZqCmvACPKsi2jRP8EtAdu"
+      },
+      "sar": {
+        "name": "NI49E021010.tif",
+        "id": "1UsB1bMtcGOCVLSbXadlPXP5bBmnIWLIu"
+      },
+      "lbl": {
+        "name": "NI49E021010.tif",
+        "id": "1z_DntujUmpU569YKuSJC6_lLb2hMSufB"
+      }
+    },
+    {
+      "pair_id": "NI49E021011",
+      "optical": {
+        "name": "NI49E021011.tif",
+        "id": "11J5BNugl-0pNKqJtODkQ4OuUOfctSw1B"
+      },
+      "sar": {
+        "name": "NI49E021011.tif",
+        "id": "19dEu2NRgoLRoW_Eje5ZTdlOJ5i-8Cmdy"
+      },
+      "lbl": {
+        "name": "NI49E021011.tif",
+        "id": "1DDjKJ6Kf-6ytZoLQlafsMQTCAt3Sosrt"
+      }
+    },
+    {
+      "pair_id": "NI49E021012",
+      "optical": {
+        "name": "NI49E021012.tif",
+        "id": "1gS7ZxjQh47zfmr7wxqMNbfw33ecky0tH"
+      },
+      "sar": {
+        "name": "NI49E021012.tif",
+        "id": "16wiE8Gd5NfMiM5guztQanjLTwAFcwAvQ"
+      },
+      "lbl": {
+        "name": "NI49E021012.tif",
+        "id": "1KFaf6mgNOENgjIHIsbUchbj5YrLuXuCm"
+      }
+    },
+    {
+      "pair_id": "NI49E022010",
+      "optical": {
+        "name": "NI49E022010.tif",
+        "id": "1t4WRROLT0wkO9NuWCEPcFZ4rzoseoVKM"
+      },
+      "sar": {
+        "name": "NI49E022010.tif",
+        "id": "1JW-7PtOAys5QLWSmz-CNrIUGsBqBhd9T"
+      },
+      "lbl": {
+        "name": "NI49E022010.tif",
+        "id": "1mY12TIFNgLdpuPuFJPEq8kq3qphmvJ3K"
+      }
+    },
+    {
+      "pair_id": "NI49E022011",
+      "optical": {
+        "name": "NI49E022011.tif",
+        "id": "1i0jZsNZneIS6ACH6g3O5uQqm1gOTTAtu"
+      },
+      "sar": {
+        "name": "NI49E022011.tif",
+        "id": "1RKeHPG4XZ734ehlLOUiKiymZuJIIK5L2"
+      },
+      "lbl": {
+        "name": "NI49E022011.tif",
+        "id": "1KGyEvQw2FUI4wrQN2rl13uv0hY4Qyaxe"
+      }
+    },
+    {
+      "pair_id": "NI49E022013",
+      "optical": {
+        "name": "NI49E022013.tif",
+        "id": "1f8ERR606RLRi6XN-Y7PBKjxWTuY_0VUa"
+      },
+      "sar": {
+        "name": "NI49E022013.tif",
+        "id": "10ngnSebnF4mRJN-pTYDE2eOkhvM7LWVa"
+      },
+      "lbl": {
+        "name": "NI49E022013.tif",
+        "id": "15H3onpWX0VlOsqlRD6B246NP4rAh80UB"
+      }
+    },
+    {
+      "pair_id": "NI49E022014",
+      "optical": {
+        "name": "NI49E022014.tif",
+        "id": "1gvKN9OMLxd9UtASLzG_VjnrU9XSThISM"
+      },
+      "sar": {
+        "name": "NI49E022014.tif",
+        "id": "1LDGbenO5mdQ6uZOdsBW4F_unEYVCT9Hp"
+      },
+      "lbl": {
+        "name": "NI49E022014.tif",
+        "id": "1j1FLgz7ZEdQhRyCuGPbt4-ADMsU7SUhQ"
+      }
+    },
+    {
+      "pair_id": "NI49E022015",
+      "optical": {
+        "name": "NI49E022015.tif",
+        "id": "1C0n9HqPpDkYcy5b7BJyQp6uuiw8wXGXR"
+      },
+      "sar": {
+        "name": "NI49E022015.tif",
+        "id": "1QaMAJ4lztq94gMXH2gXHJo777cAdXeqj"
+      },
+      "lbl": {
+        "name": "NI49E022015.tif",
+        "id": "1cXyDFU23BNAuUMwdprEsPn6Wr81KENkJ"
+      }
+    },
+    {
+      "pair_id": "NI49E023017",
+      "optical": {
+        "name": "NI49E023017.tif",
+        "id": "1kVbRU3371djdhN75a8ajrEYeOlikY9Ef"
+      },
+      "sar": {
+        "name": "NI49E023017.tif",
+        "id": "1Ddwt0moLKffyMZHrxsQFhQiiLB3v6gQ-"
+      },
+      "lbl": {
+        "name": "NI49E023017.tif",
+        "id": "12GHFEwcSHrLFvs6-hgT8pdYy2fkhFFUo"
+      }
+    },
+    {
+      "pair_id": "NI49E024013",
+      "optical": {
+        "name": "NI49E024013.tif",
+        "id": "1qOFBGjCy3lv-vxBgAhHmnneqfs5pR0GR"
+      },
+      "sar": {
+        "name": "NI49E024013.tif",
+        "id": "1oAqT-8h_Tm6R6xqGf1bM4yxob3lejTyt"
+      },
+      "lbl": {
+        "name": "NI49E024013.tif",
+        "id": "1Tjsc_UrvvwiEqajMgvg4exA87ujVovN0"
+      }
+    },
+    {
+      "pair_id": "NI49E024017",
+      "optical": {
+        "name": "NI49E024017.tif",
+        "id": "1V_xStLBfAy1F38Y81naxqnTWbXrrVfmU"
+      },
+      "sar": {
+        "name": "NI49E024017.tif",
+        "id": "1-WQGIvnPX5LDJBhh0Ei5n0cG046cQr7f"
+      },
+      "lbl": {
+        "name": "NI49E024017.tif",
+        "id": "1jvYePW426bxMW4dfNZdG2QAc78lE1i4V"
+      }
+    },
+    {
+      "pair_id": "NI49E024018",
+      "optical": {
+        "name": "NI49E024018.tif",
+        "id": "1vQON7xsGyhnpoZ3niA3sBQU4ZVTwVnNh"
+      },
+      "sar": {
+        "name": "NI49E024018.tif",
+        "id": "1Xddk8EldNoafDzx7mqHoma6ExbU8afDk"
+      },
+      "lbl": {
+        "name": "NI49E024018.tif",
+        "id": "1HNCZgVqsbqDvTn8kdbJXMcbj863bMszj"
+      }
+    },
+    {
+      "pair_id": "NI49E024019",
+      "optical": {
+        "name": "NI49E024019.tif",
+        "id": "1iOunAbsDQ-2vzSUfOaWgo4ghyIhAVaBZ"
+      },
+      "sar": {
+        "name": "NI49E024019.tif",
+        "id": "14iCscPSMQmXIWNkNbSGdWaMB1vla9vbk"
+      },
+      "lbl": {
+        "name": "NI49E024019.tif",
+        "id": "1sSusdUjTKxh6kPu2106njwdd3x7Rthap"
+      }
+    },
+    {
+      "pair_id": "NI49E024020",
+      "optical": {
+        "name": "NI49E024020.tif",
+        "id": "13fwfHB-Q6YabvPjfqqEPluFOqlxHVzcz"
+      },
+      "sar": {
+        "name": "NI49E024020.tif",
+        "id": "1IgcdxFnkNf8rnb9QTcsTsJfjG6LfIhde"
+      },
+      "lbl": {
+        "name": "NI49E024020.tif",
+        "id": "1zhoYCexL3tZWxgl8TRGS4I8ai91TTq1Z"
+      }
+    }
+  ]
+}

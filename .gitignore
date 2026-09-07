@@ -86,4 +86,6 @@ artifacts_storage/
 tmp/
 data/
 *.zip
+whu_chunk_*
+*.docx
 .DS_Store

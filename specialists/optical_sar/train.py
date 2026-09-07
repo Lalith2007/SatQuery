@@ -77,7 +77,7 @@ class OpticalSarTrainer:
         dataset_dir: Union[str, Path],
         checkpoint_dir: Union[str, Path] = "specialists/optical_sar/checkpoints",
         config: Optional[SpecialistConfig] = None,
-        device: str = "cuda" if torch.cuda.is_available() else "cpu",
+        device: str = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu"),
     ) -> None:
         self.dataset_dir = Path(dataset_dir)
         self.checkpoint_dir = Path(checkpoint_dir)

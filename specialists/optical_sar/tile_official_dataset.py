@@ -182,9 +182,15 @@ def tile_whu_dataset_directory(
     opt_raw_dir = raw_dataset_dir / "optical"
     sar_raw_dir = raw_dataset_dir / "sar"
     label_raw_dir = raw_dataset_dir / "labels"
+    if not label_raw_dir.exists() and (raw_dataset_dir / "lbl").exists():
+        label_raw_dir = raw_dataset_dir / "lbl"
 
     if not opt_raw_dir.exists():
         raise FileNotFoundError(f"Official raw optical directory missing at '{opt_raw_dir}'")
+    if not sar_raw_dir.exists():
+        raise FileNotFoundError(f"Official raw SAR directory missing at '{sar_raw_dir}'")
+    if not label_raw_dir.exists():
+        raise FileNotFoundError(f"Official raw label directory missing at '{label_raw_dir}'")
 
     raw_pairs = sorted([f.stem for f in opt_raw_dir.glob("*.*")])
     if len(raw_pairs) == 0:

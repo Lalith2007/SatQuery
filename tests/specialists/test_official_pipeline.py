@@ -182,9 +182,24 @@ def test_8class_query_aggregation_determinism() -> None:
     assert pytest.approx(total.item()) == 1.0
 
 
-def test_dataset_8class_intent_vector_contract() -> None:
+def test_dataset_8class_intent_vector_contract(tmp_path: Path) -> None:
     """Test OpticalSarPairedDataset intent_vector contract is shape (8,) for single sample and (16, 8) for batch of 16."""
-    ds = OpticalSarPairedDataset("data/official_whu_opt_sar", split="train")
+    real_ds_dir = Path("data/official_whu_opt_sar")
+    if (real_ds_dir / "train" / "optical").exists():
+        ds = OpticalSarPairedDataset(real_ds_dir, split="train")
+    else:
+        # Create minimal valid mock dataset structure in tmp_path
+        train_dir = tmp_path / "mock_ds" / "train"
+        for sub in ["optical", "sar", "labels", "metadata"]:
+            (train_dir / sub).mkdir(parents=True, exist_ok=True)
+        for i in range(16):
+            tid = f"mock_{i:03d}"
+            Image.fromarray(np.zeros((256, 256, 3), dtype=np.uint8)).save(train_dir / "optical" / f"{tid}.png")
+            Image.fromarray(np.zeros((256, 256, 2), dtype=np.uint8)).save(train_dir / "sar" / f"{tid}.png")
+            Image.fromarray(np.zeros((256, 256), dtype=np.uint8)).save(train_dir / "labels" / f"{tid}_mask.png")
+            with open(train_dir / "metadata" / f"{tid}.json", "w") as f:
+                json.dump({"tile_id": tid}, f)
+        ds = OpticalSarPairedDataset(tmp_path / "mock_ds", split="train")
 
     # Assert single sample intent_vector shape is (8,)
     sample = ds[0]
@@ -194,3 +209,18 @@ def test_dataset_8class_intent_vector_contract() -> None:
     loader = DataLoader(ds, batch_size=16, shuffle=False)
     batch = next(iter(loader))
     assert batch["intent_vector"].shape == (16, 8), f"Expected batch intent_vector shape (16, 8), got {batch['intent_vector'].shape}"
+
+
+def test_drive_manifest_structure() -> None:
+    """Test official WHU-OPT-SAR drive manifest validity and triplet integrity."""
+    from specialists.optical_sar.download_official_dataset import MANIFEST_PATH
+    assert MANIFEST_PATH.exists(), f"Manifest missing at {MANIFEST_PATH}"
+    with open(MANIFEST_PATH, "r") as f:
+        data = json.load(f)
+    assert data["total_pairs"] == 100
+    assert len(data["pairs"]) == 100
+    for p in data["pairs"]:
+        assert "pair_id" in p
+        assert "optical" in p and "id" in p["optical"] and len(p["optical"]["id"]) > 10
+        assert "sar" in p and "id" in p["sar"] and len(p["sar"]["id"]) > 10
+        assert "lbl" in p and "id" in p["lbl"] and len(p["lbl"]["id"]) > 10

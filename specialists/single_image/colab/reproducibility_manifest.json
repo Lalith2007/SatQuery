@@ -1,11 +1,11 @@
 {
   "manifest_version": "1.2.0",
-  "generated_at": "2026-08-26T11:44:57Z",
+  "generated_at": "2026-09-05T05:36:36Z",
   "evaluation_classification": "CONTROLLED DEMONSTRATION-CORPUS EVALUATION",
   "scientific_status": "SCIENTIFIC RESULTS \u2014 PENDING REAL IMAGE EVALUATION (REAL_BENCHMARK_IMAGES_UNAVAILABLE)",
   "division": "Division 2 \u2014 Single-Image Remote-Sensing Intelligence",
   "git": {
-    "commit_hash": "a79d8062da0317f9c702a6e1f6575808f39e784f",
+    "commit_hash": "f80d618a95de74471de4fa347a01314c021c2496",
     "branch": "main",
     "author": "Lalith2007",
     "email": "lalithpraveenaradhyulaedu@gmail.com"
@@ -98,10 +98,10 @@
     "resident_ram_mb": 2475.31
   },
   "runtime_environment": {
-    "os_platform": "macOS-26.5.2-arm64-arm-64bit",
+    "os_platform": "macOS-26.6.2-arm64-arm-64bit",
     "python_version": "3.11.15",
-    "pytorch_version": "2.13.0",
-    "transformers_version": "5.15.1",
+    "pytorch_version": "2.14.0",
+    "transformers_version": "5.16.1",
     "peft_version": "0.20.0",
     "safetensors_version": "0.8.0",
     "compute_hardware": {
