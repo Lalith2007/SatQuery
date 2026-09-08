@@ -225,7 +225,8 @@ notebook = {
                 "# Execute BigEarthNet Stage 1 Real Image Materialization\n",
                 "!python -m specialists.single_image.training.colab.materialize_bigearthnet \\\n",
                 "    --manifest_path \"$STAGE1_MANIFEST\" \\\n",
-                "    --output_dir \"$BIGEARTHNET_DATASET_DIR\""
+                "    --output_dir \"$BIGEARTHNET_DATASET_DIR\" \\\n",
+                "    --auto_download"
             ]
         },
         {

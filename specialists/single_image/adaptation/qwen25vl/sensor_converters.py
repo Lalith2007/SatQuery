@@ -55,17 +55,41 @@ class Sentinel1SARConverter:
     @classmethod
     def convert_s1_to_rgb(
         cls,
-        vv_array: np.ndarray,
-        vh_array: np.ndarray,
-        record_id: str,
-        scene_id: str,
-        patch_id: str,
+        vv_array: Optional[np.ndarray] = None,
+        vh_array: Optional[np.ndarray] = None,
+        record_id: str = "unknown",
+        scene_id: str = "unknown",
+        patch_id: str = "unknown",
         geolocation: Optional[Dict[str, Any]] = None,
         is_db: bool = True,
+        file_path: Optional[Union[str, Any]] = None,
     ) -> Tuple[Image.Image, TransformedImageMetadata]:
-        """Convert VV and VH arrays into a 3-channel PIL Image and sidecar metadata."""
-        vv = np.asarray(vv_array, dtype=np.float32)
-        vh = np.asarray(vh_array, dtype=np.float32)
+        """Convert VV and VH arrays or GeoTIFF into a 3-channel PIL Image and sidecar metadata."""
+        from pathlib import Path
+        if file_path is not None:
+            p = Path(file_path)
+            try:
+                import tifffile
+                data = tifffile.imread(str(p))
+            except Exception:
+                with Image.open(p) as img:
+                    data = np.array(img)
+            data = np.asarray(data, dtype=np.float32)
+            if data.ndim == 3 and data.shape[0] >= 2:
+                vv = data[0]
+                vh = data[1]
+            elif data.ndim == 3 and data.shape[-1] >= 2:
+                vv = data[:, :, 0]
+                vh = data[:, :, 1]
+            elif data.ndim == 2:
+                vv = data
+                vh = data
+            else:
+                vv = data[0] if data.ndim > 1 else data
+                vh = vv
+        else:
+            vv = np.asarray(vv_array, dtype=np.float32)
+            vh = np.asarray(vh_array, dtype=np.float32)
 
         if not is_db:
             # Convert linear power/intensity to decibels (dB)
@@ -122,21 +146,60 @@ class Sentinel2MultispectralConverter:
     @classmethod
     def convert_s2_to_rgb(
         cls,
-        band_dict: Dict[str, np.ndarray],
-        record_id: str,
-        scene_id: str,
-        patch_id: str,
+        band_dict: Optional[Dict[str, np.ndarray]] = None,
+        record_id: str = "unknown",
+        scene_id: str = "unknown",
+        patch_id: str = "unknown",
         geolocation: Optional[Dict[str, Any]] = None,
         clip_max: float = 2000.0,
+        file_path: Optional[Union[str, Any]] = None,
     ) -> Tuple[Image.Image, TransformedImageMetadata]:
-        """Convert Sentinel-2 12-band dictionary into True Color Composite (B04, B03, B02)."""
-        b04 = np.asarray(band_dict["B04"], dtype=np.float32)
-        b03 = np.asarray(band_dict["B03"], dtype=np.float32)
-        b02 = np.asarray(band_dict["B02"], dtype=np.float32)
+        """Convert Sentinel-2 12-band dictionary or GeoTIFF into True Color Composite (B04, B03, B02)."""
+        from pathlib import Path
+        if file_path is not None:
+            p = Path(file_path)
+            try:
+                import tifffile
+                data = tifffile.imread(str(p))
+            except Exception:
+                with Image.open(p) as img:
+                    data = np.array(img)
+            data = np.asarray(data, dtype=np.float32)
+            if data.ndim == 3 and data.shape[0] in {3, 10, 12}:
+                if data.shape[0] == 3:
+                    b04, b03, b02 = data[0], data[1], data[2]
+                elif data.shape[0] == 10:
+                    # Typical 10-band S2: B02, B03, B04, B05, B06, B07, B08, B8A, B11, B12
+                    b04, b03, b02 = data[2], data[1], data[0]
+                else:
+                    # 12-band: B01, B02, B03, B04...
+                    b04, b03, b02 = data[3], data[2], data[1]
+            elif data.ndim == 3 and data.shape[-1] >= 3:
+                b04, b03, b02 = data[:, :, 0], data[:, :, 1], data[:, :, 2]
+            elif data.ndim == 2:
+                b04 = data
+                b03 = data
+                b02 = data
+            else:
+                b04 = data[0] if data.ndim > 1 else data
+                b03 = b04
+                b02 = b04
+            orig_bands = ["B04", "B03", "B02"]
+        else:
+            b04 = np.asarray(band_dict["B04"], dtype=np.float32)
+            b03 = np.asarray(band_dict["B03"], dtype=np.float32)
+            b02 = np.asarray(band_dict["B02"], dtype=np.float32)
+            orig_bands = sorted(list(band_dict.keys())) if band_dict else ["B04", "B03", "B02"]
 
-        ch_r = np.clip(b04 / clip_max, 0.0, 1.0)
-        ch_g = np.clip(b03 / clip_max, 0.0, 1.0)
-        ch_b = np.clip(b02 / clip_max, 0.0, 1.0)
+        # If data is already uint8 RGB [0, 255]
+        if b04.max() <= 255.0 and clip_max == 2000.0 and b04.max() > 1.0:
+            scale = 255.0
+        else:
+            scale = clip_max
+
+        ch_r = np.clip(b04 / scale, 0.0, 1.0)
+        ch_g = np.clip(b03 / scale, 0.0, 1.0)
+        ch_b = np.clip(b02 / scale, 0.0, 1.0)
 
         rgb_stack = np.stack([ch_r, ch_g, ch_b], axis=-1)
         rgb_uint8 = (rgb_stack * 255.0).astype(np.uint8)
@@ -147,7 +210,7 @@ class Sentinel2MultispectralConverter:
             sensor="Sentinel-2 MSI",
             scene_id=scene_id,
             patch_id=patch_id,
-            original_bands=sorted(list(band_dict.keys())),
+            original_bands=orig_bands,
             channels_rendered=["B04 (Red)", "B03 (Green)", "B02 (Blue)"],
             conversion_method="true_color_composite_tcc",
             spectral_information_loss_doc=cls.DOCUMENTED_LOSS,

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -23,6 +24,197 @@ import numpy as np
 from core.logging import get_logger
 
 logger = get_logger("materialize_bigearthnet")
+
+
+class CombinedStream(io.RawIOBase):
+    """Sequential reader over multiple file-like streams."""
+
+    def __init__(self, streams: List[Any]):
+        self.streams = list(streams)
+        self.idx = 0
+
+    def readable(self) -> bool:
+        return True
+
+    def readinto(self, b: bytearray) -> int:
+        while self.idx < len(self.streams):
+            n = self.streams[self.idx].readinto(b)
+            if n > 0:
+                return n
+            self.idx += 1
+        return 0
+
+
+def download_and_extract_hf_s1(
+    needed_s1: Dict[str, str],
+    pairs_dir: Path,
+    temp_dir: Path,
+    repo_id: str = "torchgeo/bigearthnet",
+) -> int:
+    """Download S1 split archives, extract needed VV/VH GeoTIFFs, stack into sentinel1.tif, and delete archives."""
+    from huggingface_hub import hf_hub_download
+    import tifffile
+    import tarfile
+
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    part_files = ["V2/BigEarthNet-S1.tar.gzaa", "V2/BigEarthNet-S1.tar.gzab"]
+    local_parts = []
+
+    print("\n" + "=" * 60)
+    print("STEP 1: ACQUIRING SENTINEL-1 (SAR) IMAGERY (torchgeo/bigearthnet)")
+    print("=" * 60)
+    print(f"Targeting {len(needed_s1)} missing Sentinel-1 pairs...")
+
+    for pf in part_files:
+        print(f"Downloading {pf} from Hugging Face Hub (resumable)...")
+        p = hf_hub_download(repo_id=repo_id, filename=pf, repo_type="dataset", local_dir=str(temp_dir), resume_download=True)
+        local_parts.append(Path(p))
+
+    print("Opening combined multi-part tar stream for Sentinel-1...")
+    file_handles = [open(lp, "rb") for lp in local_parts]
+    comb = CombinedStream(file_handles)
+
+    extracted_s1: Dict[str, Dict[str, bytes]] = {}
+    saved_count = 0
+
+    try:
+        with tarfile.open(fileobj=comb, mode="r|gz") as tar:
+            for member in tar:
+                if not member.isfile():
+                    continue
+                name = member.name
+                if name.endswith("_VV.tif") or name.endswith("_VH.tif"):
+                    fname = name.rsplit("/", 1)[-1]
+                    if fname.endswith("_VV.tif"):
+                        s1_name = fname[:-7]
+                        pol = "VV"
+                    else:
+                        s1_name = fname[:-7]
+                        pol = "VH"
+
+                    if s1_name in needed_s1:
+                        f = tar.extractfile(member)
+                        if f is not None:
+                            extracted_s1.setdefault(s1_name, {})[pol] = f.read()
+
+                            if "VV" in extracted_s1[s1_name] and "VH" in extracted_s1[s1_name]:
+                                pid = needed_s1[s1_name]
+                                p_dir = pairs_dir / pid
+                                p_dir.mkdir(parents=True, exist_ok=True)
+
+                                vv_arr = tifffile.imread(io.BytesIO(extracted_s1[s1_name]["VV"]))
+                                vh_arr = tifffile.imread(io.BytesIO(extracted_s1[s1_name]["VH"]))
+                                stack = np.stack([vv_arr, vh_arr], axis=0)
+
+                                target_s1 = p_dir / "sentinel1.tif"
+                                target_alias = p_dir / "s1_2bands.tif"
+                                tifffile.imwrite(target_s1, stack)
+                                if not target_alias.exists():
+                                    shutil.copy2(target_s1, target_alias)
+
+                                del extracted_s1[s1_name]
+                                saved_count += 1
+                                if saved_count % 500 == 0 or saved_count == len(needed_s1):
+                                    print(f"Materialized {saved_count}/{len(needed_s1)} Sentinel-1 pairs...")
+    finally:
+        for fh in file_handles:
+            fh.close()
+
+    print(f"Sentinel-1 extraction complete: {saved_count} pairs assembled.")
+    print("Deleting temporary S1 archive chunks to reclaim storage...")
+    for lp in local_parts:
+        if lp.exists():
+            lp.unlink()
+    print("S1 archives deleted successfully.")
+    return saved_count
+
+
+def download_and_extract_hf_s2(
+    needed_s2: Dict[str, str],
+    pairs_dir: Path,
+    temp_dir: Path,
+    repo_id: str = "torchgeo/bigearthnet",
+) -> int:
+    """Download S2 split archives, extract needed B04/B03/B02 GeoTIFFs, stack into sentinel2.tif, and delete archives."""
+    from huggingface_hub import hf_hub_download
+    import tifffile
+    import tarfile
+
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    part_files = ["V2/BigEarthNet-S2.tar.gzaa", "V2/BigEarthNet-S2.tar.gzab"]
+    local_parts = []
+
+    print("\n" + "=" * 60)
+    print("STEP 2: ACQUIRING SENTINEL-2 (OPTICAL) IMAGERY (torchgeo/bigearthnet)")
+    print("=" * 60)
+    print(f"Targeting {len(needed_s2)} missing Sentinel-2 pairs...")
+
+    for pf in part_files:
+        print(f"Downloading {pf} from Hugging Face Hub (resumable)...")
+        p = hf_hub_download(repo_id=repo_id, filename=pf, repo_type="dataset", local_dir=str(temp_dir), resume_download=True)
+        local_parts.append(Path(p))
+
+    print("Opening combined multi-part tar stream for Sentinel-2...")
+    file_handles = [open(lp, "rb") for lp in local_parts]
+    comb = CombinedStream(file_handles)
+
+    extracted_s2: Dict[str, Dict[str, bytes]] = {}
+    saved_count = 0
+
+    try:
+        with tarfile.open(fileobj=comb, mode="r|gz") as tar:
+            for member in tar:
+                if not member.isfile():
+                    continue
+                name = member.name
+                if name.endswith("_B04.tif") or name.endswith("_B03.tif") or name.endswith("_B02.tif"):
+                    fname = name.rsplit("/", 1)[-1]
+                    if fname.endswith("_B04.tif"):
+                        patch_id = fname[:-8]
+                        band = "B04"
+                    elif fname.endswith("_B03.tif"):
+                        patch_id = fname[:-8]
+                        band = "B03"
+                    else:
+                        patch_id = fname[:-8]
+                        band = "B02"
+
+                    if patch_id in needed_s2:
+                        f = tar.extractfile(member)
+                        if f is not None:
+                            extracted_s2.setdefault(patch_id, {})[band] = f.read()
+
+                            if "B04" in extracted_s2[patch_id] and "B03" in extracted_s2[patch_id] and "B02" in extracted_s2[patch_id]:
+                                pid = needed_s2[patch_id]
+                                p_dir = pairs_dir / pid
+                                p_dir.mkdir(parents=True, exist_ok=True)
+
+                                b04_arr = tifffile.imread(io.BytesIO(extracted_s2[patch_id]["B04"]))
+                                b03_arr = tifffile.imread(io.BytesIO(extracted_s2[patch_id]["B03"]))
+                                b02_arr = tifffile.imread(io.BytesIO(extracted_s2[patch_id]["B02"]))
+                                stack = np.stack([b04_arr, b03_arr, b02_arr], axis=0)
+
+                                target_s2 = p_dir / "sentinel2.tif"
+                                target_alias = p_dir / "s2_10bands.tif"
+                                tifffile.imwrite(target_s2, stack)
+                                if not target_alias.exists():
+                                    shutil.copy2(target_s2, target_alias)
+
+                                del extracted_s2[patch_id]
+                                saved_count += 1
+                                if saved_count % 500 == 0 or saved_count == len(needed_s2):
+                                    print(f"Materialized {saved_count}/{len(needed_s2)} Sentinel-2 pairs...")
+    finally:
+        for fh in file_handles:
+            fh.close()
+
+    print(f"Sentinel-2 extraction complete: {saved_count} pairs assembled.")
+    print("Deleting temporary S2 archive chunks to reclaim storage...")
+    for lp in local_parts:
+        if lp.exists():
+            lp.unlink()
+    print("S2 archives deleted successfully.")
+    return saved_count
 
 
 def compute_sha256(file_path: Path) -> str:
@@ -130,6 +322,7 @@ def materialize_bigearthnet_pairs(
     source_archive_path: Optional[str] = None,
     source_url: Optional[str] = None,
     verify_only: bool = False,
+    auto_download: bool = False,
 ) -> Dict[str, Any]:
     """Materialize the 8,000 BigEarthNet pairs with strict provenance and validation."""
     t0 = time.perf_counter()
@@ -144,6 +337,7 @@ def materialize_bigearthnet_pairs(
     print(f"Manifest Path:     {manifest_p.resolve()}")
     print(f"Output Directory:  {pairs_dir.resolve()}")
     print(f"Verify-only Mode:  {verify_only}")
+    print(f"Auto-download:     {auto_download}")
 
     unique_pairs = load_unique_pairs_from_manifest(manifest_p)
     expected_pairs_count = len(unique_pairs)
@@ -154,6 +348,41 @@ def materialize_bigearthnet_pairs(
         Path("data/curated_mixture/materialized_samples"),
         pairs_dir,
     ]
+
+    # If auto_download is enabled, acquire missing imagery from Hugging Face sequentially
+    if auto_download and not verify_only:
+        needed_s1: Dict[str, str] = {}
+        needed_s2: Dict[str, str] = {}
+        for pinfo in unique_pairs:
+            pid = pinfo["pair_id"]
+            target_pair_dir = pairs_dir / pid
+            s1_exists = (target_pair_dir / "sentinel1.tif").exists() or (target_pair_dir / "s1_2bands.tif").exists()
+            s2_exists = (target_pair_dir / "sentinel2.tif").exists() or (target_pair_dir / "s2_10bands.tif").exists()
+
+            # Also check local candidates before requesting download
+            if not s1_exists:
+                for cand in local_candidates:
+                    if (cand / pid / "sentinel1.tif").exists() or (cand / pid / "s1_2bands.tif").exists():
+                        s1_exists = True
+                        break
+            if not s2_exists:
+                for cand in local_candidates:
+                    if (cand / pid / "sentinel2.tif").exists() or (cand / pid / "s2_10bands.tif").exists():
+                        s2_exists = True
+                        break
+
+            if not s1_exists:
+                needed_s1[pinfo["s1_name"]] = pid
+            if not s2_exists:
+                needed_s2[pinfo["patch_id"]] = pid
+
+        temp_dir = out_p / "temp_archives"
+        if needed_s1:
+            download_and_extract_hf_s1(needed_s1, pairs_dir, temp_dir)
+        if needed_s2:
+            download_and_extract_hf_s2(needed_s2, pairs_dir, temp_dir)
+        if temp_dir.exists():
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
     materialized_manifest_records: List[Dict[str, Any]] = []
     checksum_lines: List[str] = []
@@ -371,12 +600,14 @@ def main():
     parser.add_argument("--manifest_path", default="data/curated_mixture/bigearthnet_stage1_manifest.jsonl")
     parser.add_argument("--output_dir", default="/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1")
     parser.add_argument("--verify_only", action="store_true")
+    parser.add_argument("--auto_download", action="store_true", help="Download missing BigEarthNet archives sequentially from Hugging Face and extract matching pairs")
     args = parser.parse_args()
 
     res = materialize_bigearthnet_pairs(
         manifest_path=args.manifest_path,
         output_dir=args.output_dir,
         verify_only=args.verify_only,
+        auto_download=args.auto_download,
     )
     if not res["training_authorized"]:
         logger.warning("Materialization gate check not fully satisfied. Real BigEarthNet training cannot start until all 8,000 pairs are materialized.")

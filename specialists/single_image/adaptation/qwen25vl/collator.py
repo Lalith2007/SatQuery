@@ -14,6 +14,7 @@ import torch
 
 from core.logging import get_logger
 from specialists.single_image.adaptation.qwen25vl.sar import SARPreprocessor
+from specialists.single_image.adaptation.qwen25vl.sensor_converters import Sentinel2MultispectralConverter
 
 logger = get_logger("qwen25vl_collator")
 
@@ -109,8 +110,16 @@ class Qwen25VLDataCollator:
 
             # Load and convert image
             try:
-                if modality == "sar" or p.suffix.lower() in {".tif", ".tiff"}:
+                if modality == "sar":
                     pil_img, _ = SARPreprocessor.process_file(p)
+                elif modality == "optical" and p.suffix.lower() in {".tif", ".tiff"}:
+                    pil_img, _ = Sentinel2MultispectralConverter.convert_s2_to_rgb(file_path=p, record_id=rec_id, patch_id=str(pair_id))
+                elif p.suffix.lower() in {".tif", ".tiff"}:
+                    # Infer modality from filename
+                    if any(k in p.name.lower() for k in ["s1", "sar"]):
+                        pil_img, _ = SARPreprocessor.process_file(p)
+                    else:
+                        pil_img, _ = Sentinel2MultispectralConverter.convert_s2_to_rgb(file_path=p, record_id=rec_id, patch_id=str(pair_id))
                 else:
                     with Image.open(p) as img:
                         pil_img = img.convert("RGB")
