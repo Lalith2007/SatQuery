@@ -1,6 +1,6 @@
 # Division 4 — Optical-SAR Cross-Modal Intelligence Specialist
 
-**Owner:** Manoj (Division 4 Specialist Lead)  
+**Component:** Optical-SAR Cross-Modal Intelligence Specialist  
 **System:** SatQuery AI Agentic Vision-Language Assistant  
 **Directory:** `specialists/optical_sar/`  
 **Shared Base Class:** `core.interfaces.BaseSpecialistTool`  
@@ -99,7 +99,7 @@ print("Evidence Items:", len(result.evidence))
 print("Artifact Paths:", [a.uri_or_path for a in result.artifacts])
 ```
 
-### ToolRegistry Registration (Lalith's Agent Core):
+### ToolRegistry Registration (Agent Core):
 ```python
 from registry.registry import ToolRegistry
 from specialists.optical_sar import OpticalSarSpecialist
@@ -145,29 +145,29 @@ Run the complete Division 4 test suite across all 4 implementation phases:
 
 ---
 
-## 7. Frozen Model Baseline & Performance
+## 7. Production Model & Authoritative Performance
 
-- **Official Frozen Checkpoint:** `specialists/optical_sar/checkpoints/cmaf_landcover_best.pth`
-- **SHA-256 Hash:** `8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9`
-- **Total Model Parameters:** `19,755,144`
+- **Production Checkpoint:** `specialists/optical_sar/checkpoints/cmaf_landcover_best.pth`
+- **SHA-256 Hash:** `26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b`
+- **File Size:** 79,480,705 bytes (75.80 MB)
+- **Total Model Parameters:** `19,755,144` (Dual Truncated ResNet-50 backbones, CMAF Neck, FiLM Task Head)
 - **Output Classes:** `8` (`Background`, `Farmland`, `City`, `Village`, `Water`, `Forest`, `Road`, `Others`)
-- **Benchmark Evaluation (2,970 held-out WHU-OPT-SAR tiles / 185.2M pixels):**
-  - **Pixel Accuracy:** **`27.56%`**
-  - **Macro mIoU (8 Classes):** **`0.0553`**
-  - **Class IoUs:** Forest (`0.2584`), Farmland (`0.1422`), City (`0.0418`), Minority Classes (`0.0000`)
-- **Scientific Status Note:** Real trained optical-SAR cross-modal model integrated into the system; current frozen checkpoint demonstrates genuine inference with limited held-out generalization due to training class imbalance.
+- **Preserved Rollback Checkpoint:** `specialists/optical_sar/checkpoints/archive/cmaf_landcover_best_pre_v3.pth`
+  - **Rollback SHA-256:** `8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9`
+- **Authoritative Fresh Benchmark (15 official held-out WHU-OPT-SAR scenes / 4,950 tiles / 308,687,656 valid pixels):**
+  - **Overall Accuracy (OA):** **`71.71%`** (0.717099)
+  - **Mean IoU (mIoU):** **`35.08%`** (0.350793)
+  - **Macro F1 Score:** **`46.62%`** (0.466209)
+  - **Macro Precision:** **`46.58%`** (0.465837)
+  - **Macro Recall:** **`52.48%`** (0.524761)
+  - **Weighted F1 Score:** **`74.18%`** (0.741756)
+  - **Active Classes:** **`8 / 8`**
+  - **Per-Class IoU:** Forest (`73.69%`), Farmland (`59.20%`), Water (`50.71%`), City (`44.57%`), Village (`33.32%`), Road (`11.68%`), Others (`7.46%`), Background (`0.00%`).
+- **Contextual Note:** Intermediate training validation logs reported 56.15% OA / 23.15% mIoU under lower-resolution validation callback subsampling; full sliding inference establishes the true production accuracy. Documented weaknesses remain in thin linear features (Road 11.68%) and minority/sparse categories (Others 7.46%, Background 0.00%).
 
 ---
 
-## 8. Git Handoff Instructions
+## 8. Integration Status
 
-All work for Division 4 is integrated on feature branch `feature/manoj`:
-
-```bash
-# Verify branch status
-git status
-
-# Commit and push
-git push -u origin feature/manoj
-```
+The current production implementation is integrated into `main`.
 

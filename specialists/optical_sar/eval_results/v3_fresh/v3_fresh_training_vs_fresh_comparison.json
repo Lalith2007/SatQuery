@@ -1,0 +1,59 @@
+{
+  "oa": {
+    "historical": 0.561462,
+    "fresh": 0.717099,
+    "delta": 0.155637
+  },
+  "miou": {
+    "historical": 0.231481,
+    "fresh": 0.350793,
+    "delta": 0.119312
+  },
+  "macro_f1": {
+    "historical": 0.346009,
+    "fresh": 0.466209,
+    "delta": 0.1202
+  },
+  "per_class_iou": {
+    "background": {
+      "historical": 0.0,
+      "fresh": 0.0,
+      "delta": 0.0
+    },
+    "farmland": {
+      "historical": 0.354015,
+      "fresh": 0.591998,
+      "delta": 0.237983
+    },
+    "city": {
+      "historical": 0.284513,
+      "fresh": 0.445741,
+      "delta": 0.161228
+    },
+    "village": {
+      "historical": 0.166965,
+      "fresh": 0.333233,
+      "delta": 0.166268
+    },
+    "water": {
+      "historical": 0.381644,
+      "fresh": 0.507059,
+      "delta": 0.125415
+    },
+    "forest": {
+      "historical": 0.506953,
+      "fresh": 0.736931,
+      "delta": 0.229978
+    },
+    "road": {
+      "historical": 0.101986,
+      "fresh": 0.116754,
+      "delta": 0.014768
+    },
+    "others": {
+      "historical": 0.055773,
+      "fresh": 0.074628,
+      "delta": 0.018855
+    }
+  }
+}

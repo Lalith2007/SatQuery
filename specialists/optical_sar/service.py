@@ -70,7 +70,7 @@ class OpticalSarSpecialist(BaseSpecialistTool):
                 required_modalities=[ImageModality.OPTICAL, ImageModality.SAR],
                 min_images=2,
                 max_images=2,
-                author_or_division="Division 4 (Manoj)",
+                author_or_division="Optical-SAR Cross-Modal Intelligence",
                 metadata={"fusion_type": "Cross-Modal-Attention-Fusion (CMAF)", "supports_cloud_penetration": True},
             ),
         )
@@ -144,15 +144,27 @@ class OpticalSarSpecialist(BaseSpecialistTool):
             return False
 
         try:
+            import pathlib
+            # Enable cross-platform unpickling for checkpoints saved on Windows environments
+            pathlib.WindowsPath = pathlib.PosixPath
+
             ckpt = torch.load(target_ckpt, map_location="cpu", weights_only=False)
-            if "fusion_neck_state_dict" in ckpt:
-                self.fusion_neck.load_state_dict(ckpt["fusion_neck_state_dict"])
-            if "task_head_state_dict" in ckpt:
-                self.task_head.load_state_dict(ckpt["task_head_state_dict"])
-            if "optical_encoder_state_dict" in ckpt:
-                self.optical_encoder.load_state_dict(ckpt["optical_encoder_state_dict"])
-            if "sar_encoder_state_dict" in ckpt:
-                self.sar_encoder.load_state_dict(ckpt["sar_encoder_state_dict"])
+
+            fn_dict = ckpt.get("fusion_neck_state_dict") or ckpt.get("fusion_neck")
+            if fn_dict is not None:
+                self.fusion_neck.load_state_dict(fn_dict)
+
+            th_dict = ckpt.get("task_head_state_dict") or ckpt.get("task_head")
+            if th_dict is not None:
+                self.task_head.load_state_dict(th_dict)
+
+            oe_dict = ckpt.get("optical_encoder_state_dict") or ckpt.get("optical_encoder")
+            if oe_dict is not None:
+                self.optical_encoder.load_state_dict(oe_dict)
+
+            se_dict = ckpt.get("sar_encoder_state_dict") or ckpt.get("sar_encoder")
+            if se_dict is not None:
+                self.sar_encoder.load_state_dict(se_dict)
 
             self.optical_encoder.eval()
             self.sar_encoder.eval()
