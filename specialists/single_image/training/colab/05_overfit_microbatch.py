@@ -63,49 +63,36 @@ def run_micro_overfit_test(
 
     train_path = Path("data/qwen_dataset/train.jsonl")
     samples = []
-    if train_path.exists():
-        with open(train_path, "r", encoding="utf-8") as f:
-            for line in f:
-                if not line.strip():
-                    continue
-                rec = json.loads(line.strip())
-                img_p = Path(rec.get("image", ""))
-                # Prioritize real materialized S1/S2 pairs
-                if img_p.exists():
-                    samples.append(rec)
-                if len(samples) >= num_samples:
-                    break
+    if not train_path.exists():
+        raise FileNotFoundError(
+            f"Training dataset split not found at '{train_path}'. Run Phase B (Materialization) and Phase C (Preparation) first."
+        )
 
-        # If fewer than num_samples had materialized files, grab remaining from train.jsonl
-        if len(samples) < num_samples:
-            with open(train_path, "r", encoding="utf-8") as f:
-                for line in f:
-                    if not line.strip():
-                        continue
-                    rec = json.loads(line.strip())
-                    if rec not in samples:
-                        samples.append(rec)
-                    if len(samples) >= num_samples:
-                        break
+    with open(train_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            rec = json.loads(line.strip())
+            img_p = Path(rec.get("image", ""))
+            # Must strictly be a real materialized image, no demo assets
+            if img_p.exists() and "demo" not in str(img_p).lower() and "fallback" not in str(img_p).lower():
+                samples.append(rec)
+            if len(samples) >= num_samples:
+                break
 
-    if not samples:
-        # Fallback multi-task samples
-        opt_img = "demo_assets/demo_optical_single.png"
-        sar_img = "demo_assets/demo_sar_cross.tif"
-        samples = [
-            {
-                "id": f"micro_sample_{i}",
-                "image": sar_img if i % 2 == 1 else opt_img,
-                "modality": "sar" if i % 2 == 1 else "optical",
-                "task": "grounding" if i % 3 == 0 else ("vqa" if i % 3 == 1 else "caption"),
-                "messages": [
-                    {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": "Locate the primary structure."}]},
-                    {"role": "assistant", "content": "<|box_start|>(200,200),(600,600)<|box_end|>"},
-                ],
-            }
-            for i in range(num_samples)
-        ]
-    print(f"Loaded {len(samples)} micro-batch samples (Real rasters verified: {sum(1 for s in samples if Path(str(s.get('image'))).exists())}/{len(samples)}).")
+    if len(samples) < num_samples:
+        raise RuntimeError(
+            f"Micro-overfit test requires at least {num_samples} real materialized BigEarthNet training samples, "
+            f"but found only {len(samples)} with verified image files. Demo/fallback substitutions are strictly forbidden."
+        )
+
+    print(f"Loaded {len(samples)} real BigEarthNet micro-batch samples:")
+    for s in samples:
+        print(f"  - [{s['id']}] Pair: {s.get('pair_id')} | Modality: {s.get('modality')} | Image: {s.get('image')}")
+    report["REAL_BIGEARTHNET_DATA"] = True
+    report["demo_fallback_used"] = False
+    report["sample_ids"] = [s["id"] for s in samples]
+    report["sample_pairs"] = [s.get("pair_id") for s in samples]
 
     if is_cuda:
         quant_cfg = QuantizationConfig(load_in_4bit=True)
@@ -117,7 +104,7 @@ def run_micro_overfit_test(
         peft_model, stats = QwenModelLoader.apply_lora_adaptation(model, LoraConfigQwen())
         peft_model.train()
 
-        collator = Qwen25VLDataCollator(processor=processor)
+        collator = Qwen25VLDataCollator(processor=processor, strict_real_data=True, demo_mode=False)
         batch = collator(samples)
         batch = {k: v.to("cuda") for k, v in batch.items() if isinstance(v, torch.Tensor)}
 

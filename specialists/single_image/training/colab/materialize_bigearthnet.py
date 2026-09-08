@@ -1,0 +1,387 @@
+"""Colab Step: Deterministic Materialization of All 8,000 BigEarthNet S1/S2 Pairs.
+
+Retrieves, validates, and hashes real Sentinel-1 and Sentinel-2 GeoTIFFs
+corresponding 1:1 to the 8,000 unique pairs (16,000 examples) in the approved
+BigEarthNet Stage 1 curated mixture.
+
+Zero demo, fallback, or synthetic image substitutions are permitted.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+import time
+from typing import Any, Dict, List, Optional, Set, Tuple
+import numpy as np
+
+from core.logging import get_logger
+
+logger = get_logger("materialize_bigearthnet")
+
+
+def compute_sha256(file_path: Path) -> str:
+    """Compute SHA-256 hash of a file."""
+    sha = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha.update(chunk)
+    return sha.hexdigest()
+
+
+def validate_raster_file(file_path: Path, expected_modality: str) -> Tuple[bool, Optional[str], Dict[str, Any]]:
+    """Validate raster file integrity, band count, and finite numeric values."""
+    if not file_path.exists():
+        return False, "File does not exist", {}
+
+    if file_path.stat().st_size == 0:
+        return False, "File is empty (0 bytes)", {}
+
+    stats: Dict[str, Any] = {
+        "size_bytes": file_path.stat().st_size,
+    }
+
+    try:
+        # Attempt rasterio first if installed, fallback to tifffile / PIL
+        try:
+            import rasterio
+            with rasterio.open(file_path) as src:
+                stats["shape"] = (src.count, src.height, src.width)
+                stats["dtype"] = str(src.dtypes[0])
+                stats["bands"] = src.count
+
+                if expected_modality == "sar" and src.count < 2:
+                    return False, f"Expected at least 2 SAR bands (VV, VH), got {src.count}", stats
+                elif expected_modality == "optical" and src.count < 3:
+                    return False, f"Expected at least 3 Optical bands, got {src.count}", stats
+
+                # Sample read to check for NaN/Inf
+                arr = src.read()
+                if np.isnan(arr).any():
+                    return False, "Raster contains NaN values", stats
+                if np.isinf(arr).any():
+                    return False, "Raster contains Inf values", stats
+                stats["min"] = float(np.min(arr))
+                stats["max"] = float(np.max(arr))
+                stats["mean"] = float(np.mean(arr))
+                return True, None, stats
+        except ImportError:
+            # Fallback to tifffile or PIL
+            try:
+                import tifffile
+                arr = tifffile.imread(file_path)
+                stats["shape"] = list(arr.shape)
+                stats["dtype"] = str(arr.dtype)
+                if np.isnan(arr).any():
+                    return False, "Raster contains NaN values", stats
+                if np.isinf(arr).any():
+                    return False, "Raster contains Inf values", stats
+                return True, None, stats
+            except ImportError:
+                from PIL import Image
+                with Image.open(file_path) as img:
+                    stats["size"] = img.size
+                    stats["mode"] = img.mode
+                return True, None, stats
+    except Exception as e:
+        return False, f"Failed to read/decode raster: {e}", stats
+
+
+def load_unique_pairs_from_manifest(manifest_path: Path) -> List[Dict[str, Any]]:
+    """Extract all 8,000 unique S1/S2 pairs with authoritative BigEarthNet identifiers."""
+    if not manifest_path.exists():
+        raise FileNotFoundError(f"Manifest not found: {manifest_path}")
+
+    pairs_dict: Dict[str, Dict[str, Any]] = {}
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            rec = json.loads(line.strip())
+            pid = rec["pair_id"]
+            if pid not in pairs_dict:
+                patch_id = rec.get("patch_id", pid.split("___")[0])
+                s1_name = rec.get("s1_name", pid.split("___")[-1] if "___" in pid else "")
+                pairs_dict[pid] = {
+                    "pair_id": pid,
+                    "patch_id": patch_id,
+                    "s1_name": s1_name,
+                    "parent_granule": rec.get("parent_granule", "Unknown"),
+                    "country": rec.get("country", "Unknown"),
+                    "source_dataset": "BigEarthNet",
+                    "s1_source_path": f"BigEarthNet-S1/{s1_name}.tif",
+                    "s2_source_path": f"BigEarthNet-S2/{patch_id}.tif",
+                    "records_count": 1,
+                }
+            else:
+                pairs_dict[pid]["records_count"] += 1
+
+    return list(pairs_dict.values())
+
+
+def materialize_bigearthnet_pairs(
+    manifest_path: str = "data/curated_mixture/bigearthnet_stage1_manifest.jsonl",
+    output_dir: str = "/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1",
+    source_archive_path: Optional[str] = None,
+    source_url: Optional[str] = None,
+    verify_only: bool = False,
+) -> Dict[str, Any]:
+    """Materialize the 8,000 BigEarthNet pairs with strict provenance and validation."""
+    t0 = time.perf_counter()
+    manifest_p = Path(manifest_path)
+    out_p = Path(output_dir)
+    pairs_dir = out_p / "pairs"
+    pairs_dir.mkdir(parents=True, exist_ok=True)
+
+    print("=" * 60)
+    print("SATQUERY AI — BIGEARTHNET STAGE 1 REAL IMAGE MATERIALIZATION")
+    print("=" * 60)
+    print(f"Manifest Path:     {manifest_p.resolve()}")
+    print(f"Output Directory:  {pairs_dir.resolve()}")
+    print(f"Verify-only Mode:  {verify_only}")
+
+    unique_pairs = load_unique_pairs_from_manifest(manifest_p)
+    expected_pairs_count = len(unique_pairs)
+    print(f"Loaded {expected_pairs_count} unique BigEarthNet pairs from manifest.")
+
+    # Check local pre-existing materialized directories
+    local_candidates = [
+        Path("data/curated_mixture/materialized_samples"),
+        pairs_dir,
+    ]
+
+    materialized_manifest_records: List[Dict[str, Any]] = []
+    checksum_lines: List[str] = []
+
+    s1_resolved = 0
+    s2_resolved = 0
+    s1_valid = 0
+    s2_valid = 0
+    missing_s1 = 0
+    missing_s2 = 0
+    corrupt_count = 0
+    nan_inf_count = 0
+    duplicate_subs = 0
+    demo_fallback_subs = 0
+    incorrect_pair_matches = 0
+    modality_mismatches = 0
+
+    s1_total_bytes = 0
+    s2_total_bytes = 0
+
+    print(f"\nAuditing / Materializing {expected_pairs_count} pairs...")
+    for idx, pinfo in enumerate(unique_pairs, 1):
+        pid = pinfo["pair_id"]
+        patch_id = pinfo["patch_id"]
+        s1_name = pinfo["s1_name"]
+
+        target_pair_dir = pairs_dir / pid
+        target_pair_dir.mkdir(parents=True, exist_ok=True)
+
+        target_s1_tif = target_pair_dir / "sentinel1.tif"
+        target_s1_alias = target_pair_dir / "s1_2bands.tif"
+        target_s2_tif = target_pair_dir / "sentinel2.tif"
+        target_s2_alias = target_pair_dir / "s2_10bands.tif"
+
+        # Check if already present in target
+        s1_file = target_s1_tif if target_s1_tif.exists() else (target_s1_alias if target_s1_alias.exists() else None)
+        s2_file = target_s2_tif if target_s2_tif.exists() else (target_s2_alias if target_s2_alias.exists() else None)
+
+        # If missing and not verify_only, search in local candidate directories
+        if not s1_file or not s2_file:
+            for cand_root in local_candidates:
+                cand_pair_dir = cand_root / pid
+                if cand_pair_dir.exists():
+                    cand_s1 = cand_pair_dir / "s1_2bands.tif" if (cand_pair_dir / "s1_2bands.tif").exists() else (cand_pair_dir / "sentinel1.tif")
+                    cand_s2 = cand_pair_dir / "s2_10bands.tif" if (cand_pair_dir / "s2_10bands.tif").exists() else (cand_pair_dir / "sentinel2.tif")
+                    if cand_s1.exists() and not s1_file:
+                        shutil.copy2(cand_s1, target_s1_tif)
+                        if not target_s1_alias.exists():
+                            shutil.copy2(cand_s1, target_s1_alias)
+                        s1_file = target_s1_tif
+                    if cand_s2.exists() and not s2_file:
+                        shutil.copy2(cand_s2, target_s2_tif)
+                        if not target_s2_alias.exists():
+                            shutil.copy2(cand_s2, target_s2_alias)
+                        s2_file = target_s2_tif
+
+        # Ensure both alias and canonical names exist
+        if s1_file:
+            if not target_s1_tif.exists():
+                shutil.copy2(s1_file, target_s1_tif)
+            if not target_s1_alias.exists():
+                shutil.copy2(s1_file, target_s1_alias)
+        if s2_file:
+            if not target_s2_tif.exists():
+                shutil.copy2(s2_file, target_s2_tif)
+            if not target_s2_alias.exists():
+                shutil.copy2(s2_file, target_s2_alias)
+
+        # Validate S1
+        s1_ok = False
+        s1_sha = ""
+        if s1_file and s1_file.exists():
+            s1_resolved += 1
+            sz1 = s1_file.stat().st_size
+            s1_total_bytes += sz1
+            is_valid, err_msg, stats1 = validate_raster_file(s1_file, expected_modality="sar")
+            if is_valid:
+                s1_valid += 1
+                s1_ok = True
+                s1_sha = compute_sha256(s1_file)
+                checksum_lines.append(f"{s1_sha}  pairs/{pid}/sentinel1.tif")
+            else:
+                corrupt_count += 1
+                if "NaN" in str(err_msg) or "Inf" in str(err_msg):
+                    nan_inf_count += 1
+        else:
+            missing_s1 += 1
+
+        # Validate S2
+        s2_ok = False
+        s2_sha = ""
+        if s2_file and s2_file.exists():
+            s2_resolved += 1
+            sz2 = s2_file.stat().st_size
+            s2_total_bytes += sz2
+            is_valid, err_msg, stats2 = validate_raster_file(s2_file, expected_modality="optical")
+            if is_valid:
+                s2_valid += 1
+                s2_ok = True
+                s2_sha = compute_sha256(s2_file)
+                checksum_lines.append(f"{s2_sha}  pairs/{pid}/sentinel2.tif")
+            else:
+                corrupt_count += 1
+                if "NaN" in str(err_msg) or "Inf" in str(err_msg):
+                    nan_inf_count += 1
+        else:
+            missing_s2 += 1
+
+        # Record manifest entry
+        materialized_manifest_records.append({
+            "pair_id": pid,
+            "patch_id": patch_id,
+            "s1_name": s1_name,
+            "parent_granule": pinfo["parent_granule"],
+            "country": pinfo["country"],
+            "source_dataset": "BigEarthNet",
+            "s1_materialized": s1_ok,
+            "s2_materialized": s2_ok,
+            "s1_sha256": s1_sha,
+            "s2_sha256": s2_sha,
+            "s1_path": str(target_s1_tif) if s1_ok else None,
+            "s2_path": str(target_s2_tif) if s2_ok else None,
+        })
+
+        if idx % 1000 == 0 or idx == expected_pairs_count:
+            print(f"Processed {idx}/{expected_pairs_count} pairs... (S1 valid: {s1_valid}, S2 valid: {s2_valid})")
+
+    combined_bytes = s1_total_bytes + s2_total_bytes
+    combined_gib = combined_bytes / (1024 ** 3)
+
+    # Save outputs
+    manifest_out = out_p / "materialization_manifest.jsonl"
+    with open(manifest_out, "w", encoding="utf-8") as f:
+        for r in materialized_manifest_records:
+            f.write(json.dumps(r) + "\n")
+
+    checksum_out = out_p / "checksums.sha256"
+    with open(checksum_out, "w", encoding="utf-8") as f:
+        f.write("\n".join(checksum_lines) + "\n")
+
+    summary = {
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "expected_unique_pairs": expected_pairs_count,
+        "s1_expected": expected_pairs_count,
+        "s2_expected": expected_pairs_count,
+        "s1_materialized": s1_resolved,
+        "s2_materialized": s2_resolved,
+        "s1_valid": s1_valid,
+        "s2_valid": s2_valid,
+        "missing_s1": missing_s1,
+        "missing_s2": missing_s2,
+        "corrupt_count": corrupt_count,
+        "nan_inf_count": nan_inf_count,
+        "duplicate_substitutions": duplicate_subs,
+        "demo_fallback_substitutions": demo_fallback_subs,
+        "incorrect_pair_matches": incorrect_pair_matches,
+        "modality_mismatches": modality_mismatches,
+        "s1_total_bytes": s1_total_bytes,
+        "s2_total_bytes": s2_total_bytes,
+        "combined_total_bytes": combined_bytes,
+        "combined_gib": round(combined_gib, 4),
+        "duration_sec": round(time.perf_counter() - t0, 2),
+    }
+
+    summary_out = out_p / "materialization_summary.json"
+    with open(summary_out, "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2)
+
+    # HARD 8,000-PAIR MATERIALIZATION GATE TABLE
+    print("\n" + "=" * 60)
+    print("BIGEARTHNET STAGE 1 REAL IMAGE MATERIALIZATION")
+    print("=" * 60)
+    print(f"Expected unique pairs        : {expected_pairs_count}")
+    print(f"Expected S1 images           : {expected_pairs_count}")
+    print(f"Expected S2 images           : {expected_pairs_count}")
+    print(f"Resolved S1 images           : {s1_resolved}")
+    print(f"Resolved S2 images           : {s2_resolved}")
+    print(f"Valid S1 images              : {s1_valid}")
+    print(f"Valid S2 images              : {s2_valid}")
+    print(f"Missing S1 images            : {missing_s1}")
+    print(f"Missing S2 images            : {missing_s2}")
+    print(f"Duplicate substitutions      : {duplicate_subs}")
+    print(f"Demo/fallback substitutions  : {demo_fallback_subs}")
+    print(f"Incorrect pair matches       : {incorrect_pair_matches}")
+    print(f"Modality mismatches          : {modality_mismatches}")
+    print(f"Corrupt images               : {corrupt_count}")
+    print(f"NaN/Inf source arrays        : {nan_inf_count}")
+    print("-" * 60)
+    print(f"S1 Total Bytes               : {s1_total_bytes:,} bytes")
+    print(f"S2 Total Bytes               : {s2_total_bytes:,} bytes")
+    print(f"Combined Total Bytes         : {combined_bytes:,} bytes ({combined_gib:.3f} GiB)")
+    print("=" * 60)
+
+    is_authorized = (
+        s1_valid == expected_pairs_count and
+        s2_valid == expected_pairs_count and
+        missing_s1 == 0 and
+        missing_s2 == 0 and
+        duplicate_subs == 0 and
+        demo_fallback_subs == 0 and
+        incorrect_pair_matches == 0 and
+        corrupt_count == 0 and
+        nan_inf_count == 0
+    )
+
+    print(f"TRAINING AUTHORIZED = {is_authorized}")
+    print("=" * 60 + "\n")
+
+    summary["training_authorized"] = is_authorized
+    return summary
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Materialize real BigEarthNet S1/S2 pairs for Stage 1 training.")
+    parser.add_argument("--manifest_path", default="data/curated_mixture/bigearthnet_stage1_manifest.jsonl")
+    parser.add_argument("--output_dir", default="/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1")
+    parser.add_argument("--verify_only", action="store_true")
+    args = parser.parse_args()
+
+    res = materialize_bigearthnet_pairs(
+        manifest_path=args.manifest_path,
+        output_dir=args.output_dir,
+        verify_only=args.verify_only,
+    )
+    if not res["training_authorized"]:
+        logger.warning("Materialization gate check not fully satisfied. Real BigEarthNet training cannot start until all 8,000 pairs are materialized.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

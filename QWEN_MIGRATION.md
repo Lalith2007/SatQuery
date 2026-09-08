@@ -17,26 +17,27 @@ This document establishes the architecture, migration strategy, and execution pr
 > - **QLoRA training is NEVER performed on the local Mac / Apple Silicon / MPS.**
 > - **The local repository is ONLY for: code development, static validation, dataset structure validation, notebook generation, configuration audits, and unit tests.**
 > - **Reporting Semantics & Status Integrity**:
->   - **Local execution certifies ONLY**: `IMPLEMENTATION VALIDATION = PASS`, `REAL TRAINING STATUS = NOT COMPLETE`.
+> - **Reporting Semantics & Status Integrity**:
+>   - **Local execution certifies ONLY**: `IMPLEMENTATION VALIDATION = PASS`, `REAL BIGEARTHNET MATERIALIZATION = NOT READY`, `REAL TRAINING STATUS = NOT COMPLETE`.
 >   - **Phases A–E (Structural/Implementation)**: `PASS`.
->   - **Phases F–K (Training & Verification)**: Prior to physical execution on Google Colab with CUDA:
->     - `Phase F (Full Stage 1 QLoRA Training) = NOT EXECUTED`
->     - `Phase G (Held-out Evaluation) = BLOCKED / NOT EXECUTED`
->     - `Phase H (Adapter Verification) = BLOCKED / NOT EXECUTED`
->     - `Phase I (Full Checkpoint Merge) = BLOCKED / NOT EXECUTED`
->     - `Phase J (Merged Checkpoint Independent Inference) = BLOCKED / NOT EXECUTED`
->     - `Phase K (Artifact Packaging & Google Drive Export) = BLOCKED / NOT EXECUTED`
->   - **PASS states for Phases F–K are NEVER fabricated from mocks, unit tests, schema tests, or placeholder artifacts.**
->   - **Only after certified REAL-CUDA execution in Colab does the report state**:
->     - `REAL-CUDA TRAINING = PASS`
->     - `ADAPTER = PASS`
->     - `MERGED FULL CHECKPOINT = PASS`
->     - `INDEPENDENT INFERENCE = PASS`
->     - `CHECKPOINT INTEGRITY = PASS`
->     - `PERSISTENT ARTIFACT = PASS`
-> - **Deliverables: Produces BOTH a LoRA adapter (`adapter/`) AND a complete standalone merged model checkpoint (`merged_full/`) stored in safetensors format.**
-> - **The merged model is the PRIMARY deployment artifact and must be loadable independently without PEFT.**
-> - **Multi-GB model weights are stored outside Git** (in persistent Google Drive `/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/` or optional Hugging Face Hub). Git stores code, configs, manifests, documentation, and SHA-256 hashes.
+>   - **Phases F–L (Training & Verification)**: Prior to physical execution on Google Colab with CUDA:
+>     - `Phase F (Real BigEarthNet Micro-Overfit) = NOT EXECUTED`
+>     - `Pre-Training Readiness Gate = READY`
+>     - `Phase G (Full Stage 1 QLoRA Training) = NOT EXECUTED`
+>     - `Phase H (Held-out Evaluation) = BLOCKED / NOT EXECUTED`
+>     - `Phase I (Adapter Export) = BLOCKED / NOT EXECUTED`
+>     - `Phase J (Full Checkpoint Merge) = BLOCKED / NOT EXECUTED`
+>     - `Phase K (Merged Checkpoint Independent Inference) = BLOCKED / NOT EXECUTED`
+>     - `Phase L (Artifact Packaging & Google Drive Export) = BLOCKED / NOT EXECUTED`
+>   - **Dataset Corpus & Split Integrity**:
+>     - **Stage 1 Corpus**: 16,000 total records across 8,000 unique BigEarthNet S1/S2 pairs.
+>     - **Train Split**: 14,304 records (actual optimizer training dataset).
+>     - **Validation Split**: 846 records.
+>     - **Test Split**: 850 records.
+>     - **Zero Demo/Fallback Substitutions**: Every record must resolve to actual materialized BigEarthNet imagery (`STRICT_REAL_DATA=true`). Demo and fallback image substitutions are strictly forbidden during training, validation, and evaluation.
+>   - **Deliverables**: Produces BOTH a LoRA adapter (`adapter/`) AND a complete standalone merged model checkpoint (`merged_full/`) stored in safetensors format.
+>   - **The merged model is the PRIMARY deployment artifact and must be loadable independently without PEFT.**
+>   - **Multi-GB model weights are stored outside Git** (in persistent Google Drive `/content/drive/MyDrive/SatQueryAI_Qwen25VL/` or optional Hugging Face Hub). Git stores code, configs, manifests, documentation, and SHA-256 hashes.
 
 ### 1.1 Development and Execution Topology
 
@@ -54,26 +55,30 @@ LOCAL / ANTIGRAVITY (Apple Silicon Mac)
 GOOGLE COLAB CUDA RUNTIME (NVIDIA T4 / L4 / A100)
     │
     ├─ Phase A: Environment Check (Strict CUDA Guard) (00_environment_check.py)
-    ├─ Phase B: Stage 1 Dataset Validation Gate (01_prepare_dataset.py, 02_validate_dataset.py)
-    ├─ Phase C: Architecture & Grounding Token Inspection (03_inspect_qwen.py)
-    ├─ Phase D: Real CUDA Smoke Test (04_smoke_test.py)
-    ├─ Phase E: Micro-Batch Overfit Convergence Test (05_overfit_microbatch.py)
-    ├─ Phase F: Production 4-bit QLoRA Training (06_train_qwen25vl_qlora.py)
-    ├─ Phase G: Held-Out Authoritative Evaluation (07_evaluate_qwen25vl.py)
-    ├─ Phase H: Adapter Verification & SHA-256 Calculation (08_export_adapter.py)
-    ├─ Phase I: Full Checkpoint Merging (Safetensors Shards) (08_export_adapter.py)
-    ├─ Phase J: Standalone Merged Independent Inference Validation (08_export_adapter.py)
-    └─ Phase K: Packaging, SHA-256 Manifest, Archive & Google Drive Export (09_package_artifacts.py)
+    ├─ Phase B: Real BigEarthNet Materialization (materialize_bigearthnet.py)
+    ├─ Phase C: Real 16,000-Record Resolution + Split Audit (01_prepare_dataset.py, 02_validate_dataset.py)
+    ├─ Phase D: Architecture & Grounding Token Inspection (03_inspect_qwen.py)
+    ├─ Phase E: Real CUDA Smoke Test (04_smoke_test.py)
+    ├─ Phase F: Real BigEarthNet Micro-Batch Overfit (05_overfit_microbatch.py)
+    ├─ Pre-Training Readiness Gate (Materialization, Resolution, Leakage, Micro-Overfit Verification)
+    ├─ Phase G: Production 4-bit QLoRA Training (14,304 train records) (06_train_qwen25vl_qlora.py)
+    ├─ Phase H: Held-Out Authoritative Evaluation (850 test records) (07_evaluate_qwen25vl.py)
+    ├─ Phase I: Adapter Verification & SHA-256 Calculation (08_export_adapter.py)
+    ├─ Phase J: Full Checkpoint Merging (Safetensors Shards) (08_export_adapter.py)
+    ├─ Phase K: Standalone Merged Independent Inference Validation (08_export_adapter.py)
+    └─ Phase L: Packaging, SHA-256 Manifest, Archive & Google Drive Export (09_package_artifacts.py)
     │
     ▼ [Persistent Artifact Export]
 GOOGLE DRIVE PERSISTENCE & REPRODUCIBILITY ARCHIVE
-    /content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/
-    ├── adapter/ (adapter_model.safetensors, adapter_config.json)
-    ├── merged_full/ (config.json, preprocessor_config.json, model.safetensors shards)
-    ├── evaluation/ (results.json, results.md)
-    ├── checkpoint_manifest.json (SHA-256 checksums across all shards)
-    ├── CHECKPOINT_CARD.md
-    └── qwen25vl_stage1_full_checkpoint.tar.zst
+    /content/drive/MyDrive/SatQueryAI_Qwen25VL/
+    ├── datasets/bigearthnet_stage1/pairs/ (8,000 unique S1/S2 pairs)
+    └── stage1_run/
+        ├── adapter/ (adapter_model.safetensors, adapter_config.json)
+        ├── merged_full/ (config.json, preprocessor_config.json, model.safetensors shards)
+        ├── evaluation/ (results.json, results.md)
+        ├── checkpoint_manifest.json (SHA-256 checksums across all shards)
+        ├── CHECKPOINT_CARD.md
+        └── qwen25vl_stage1_full_checkpoint.tar.zst
 ```
 
 ### 1.2 Execution Classification Discipline

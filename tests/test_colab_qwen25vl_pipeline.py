@@ -46,7 +46,7 @@ def test_notebook_exists_and_is_valid_json():
     assert len(nb_data["cells"]) >= 20, f"Expected at least 20 cells, got {len(nb_data['cells'])}"
 
 
-# 2. Expected Notebook Stages Exist (Phases A through K)
+# 2. Expected Notebook Stages Exist (Phases A through L)
 def test_expected_notebook_stages_exist():
     nb_path = Path("specialists/single_image/training/colab/colab_qwen25vl_training.ipynb")
     with open(nb_path, "r", encoding="utf-8") as f:
@@ -63,18 +63,22 @@ def test_expected_notebook_stages_exist():
         "PHASE D",
         "PHASE E",
         "PHASE F",
+        "PRE-TRAINING READINESS GATE",
         "PHASE G",
         "PHASE H",
         "PHASE I",
         "PHASE J",
         "PHASE K",
+        "PHASE L",
     ]
     for phase in expected_phases:
         assert phase in all_text, f"Mandatory stage '{phase}' not found in notebook cells!"
     
     assert "EXECUTION_MODE = \"REAL-CUDA\"" in all_text
+    assert "STRICT_REAL_DATA = True" in all_text
+    assert "DEMO_MODE = False" in all_text
     assert "Qwen/Qwen2.5-VL-3B-Instruct" in all_text
-    assert "QWEN2.5-VL STAGE 1 TRAINING FINAL REPORT" in all_text
+    assert "REAL BIGEARTHNET TRAINING READINESS" in all_text
 
 
 # 3. CUDA Guard Exists and Enforces Termination
@@ -323,27 +327,147 @@ def test_notebook_final_report_semantics():
     final_cell_source = ""
     for cell in nb_data["cells"]:
         text = "".join(cell.get("source", []))
-        if "QWEN2.5-VL STAGE 1 TRAINING FINAL REPORT" in text:
+        if "SATQUERY AI — DIVISION 2: IMPLEMENTATION & STRUCTURAL VALIDATION STATUS" in text:
             final_cell_source = text
             break
             
     assert final_cell_source, "Final training report cell not found in notebook!"
     
     # Verify pre-training / uncertified state semantics
-    assert "IMPLEMENTATION VALIDATION = PASS" in final_cell_source
-    assert "REAL TRAINING STATUS = NOT COMPLETE" in final_cell_source
-    assert "F = NOT EXECUTED" in final_cell_source
-    assert "G = BLOCKED / NOT EXECUTED" in final_cell_source
-    assert "H = BLOCKED / NOT EXECUTED" in final_cell_source
-    assert "I = BLOCKED / NOT EXECUTED" in final_cell_source
-    assert "J = BLOCKED / NOT EXECUTED" in final_cell_source
-    assert "K = BLOCKED / NOT EXECUTED" in final_cell_source
+    assert "IMPLEMENTATION VALIDATION:                            PASS" in final_cell_source
+    assert "REAL TRAINING STATUS:                                 NOT COMPLETE" in final_cell_source
+    assert "Phase G — FULL STAGE 1 QLORA TRAINING:                NOT EXECUTED" in final_cell_source
+    assert "Phase H — HELD-OUT EVALUATION:                        BLOCKED / NOT EXECUTED" in final_cell_source
+    assert "Phase I — ADAPTER EXPORT:                             BLOCKED / NOT EXECUTED" in final_cell_source
+    assert "Phase J — FULL CHECKPOINT MERGE:                      BLOCKED / NOT EXECUTED" in final_cell_source
+    assert "Phase K — MERGED CHECKPOINT INDEPENDENT INFERENCE:    BLOCKED / NOT EXECUTED" in final_cell_source
+    assert "Phase L — ARTIFACT PACKAGING:                         BLOCKED / NOT EXECUTED" in final_cell_source
     
     # Verify post-training certified state semantics
-    assert "REAL-CUDA TRAINING = PASS" in final_cell_source
-    assert "ADAPTER = PASS" in final_cell_source
-    assert "MERGED FULL CHECKPOINT = PASS" in final_cell_source
-    assert "INDEPENDENT INFERENCE = PASS" in final_cell_source
-    assert "CHECKPOINT INTEGRITY = PASS" in final_cell_source
-    assert "PERSISTENT ARTIFACT = PASS" in final_cell_source
+    assert "Phase G — FULL REAL QLORA TRAINING:                   PASS" in final_cell_source
+    assert "Phase H — HELD-OUT EVALUATION:                        PASS" in final_cell_source
+    assert "Phase I — ADAPTER EXPORT:                             PASS" in final_cell_source
+    assert "Phase J — FULL CHECKPOINT MERGE:                      PASS" in final_cell_source
+    assert "Phase K — MERGED CHECKPOINT INDEPENDENT INFERENCE:    PASS" in final_cell_source
+    assert "Phase L — ARTIFACT PACKAGING & GOOGLE DRIVE PERSIST:  PASS" in final_cell_source
+
+
+# 15. Collator Strict Mode Rejects Missing Images
+def test_collator_strict_mode_rejects_missing_image():
+    from specialists.single_image.adaptation.qwen25vl.collator import Qwen25VLDataCollator, DatasetIntegrityError
+    
+    collator = Qwen25VLDataCollator(processor=None, strict_real_data=True, demo_mode=False)
+    bad_sample = {
+        "id": "bad_001",
+        "pair_id": "pair_001",
+        "image": "non_existent_folder/pair_001/sentinel1.tif",
+        "modality": "sar",
+    }
+    with pytest.raises(DatasetIntegrityError) as exc_info:
+        collator._resolve_image(bad_sample)
+    assert "missing imagery is strictly forbidden" in str(exc_info.value).lower()
+
+
+# 16. Collator Strict Mode Rejects Demo and Fallback Assets
+def test_collator_strict_mode_rejects_demo_and_fallback_assets():
+    from specialists.single_image.adaptation.qwen25vl.collator import Qwen25VLDataCollator, DatasetIntegrityError
+    
+    collator = Qwen25VLDataCollator(processor=None, strict_real_data=True, demo_mode=False)
+    demo_sample = {
+        "id": "demo_test_001",
+        "pair_id": "pair_demo",
+        "image": "demo_assets/demo_sar_cross.tif",
+        "modality": "sar",
+    }
+    with pytest.raises(DatasetIntegrityError) as exc_info:
+        collator._resolve_image(demo_sample)
+    assert "demo or fallback image path detected" in str(exc_info.value).lower()
+
+
+# 17. Collator Strict Mode Rejects Mismatched Pair ID and Modality
+def test_collator_strict_mode_rejects_mismatches(tmp_path):
+    from specialists.single_image.adaptation.qwen25vl.collator import Qwen25VLDataCollator, DatasetIntegrityError
+    
+    # Create valid dummy files in tmp_path
+    pair_dir = tmp_path / "pair_A"
+    pair_dir.mkdir()
+    s1_file = pair_dir / "sentinel1.tif"
+    s1_file.write_bytes(b"dummy")
+    
+    collator = Qwen25VLDataCollator(processor=None, strict_real_data=True, demo_mode=False)
+    
+    # 1. Pair ID mismatch
+    mismatched_pair_sample = {
+        "id": "rec_001",
+        "pair_id": "pair_B",  # record says pair_B, file is in pair_A
+        "image": str(s1_file),
+        "modality": "sar",
+    }
+    with pytest.raises(DatasetIntegrityError) as exc_info:
+        collator._resolve_image(mismatched_pair_sample)
+    assert "pair id mismatch" in str(exc_info.value).lower()
+    
+    # 2. Modality mismatch (specifies optical, but path is sentinel1.tif)
+    mismatched_modality_sample = {
+        "id": "rec_002",
+        "pair_id": "pair_A",
+        "image": str(s1_file),
+        "modality": "optical",
+    }
+    with pytest.raises(DatasetIntegrityError) as exc_info:
+        collator._resolve_image(mismatched_modality_sample)
+    assert "modality mismatch" in str(exc_info.value).lower()
+
+
+# 18. Materialization Gate and Manifest Schema
+def test_materialization_gate_and_manifest_schema(tmp_path):
+    from specialists.single_image.training.colab.materialize_bigearthnet import (
+        materialize_bigearthnet_pairs,
+        load_unique_pairs_from_manifest,
+    )
+    
+    manifest_path = Path("data/curated_mixture/bigearthnet_stage1_manifest.jsonl")
+    pairs = load_unique_pairs_from_manifest(manifest_path)
+    assert len(pairs) == 8000
+    assert "pair_id" in pairs[0]
+    assert "patch_id" in pairs[0]
+    assert "s1_name" in pairs[0]
+    assert pairs[0]["source_dataset"] == "BigEarthNet"
+    assert "BigEarthNet-S1" in pairs[0]["s1_source_path"]
+    assert "BigEarthNet-S2" in pairs[0]["s2_source_path"]
+
+
+# 19. Train/Val/Test Split Pair Isolation
+def test_train_val_test_split_pair_isolation():
+    import importlib
+    mod_prep = importlib.import_module("specialists.single_image.training.colab.01_prepare_dataset")
+    
+    manifest_path = Path("data/curated_mixture/bigearthnet_stage1_manifest.jsonl")
+    records = mod_prep.load_stage1_manifest(manifest_path)
+    
+    train_recs, val_recs, test_recs, report = mod_prep.partition_by_parent_granule(records)
+    
+    train_pairs = {r["pair_id"] for r in train_recs}
+    val_pairs = {r["pair_id"] for r in val_recs}
+    test_pairs = {r["pair_id"] for r in test_recs}
+    
+    # Assert zero cross-split leakage
+    assert len(train_pairs.intersection(val_pairs)) == 0, "Leakage detected between train and val pairs!"
+    assert len(train_pairs.intersection(test_pairs)) == 0, "Leakage detected between train and test pairs!"
+    assert len(val_pairs.intersection(test_pairs)) == 0, "Leakage detected between val and test pairs!"
+    assert len(train_pairs) + len(val_pairs) + len(test_pairs) == 8000
+
+
+# 20. 100-Record Spot Check Logic Executes Cleanly
+def test_spot_check_logic_and_resolution_audit():
+    import importlib
+    mod_val = importlib.import_module("specialists.single_image.training.colab.02_validate_dataset")
+    
+    # Run audit on generated data/qwen_dataset if available
+    audit = mod_val.audit_16k_image_resolution("data/qwen_dataset")
+    assert audit["total_records"] in (0, 16000)
+    if audit["total_records"] == 16000:
+        assert audit["unique_pairs"] == 8000
+        assert audit["leakage"]["passed"] is True
+
 

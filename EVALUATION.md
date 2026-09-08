@@ -5,7 +5,8 @@
 **Evaluation Harness**: `specialists/single_image/training/colab/07_evaluate_qwen25vl.py` and `08_export_adapter.py`  
 **Evaluation Runtime**: Google Colab NVIDIA CUDA (`EXECUTION_MODE=REAL-CUDA`) — MANDATORY  
 **Local Environment**: Development, static validation, and unit test harness ONLY  
-**Dataset**: BigEarthNet.txt Stage 1 Curated Held-Out Split (`data/qwen_dataset/test.jsonl`)  
+**Dataset**: BigEarthNet.txt Stage 1 Curated Held-Out Split (`data/qwen_dataset/test.jsonl` — 850 records)  
+**Integrity Guard**: Zero demo/fallback imagery permitted (`STRICT_REAL_DATA=true`). Every evaluated sample resolves to real materialized BigEarthNet GeoTIFFs.  
 
 ---
 
@@ -14,10 +15,15 @@
 SatQuery AI's Division 2 evaluation enforces strict spatial independence between training and test sets:
 1. **Parent-Granule Spatial Isolation**: Every satellite pair belongs to an identified parent granule (115 total granules across 8 European countries). All crops from test parent granules are completely excluded from the training and validation splits.
 2. **Zero Split Leakage**:
-   $$\text{Granules}_{\text{Train}} \cap \text{Granules}_{\text{Test}} = \emptyset, \quad \text{Overlap} = 0$$
-3. **No In-Sample Contamination**: Evaluation queries, bounding boxes, and images are never exposed to the model during QLoRA parameter updates.
-4. **Standalone Merged Checkpoint Evaluation**: The evaluation suite tests both the LoRA adapter (`adapter/`) and the standalone merged model (`merged_full/`) independently without PEFT.
-5. **Persistent Artifact Tracking**: Evaluated model weights are stored outside Git in Google Drive (`/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/`) with SHA-256 integrity verified in `checkpoint_manifest.json`.
+   $$\text{Pairs}_{\text{Train}} \cap \text{Pairs}_{\text{Test}} = \emptyset, \quad \text{Pairs}_{\text{Train}} \cap \text{Pairs}_{\text{Val}} = \emptyset, \quad \text{Pairs}_{\text{Val}} \cap \text{Pairs}_{\text{Test}} = \emptyset, \quad \text{Overlap} = 0$$
+3. **Authoritative Corpus Distribution**:
+   - Total Stage 1 Corpus: 16,000 records (8,000 unique pairs)
+   - Training Split: 14,304 records
+   - Validation Split: 846 records
+   - Held-Out Test Split: 850 records
+4. **No In-Sample Contamination**: Evaluation queries, bounding boxes, and images are never exposed to the model during QLoRA parameter updates.
+5. **Standalone Merged Checkpoint Evaluation**: The evaluation suite tests both the LoRA adapter (`adapter/`) and the standalone merged model (`merged_full/`) independently without PEFT.
+6. **Persistent Artifact Tracking**: Evaluated model weights are stored outside Git in Google Drive (`/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/`) with SHA-256 integrity verified in `checkpoint_manifest.json`.
 
 ---
 

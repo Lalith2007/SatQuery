@@ -50,18 +50,38 @@ def build_qwen_chatml_record(
     else:
         formatted_output = raw_output
 
-    # Determine image path
+    # Determine image path with deterministic resolution
+    patch_id = record.get("patch_id", pair_id.split("___")[0])
+    s1_name = record.get("s1_name", pair_id.split("___")[-1] if "___" in pair_id else "")
+    target_filename = "s1_2bands.tif" if is_sar else "s2_10bands.tif"
+    alt_filename = "sentinel1.tif" if is_sar else "sentinel2.tif"
+
+    candidate_roots = []
+    if image_dir:
+        candidate_roots.append(Path(image_dir))
+    candidate_roots.extend([
+        Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1/pairs"),
+        Path("data/curated_mixture/materialized_samples"),
+    ])
+
     image_path = None
-    if image_dir and image_dir.exists():
-        pair_dir = image_dir / pair_id
-        if pair_dir.exists():
-            img_file = pair_dir / ("s1_2bands.tif" if is_sar else "s2_10bands.tif")
-            if img_file.exists():
-                image_path = str(img_file)
+    for root in candidate_roots:
+        if root.exists():
+            pair_dir = root / pair_id
+            if pair_dir.exists():
+                f1 = pair_dir / target_filename
+                f2 = pair_dir / alt_filename
+                if f1.exists():
+                    image_path = str(f1)
+                    break
+                elif f2.exists():
+                    image_path = str(f2)
+                    break
 
     if image_path is None:
-        # Fallback path pointer
-        image_path = f"data/curated_mixture/materialized_samples/{pair_id}/{'s1_2bands.tif' if is_sar else 's2_10bands.tif'}"
+        # Default canonical relative path pointer
+        base_dir = candidate_roots[0] if candidate_roots else Path("data/curated_mixture/materialized_samples")
+        image_path = str(base_dir / pair_id / target_filename)
 
     user_prompt = record["input"]
     messages = [
@@ -81,6 +101,12 @@ def build_qwen_chatml_record(
     item = {
         "id": rec_id,
         "pair_id": pair_id,
+        "patch_id": patch_id,
+        "s1_name": s1_name,
+        "source_dataset": "BigEarthNet",
+        "source_annotation_id": record.get("source_row_id", record.get("ID", rec_id)),
+        "s1_source_path": f"BigEarthNet-S1/{s1_name}.tif",
+        "s2_source_path": f"BigEarthNet-S2/{patch_id}.tif",
         "image": image_path,
         "sensor": sensor,
         "modality": modality,
@@ -88,6 +114,10 @@ def build_qwen_chatml_record(
         "annotation_type": anno_type,
         "country": record.get("country", "Unknown"),
         "parent_granule": record.get("parent_granule", "Unknown"),
+        "split": record.get("split", "train"),
+        "instruction": user_prompt,
+        "target": formatted_output,
+        "caption": formatted_output if task == "caption" else None,
         "messages": messages,
     }
 

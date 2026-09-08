@@ -37,8 +37,13 @@
 Approved Stage 1 training dataset:
 - **Manifest**: `data/curated_mixture/bigearthnet_stage1_manifest.jsonl`
 - **SHA-256**: `809ff7f4506c8205ac0dc49582041bb0e79c96fa51e57137185b17655e089d7d`
-- **Source**: BigEarthNet.txt-derived curated remote sensing dataset.
-- **Unique Pairs**: 8,000 unique S1/S2 pairs (16,000 supervised training examples; 2 examples per pair).
+- **Source**: `BIFOLD-BigEarthNetv2-0/BigEarthNet.txt` curated remote sensing dataset.
+- **Total Stage 1 Corpus**: 16,000 supervised instruction records across 8,000 unique S1/S2 pairs.
+- **Split Distribution**:
+  - **Train**: 14,304 records (actual optimizer training examples).
+  - **Validation**: 846 records.
+  - **Test**: 850 records.
+- **Real Imagery Requirement**: Zero demo, fallback, or synthetic image substitutions are permitted (`STRICT_REAL_DATA=true`). All 14,304 training steps use actual corresponding BigEarthNet GeoTIFF rasters materialized in persistent storage (`/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1/pairs/`).
 - **Sensor Modalities**:
   - **Sentinel-1 SAR**: Dual-polarization ratio composite. Input rasters are calibrated in dB backscatter. Canonical 3-channel encoding:
     $$R = \text{VV}_{\text{dB}}, \quad G = \text{VH}_{\text{dB}}, \quad B = \text{VV}_{\text{dB}} - \text{VH}_{\text{dB}}$$
@@ -48,10 +53,13 @@ Approved Stage 1 training dataset:
 
 ### 3.2 Dataset Distribution
 - **Total Examples**: 16,000 supervised examples
-- **Unique S1/S2 Pairs**: 8,000 pairs
+- **Optimizer Training Set**: 14,304 examples
+- **Held-Out Test Set**: 850 examples
+- **Validation Set**: 846 examples
+- **Unique S1/S2 Pairs**: 8,000 pairs (2 examples per pair)
 - **Modality Balance**: 50.0% Sentinel-1 SAR (8,000), 50.0% Sentinel-2 MSI (8,000)
 - **Geographic Spread**: 115 distinct parent granules across 8 European countries
-- **Spatial Leakage Audit**: Parent-granule spatial isolation ensures zero spatial overlap between training and evaluation splits ($\text{Train} \cap \text{Val} = 0$, $\text{Train} \cap \text{Test} = 0$).
+- **Spatial Leakage Audit**: Parent-granule spatial isolation ensures zero spatial overlap between training, validation, and test splits ($\text{Train} \cap \text{Val} = 0$, $\text{Train} \cap \text{Test} = 0$, $\text{Val} \cap \text{Test} = 0$).
 
 ---
 

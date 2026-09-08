@@ -70,6 +70,17 @@ def evaluate_test_split(
         task = s["task"]
         modality = s["modality"]
         img_path = s["image"]
+        p_img = Path(img_path)
+        if not p_img.exists():
+            raise RuntimeError(
+                f"Held-out evaluation failed: image '{img_path}' does not exist for test record '{s['id']}'. "
+                "All test records must resolve to real materialized BigEarthNet imagery."
+            )
+        if "demo" in img_path.lower() or "fallback" in img_path.lower():
+            raise RuntimeError(
+                f"Held-out evaluation failed: demo or fallback image '{img_path}' detected for test record '{s['id']}'. "
+                "Demo substitutions are strictly forbidden in held-out evaluation."
+            )
         user_prompt = s["messages"][0]["content"][1]["text"]
         gt_answer = s["messages"][1]["content"]
 

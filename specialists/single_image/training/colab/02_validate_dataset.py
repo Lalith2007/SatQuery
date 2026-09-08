@@ -229,6 +229,222 @@ def validate_dataset_split(
     }
 
 
+def audit_16k_image_resolution(
+    data_dir: str = "data/qwen_dataset",
+    image_dir: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Audit all 16,000 ChatML instruction records for real image resolution and split integrity."""
+    dir_p = Path(data_dir)
+    splits = ["train", "val", "test"]
+    split_files = {s: dir_p / f"{s}.jsonl" for s in splits}
+
+    total_records = 0
+    real_image_count = 0
+    demo_count = 0
+    fallback_count = 0
+    missing_count = 0
+    mismatched_pair_count = 0
+    mismatched_modality_count = 0
+
+    split_pairs: Dict[str, Set[str]] = {s: set() for s in splits}
+    split_counts: Dict[str, int] = {s: 0 for s in splits}
+    all_pairs: Set[str] = set()
+
+    for s, fp in split_files.items():
+        if not fp.exists():
+            continue
+        with open(fp, "r", encoding="utf-8") as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                rec = json.loads(line.strip())
+                total_records += 1
+                split_counts[s] += 1
+                pid = rec.get("pair_id", "unknown")
+                split_pairs[s].add(pid)
+                all_pairs.add(pid)
+
+                img_p = Path(rec.get("image", ""))
+                modality = rec.get("modality", "optical").lower()
+
+                # Check demo/fallback
+                if "demo" in str(img_p).lower():
+                    demo_count += 1
+                elif "fallback" in str(img_p).lower():
+                    fallback_count += 1
+
+                # Check existence
+                if not img_p.exists():
+                    missing_count += 1
+                else:
+                    real_image_count += 1
+
+                # Check pair ID matching in path
+                if pid not in str(img_p) and img_p.parent.name != pid:
+                    mismatched_pair_count += 1
+
+                # Check modality matching
+                fname_lower = img_p.name.lower()
+                if modality == "sar" and not any(k in fname_lower for k in ["s1", "sar", "sentinel1"]):
+                    mismatched_modality_count += 1
+                elif modality == "optical" and not any(k in fname_lower for k in ["s2", "optical", "sentinel2", "msi"]):
+                    mismatched_modality_count += 1
+
+    inter_train_val = len(split_pairs["train"].intersection(split_pairs["val"]))
+    inter_train_test = len(split_pairs["train"].intersection(split_pairs["test"]))
+    inter_val_test = len(split_pairs["val"].intersection(split_pairs["test"]))
+
+    print("\n" + "=" * 60)
+    print("REAL 16,000-EXAMPLE RESOLUTION & SPLIT AUDIT")
+    print("=" * 60)
+    print(f"Total records examined       : {total_records}")
+    print(f"Train records                : {split_counts['train']} (Expected: 14304)")
+    print(f"Val records                  : {split_counts['val']} (Expected: 846)")
+    print(f"Test records                 : {split_counts['test']} (Expected: 850)")
+    print(f"Unique S1/S2 pairs           : {len(all_pairs)} (Expected: 8000)")
+    print("-" * 60)
+    print(f"Real corresponding imagery   : {real_image_count} / {total_records}")
+    print(f"Demo image substitutions     : {demo_count}")
+    print(f"Fallback image substitutions : {fallback_count}")
+    print(f"Missing images               : {missing_count}")
+    print(f"Mismatched pair IDs          : {mismatched_pair_count}")
+    print(f"Mismatched modalities        : {mismatched_modality_count}")
+    print("-" * 60)
+    print(f"TRAIN ∩ VAL pair leakage     : {inter_train_val}")
+    print(f"TRAIN ∩ TEST pair leakage    : {inter_train_test}")
+    print(f"VAL ∩ TEST pair leakage      : {inter_val_test}")
+    print("=" * 60 + "\n")
+
+    return {
+        "total_records": total_records,
+        "split_counts": split_counts,
+        "unique_pairs": len(all_pairs),
+        "real_image_count": real_image_count,
+        "demo_count": demo_count,
+        "fallback_count": fallback_count,
+        "missing_count": missing_count,
+        "mismatched_pair_count": mismatched_pair_count,
+        "mismatched_modality_count": mismatched_modality_count,
+        "leakage": {
+            "train_val": inter_train_val,
+            "train_test": inter_train_test,
+            "val_test": inter_val_test,
+            "passed": (inter_train_val == 0 and inter_train_test == 0 and inter_val_test == 0),
+        },
+    }
+
+
+def spot_check_100_records(
+    data_dir: str = "data/qwen_dataset",
+    num_samples: int = 100,
+    seed: int = 42,
+) -> List[Dict[str, Any]]:
+    """Inspect at least 100 records sampled deterministically across modalities and tasks."""
+    import random
+    rng = random.Random(seed)
+
+    dir_p = Path(data_dir)
+    all_records = []
+    for s in ["train", "val", "test"]:
+        fp = dir_p / f"{s}.jsonl"
+        if fp.exists():
+            with open(fp, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        r = json.loads(line.strip())
+                        r["split"] = s
+                        all_records.append(r)
+
+    if not all_records:
+        logger.warning(f"No records found in {data_dir} to spot check.")
+        return []
+
+    # Stratified selection across tasks and modalities
+    by_bucket: Dict[str, List[Dict[str, Any]]] = {}
+    for r in all_records:
+        key = f"{r.get('split')}_{r.get('modality')}_{r.get('task')}"
+        by_bucket.setdefault(key, []).append(r)
+
+    sampled = []
+    keys = sorted(list(by_bucket.keys()))
+    samples_per_bucket = max(1, num_samples // len(keys)) if keys else 1
+    for k in keys:
+        bucket_records = by_bucket[k]
+        rng.shuffle(bucket_records)
+        sampled.extend(bucket_records[:samples_per_bucket])
+
+    if len(sampled) < num_samples:
+        remaining = [r for r in all_records if r not in sampled]
+        rng.shuffle(remaining)
+        sampled.extend(remaining[:num_samples - len(sampled)])
+
+    sampled = sampled[:num_samples]
+
+    print(f"\nExecuting Real-Data Spot Check on {len(sampled)} records...")
+    spot_reports = []
+    grounding_errors = []
+
+    for idx, s in enumerate(sampled, 1):
+        pid = s.get("pair_id", "unknown")
+        sid = s.get("id", "unknown")
+        modality = s.get("modality", "optical")
+        task = s.get("task", "unknown")
+        img_path = Path(s.get("image", ""))
+        user_prompt = s["messages"][0]["content"][1]["text"] if len(s["messages"]) > 0 else ""
+        target = s["messages"][1]["content"] if len(s["messages"]) > 1 else ""
+
+        report_item: Dict[str, Any] = {
+            "index": idx,
+            "id": sid,
+            "pair_id": pid,
+            "split": s.get("split"),
+            "modality": modality,
+            "task": task,
+            "image_path": str(img_path),
+            "image_exists": img_path.exists(),
+            "instruction": user_prompt[:80] + ("..." if len(user_prompt) > 80 else ""),
+            "target": target[:80] + ("..." if len(target) > 80 else ""),
+        }
+
+        # Conversion stats
+        if img_path.exists():
+            try:
+                if modality == "sar":
+                    pil_img, stats = Sentinel1SARConverter.convert_s1_to_rgb(
+                        vv_array=None, vh_array=None, file_path=img_path, record_id=sid, scene_id=pid, patch_id=pid
+                    )
+                else:
+                    pil_img, stats = Sentinel2MultispectralConverter.convert_s2_to_rgb(
+                        file_path=img_path, record_id=sid, scene_id=pid, patch_id=pid
+                    )
+                report_item["converted_shape"] = pil_img.size
+                report_item["finite_check"] = True
+                report_item["stats"] = stats
+            except Exception as e:
+                report_item["conversion_error"] = str(e)
+                report_item["finite_check"] = False
+
+        if task == "grounding" and "bbox" in s:
+            raw_box = s["bbox"]
+            enc = BoxCodec.encode_bbox(raw_box, width=120, height=120, source_format="normalized_0_1_ymin_xmin")
+            dec = BoxCodec.decode_bbox(enc, width=120, height=120)
+            dec_box = dec[0]["normalized_bbox"] if dec else [0, 0, 0, 0]
+            err = max(abs(a - b) for a, b in zip(raw_box, dec_box))
+            grounding_errors.append(err)
+            report_item["canonical_bbox"] = raw_box
+            report_item["qwen_bbox_encoded"] = enc
+            report_item["decoded_bbox"] = dec_box
+            report_item["roundtrip_error"] = round(err, 6)
+
+        spot_reports.append(report_item)
+
+    print(f"Spot Check Complete: {len(spot_reports)} samples audited.")
+    if grounding_errors:
+        print(f"Grounding Spot-Check Max Error: {max(grounding_errors):.6f} (Tolerance: <= 0.002)")
+
+    return spot_reports
+
+
 def run_dataset_validation(
     manifest_path: str = "data/curated_mixture/bigearthnet_stage1_manifest.jsonl",
     data_dir: str = "data/qwen_dataset",

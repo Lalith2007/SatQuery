@@ -18,36 +18,57 @@ from specialists.single_image.adaptation.qwen25vl.sar import SARPreprocessor
 logger = get_logger("qwen25vl_collator")
 
 
+class DatasetIntegrityError(RuntimeError):
+    """Raised when dataset integrity checks fail in strict real-data training/evaluation."""
+    pass
+
+
 class Qwen25VLDataCollator:
-    """Multimodal data collator supporting optical and SAR rasters with label masking."""
+    """Multimodal data collator supporting optical and SAR rasters with label masking and strict real-data enforcement."""
 
     def __init__(
         self,
         processor: Any,
         label_pad_token_id: int = -100,
+        strict_real_data: bool = True,
+        demo_mode: bool = False,
     ) -> None:
         self.processor = processor
         self.label_pad_token_id = label_pad_token_id
+        self.strict_real_data = strict_real_data
+        self.demo_mode = demo_mode
 
     def _resolve_image(self, example: Dict[str, Any]) -> Image.Image:
-        """Resolve example image field to a 3-channel RGB PIL Image."""
+        """Resolve example image field to a 3-channel RGB PIL Image with strict real-data enforcement."""
         img_val = example.get("image")
         modality = example.get("modality", "optical").lower()
+        rec_id = example.get("id", "unknown")
+        pair_id = example.get("pair_id")
 
         if isinstance(img_val, Image.Image):
             pil_img = img_val
         elif isinstance(img_val, (str, Path)):
             p = Path(img_val)
-            if p.exists():
-                if modality == "sar" or p.suffix.lower() in {".tif", ".tiff"}:
-                    pil_img, _ = SARPreprocessor.process_file(p)
-                else:
-                    with Image.open(p) as img:
-                        pil_img = img.convert("RGB")
-            else:
-                # Defensive fallback for unmaterialized remote sensing shards
+
+            # 1. STRICT REAL DATA: Check for demo or fallback assets
+            p_str_lower = str(p).lower()
+            if "demo" in p_str_lower or "fallback" in p_str_lower:
+                if self.strict_real_data or not self.demo_mode:
+                    raise DatasetIntegrityError(
+                        f"Dataset integrity error: demo or fallback image path detected at '{p}' for record '{rec_id}'. "
+                        "Strict real BigEarthNet data enforcement is active; demo substitutions are strictly forbidden in training/eval."
+                    )
+
+            # 2. STRICT REAL DATA: Check file existence
+            if not p.exists():
+                if self.strict_real_data or not self.demo_mode:
+                    raise DatasetIntegrityError(
+                        f"Dataset integrity error: source image not found at path '{p}' for record '{rec_id}' (pair: '{pair_id}'). "
+                        "Strict real BigEarthNet data enforcement is active; missing imagery is strictly forbidden."
+                    )
+                # Isolated DEMO_MODE fallback (only when strict_real_data=False AND demo_mode=True)
                 logger.warning(
-                    f"Image not found at path '{p}'. Using modality-appropriate raster fallback."
+                    f"DEMO MODE ONLY: Image not found at path '{p}'. Using modality-appropriate demo fallback."
                 )
                 demo_opt = Path("demo_assets/demo_optical_single.png")
                 demo_sar = Path("demo_assets/demo_sar_cross.tif")
@@ -60,8 +81,54 @@ class Qwen25VLDataCollator:
                     import numpy as np
                     synth = np.full((120, 120, 3), 128, dtype=np.uint8)
                     pil_img = Image.fromarray(synth, mode="RGB")
+                return pil_img
+
+            # 3. STRICT REAL DATA: Pair ID validation
+            if self.strict_real_data and pair_id is not None:
+                if pair_id not in str(p) and p.parent.name != pair_id:
+                    raise DatasetIntegrityError(
+                        f"Dataset integrity error: pair ID mismatch. Record specifies pair '{pair_id}', "
+                        f"but image path is '{p}'."
+                    )
+
+            # 4. STRICT REAL DATA: Modality validation
+            if self.strict_real_data:
+                fname_lower = p.name.lower()
+                if modality == "sar":
+                    if not any(k in fname_lower for k in ["s1", "sar", "sentinel1"]):
+                        raise DatasetIntegrityError(
+                            f"Dataset integrity error: modality mismatch. Record specifies modality 'sar', "
+                            f"but image filename '{p.name}' does not indicate Sentinel-1 SAR imagery."
+                        )
+                elif modality == "optical":
+                    if not any(k in fname_lower for k in ["s2", "optical", "sentinel2", "msi"]):
+                        raise DatasetIntegrityError(
+                            f"Dataset integrity error: modality mismatch. Record specifies modality 'optical', "
+                            f"but image filename '{p.name}' does not indicate Sentinel-2 Optical imagery."
+                        )
+
+            # Load and convert image
+            try:
+                if modality == "sar" or p.suffix.lower() in {".tif", ".tiff"}:
+                    pil_img, _ = SARPreprocessor.process_file(p)
+                else:
+                    with Image.open(p) as img:
+                        pil_img = img.convert("RGB")
+            except Exception as e:
+                raise DatasetIntegrityError(
+                    f"Dataset integrity error: failed to decode/convert image at '{p}' for record '{rec_id}': {e}"
+                ) from e
         else:
-            raise ValueError(f"Unsupported image type in example: {type(img_val)}")
+            raise DatasetIntegrityError(f"Unsupported image type in example '{rec_id}': {type(img_val)}")
+
+        # 5. STRICT REAL DATA: Validate decoded PIL image
+        if pil_img.mode != "RGB":
+            pil_img = pil_img.convert("RGB")
+        w, h = pil_img.size
+        if w <= 0 or h <= 0:
+            raise DatasetIntegrityError(
+                f"Dataset integrity error: invalid decoded image dimensions ({w}x{h}) at path '{img_val}'"
+            )
 
         return pil_img
 

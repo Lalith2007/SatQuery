@@ -113,8 +113,8 @@ def train_qwen25vl_qlora(
     )
     peft_model, lora_stats = QwenModelLoader.apply_lora_adaptation(model, lora_cfg)
 
-    # 5. Multimodal Data Collator
-    collator = Qwen25VLDataCollator(processor=processor)
+    # 5. Multimodal Data Collator with Strict Real-Data Enforcement
+    collator = Qwen25VLDataCollator(processor=processor, strict_real_data=True, demo_mode=False)
 
     # 6. SFTConfig and SFTTrainer
     from trl import SFTConfig, SFTTrainer

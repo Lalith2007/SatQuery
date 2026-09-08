@@ -68,8 +68,9 @@ SatQuery is organized into decoupled, production-grade subsystems:
 * **Result Aggregator (`agent/result_aggregator.py`)**: Assembles structured `QueryResponse` dossiers with comprehensive execution audit logs.
 
 ### 🛰️ Division 2 — Single-Image Remote-Sensing Intelligence
-* **Vision-Language Foundation (`specialists/single_image/`)**: Adapted vision-language model powered by Alibaba Cloud's **Qwen2.5-VL-3B-Instruct** (`Qwen/Qwen2.5-VL-3B-Instruct`), fine-tuned via 4-bit QLoRA on the BigEarthNet Stage 1 curated mixture (8,000 unique pairs / 16,000 supervised training examples; 1:1 Sentinel-1 SAR and Sentinel-2 MSI balance).
-* **Colab CUDA Training Protocol**: Model training is strictly performed on physical NVIDIA GPUs in Google Colab (`colab_qwen25vl_training.ipynb`). The local repository is strictly for development, validation, and test harness execution.
+* **Vision-Language Foundation (`specialists/single_image/`)**: Adapted vision-language model powered by Alibaba Cloud's **Qwen2.5-VL-3B-Instruct** (`Qwen/Qwen2.5-VL-3B-Instruct`), fine-tuned via 4-bit QLoRA on the BigEarthNet.txt Stage 1 curated mixture (16,000 total records across 8,000 unique pairs: 14,304 train / 846 val / 850 test; 1:1 Sentinel-1 SAR and Sentinel-2 MSI balance).
+* **Real BigEarthNet Imagery & Zero Fallbacks**: Zero demo, fallback, or synthetic image substitutions are permitted during training or evaluation (`STRICT_REAL_DATA=true`). All training records resolve to actual corresponding BigEarthNet GeoTIFF rasters materialized in persistent storage (`/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1/pairs/`).
+* **Colab CUDA Training Protocol**: Model training is strictly performed on physical NVIDIA GPUs in Google Colab (`colab_qwen25vl_training.ipynb`) using the 12-phase pipeline. The local repository is strictly for development, validation, and test harness execution.
 * **Dual Checkpoint Artifacts**: The training pipeline exports BOTH a LoRA adapter (`adapter/`) and a complete standalone merged model (`merged_full/` with safetensors shards, loadable independently without PEFT). Multi-GB weights are stored outside Git in persistent Google Drive storage (`/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/`).
 * **Supported Tasks**:
   * `SINGLE_IMAGE_VQA`: Natural language question answering over optical and Sentinel-1 SAR rasters.
