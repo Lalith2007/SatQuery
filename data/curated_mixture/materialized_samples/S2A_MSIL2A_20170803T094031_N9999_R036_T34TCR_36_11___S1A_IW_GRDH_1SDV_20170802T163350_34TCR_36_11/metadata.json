@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_01167",
+    "source_row_id": 776284,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_11___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_11",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_11",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_11",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Provide an description of the image content, highlighting the geographic location, season, and spatial patterns.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a predominantly agricultural landscape within the \"temperate, no dry season, hot summer\" climate zone. The largest area is arable land, spanning approximately 822,000 square meters, which borders pastures (~565,000 sqm). Additionally, a small patch of land principally occupied by agriculture with significant areas of natural vegetation, covering about 72,000 square meters, is present. The arable land is adjacent to both the pastures and this smaller agricultural area.",
+    "latitude": 45.911617752543734,
+    "longitude": 18.985946028846463,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_01168",
+    "source_row_id": 776272,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_11___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_11",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_11",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_11",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Does any arable land abut pastures in the scene?",
+    "output": "yes",
+    "latitude": 45.911617752543734,
+    "longitude": 18.985946028846463,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

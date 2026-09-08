@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_01185",
+    "source_row_id": 779144,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_39_08___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_39_8",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_39_08",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_39_8",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Describe the satellite scene, including the region, time of year, and land cover classes.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a predominantly agricultural landscape within the \"temperate, no dry season, hot summer\" climate zone. The largest area is arable land, spanning approximately 1,242,000 square meters. Interspersed among the agricultural areas are smaller patches of broad-leaved forest, covering around 126,000 square meters, and transitional woodland or shrub, occupying about 72,000 square meters. The arable land borders both the broad-leaved forest and the transitional woodland or shrub. Furthermore, the broad-leaved forest is adjacent to the transitional woodland or shrub, indicating a varied and dynamic ecosystem.",
+    "latitude": 45.94480876832951,
+    "longitude": 19.031190884434437,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_01186",
+    "source_row_id": 779132,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_39_08___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_39_8",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_39_08",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_39_8",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Is there any broad-leaved forest and transitional woodlands or shrubs spatially touching in this scene?",
+    "output": "yes",
+    "latitude": 45.94480876832951,
+    "longitude": 19.031190884434437,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

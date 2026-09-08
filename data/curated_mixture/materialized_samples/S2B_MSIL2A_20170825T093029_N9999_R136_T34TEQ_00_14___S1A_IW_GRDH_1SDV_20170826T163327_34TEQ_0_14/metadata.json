@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07707",
+    "source_row_id": 4493201,
+    "pair_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_14___S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_14",
+    "patch_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_14",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_14",
+    "parent_granule": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Describe this image in detail.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a diverse landscape dominated by forest and seminatural areas within the \"temperate, no dry season, hot summer\" climate zone. The primary feature is the expansive transitional woodlands or shrubs, covering approximately 739,000 square meters, which is distributed across three areas, including one large area of about 700,000 square meters and two marginal areas. This transitional woodlands or shrubs borders the broad-leaved forest, spanning around 660,000 square meters, which is divided into two areas: a larger one of about 534,000 square meters and a smaller one of approximately 126,000 square meters. The broad-leaved forest is also adjacent to a marginal mixed forest, which covers 72,000 square meters, accounting for less than 5% of the total area. The transitional woodlands or shrubs and broad-leaved forest are the dominant features, with the mixed forest being a smaller, marginal component of the landscape.",
+    "latitude": 44.9972055620316,
+    "longitude": 21.00735861991272,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07708",
+    "source_row_id": 4493192,
+    "pair_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_14___S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_14",
+    "patch_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_14",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_14",
+    "parent_granule": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "bounding box",
+    "task": "point",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Generate a bounding box enclosing the land cover class instance at <point>(0.36, 0.69)</point> in the satellite image.",
+    "output": "[0.0 0.24, 1.0 1.0]",
+    "latitude": 44.9972055620316,
+    "longitude": 21.00735861991272,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "coarse_patch_level_referring_expression",
+    "grounding_resolution_note": "BigEarthNet.txt provides coarse patch-level spatial referring expression supervision on 120x120 pixels. Fine-grained sub-meter object grounding is reserved for Stage 2 (DIOR-RSVG/RSVG)."
+  }
+]

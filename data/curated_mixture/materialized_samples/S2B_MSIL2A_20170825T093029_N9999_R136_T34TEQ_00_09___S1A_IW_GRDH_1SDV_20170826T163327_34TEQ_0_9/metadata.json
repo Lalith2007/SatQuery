@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07703",
+    "source_row_id": 4493108,
+    "pair_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_09___S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_9",
+    "patch_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_09",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_9",
+    "parent_granule": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Explain the features in the image, highlighting the geographic context, season, and land cover classes.",
+    "output": "This satellite image, captured during the summer in Serbia, showcases a landscape dominated by artificial surfaces and agricultural areas within the \"temperate, no dry season, hot summer\" climate zone. The primary feature is the expansive urban fabric (~977,000 sqm), which borders a significant area of arable land (~463,000 sqm).",
+    "latitude": 45.05121689430164,
+    "longitude": 21.007365542527456,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07704",
+    "source_row_id": 4493100,
+    "pair_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_09___S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_9",
+    "patch_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_09",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_9",
+    "parent_granule": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Would you identify any arable land as lying right beside urban fabrics?",
+    "output": "yes",
+    "latitude": 45.05121689430164,
+    "longitude": 21.007365542527456,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

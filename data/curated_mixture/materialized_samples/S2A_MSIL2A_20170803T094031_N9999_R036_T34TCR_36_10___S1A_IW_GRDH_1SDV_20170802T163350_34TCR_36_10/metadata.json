@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_01165",
+    "source_row_id": 776264,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_10___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_10",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_10",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_10",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Describe this satellite image, noting the region, seasonal context, and distribution of land cover types.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a predominantly agricultural landscape within the \"temperate, no dry season, hot summer\" climate zone. The largest area is arable land, spanning approximately 949,000 square meters, which is distributed across two distinct regions: a larger area of about 590,000 square meters and a smaller one of around 359,000 square meters. This arable land borders with land principally occupied by agriculture with significant areas of natural vegetation, covering around 487,000 square meters. Additionally, a small patch of transitional woodlands or shrubs, accounting for less than 5% of the total area (72,000 sqm), is situated adjacent to the arable land. The arable land and land principally occupied by agriculture with significant areas of natural vegetation are the dominant features, with the transitional woodlands or shrubs being a marginal but adjacent component, highlighting the diverse yet predominantly agricultural nature of the region.",
+    "latitude": 45.92241163947757,
+    "longitude": 18.985555333687643,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_01166",
+    "source_row_id": 776250,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_10___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_10",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_36_10",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_36_10",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Would you confirm that any arable land borders upon land principally occupied by agriculture with significant areas of natural vegetation?",
+    "output": "yes",
+    "latitude": 45.92241163947757,
+    "longitude": 18.985555333687643,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

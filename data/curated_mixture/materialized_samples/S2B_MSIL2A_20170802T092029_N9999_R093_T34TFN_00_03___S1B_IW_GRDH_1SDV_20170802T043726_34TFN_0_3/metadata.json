@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07129",
+    "source_row_id": 4090383,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_03___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_3",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_03",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_3",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Describe the image, noting where it was captured, the season, and the distribution of land cover types.",
+    "output": "This satellite image, captured during the summer in Serbia, showcases a predominantly forested landscape within the \"cold, no dry season, warm summer\" climate zone. The dominant feature is the expansive broad-leaved forest, covering approximately 807,000 square meters, which is distributed across two areas, one larger (~645,000 sqm) and one smaller (~162,000 sqm). The broad-leaved forest shares borders with transitional woodland and shrub, spanning around 623,000 square meters, which is itself distributed over two areas, one larger (~457,000 sqm) and one smaller (~166,000 sqm). Additionally, the broad-leaved forest is adjacent to a marginal area of natural grassland and sparsely vegetated areas, which accounts for less than 5% of the total area (~72,000 sqm) and is comprised of two marginal patches. The transitional woodland and shrub is also adjacent to the natural grassland and sparsely vegetated areas. The image highlights a complex interplay between forest and seminatural areas in this region.",
+    "latitude": 43.30830959345695,
+    "longitude": 22.240443562332544,
+    "season": "Summer",
+    "climate_zone": "Cold, no dry season, warm summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07130",
+    "source_row_id": 4090375,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_03___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_3",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_03",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_3",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "bounding box",
+    "task": "point",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Output a bounding box enclosing the land cover class instance positioned at <point>(0.38, 0.26)</point> in the image.",
+    "output": "[0.0 0.0, 1.0 0.64]",
+    "latitude": 43.30830959345695,
+    "longitude": 22.240443562332544,
+    "season": "Summer",
+    "climate_zone": "Cold, no dry season, warm summer",
+    "grounding_semantic_level": "coarse_patch_level_referring_expression",
+    "grounding_resolution_note": "BigEarthNet.txt provides coarse patch-level spatial referring expression supervision on 120x120 pixels. Fine-grained sub-meter object grounding is reserved for Stage 2 (DIOR-RSVG/RSVG)."
+  }
+]

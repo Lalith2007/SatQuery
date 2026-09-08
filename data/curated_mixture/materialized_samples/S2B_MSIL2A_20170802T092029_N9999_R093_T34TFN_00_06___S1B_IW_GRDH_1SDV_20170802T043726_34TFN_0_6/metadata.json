@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07133",
+    "source_row_id": 4090451,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_06___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_6",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_06",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_6",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Provide an description of the image content, highlighting the geographic location, season, and spatial patterns.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a predominantly agricultural landscape within the \"temperate, no dry season, hot summer\" climate zone. The dominant feature is complex cultivation patterns, spanning approximately 727,000 square meters, which are distributed across three areas, including one large area (~455,000 sqm), one smaller area (~262,000 sqm), and a marginal area. These complex cultivation patterns share borders with land principally occupied by agriculture with significant areas of natural vegetation (~515,000 sqm) and urban fabric (~192,000 sqm). The land principally occupied by agriculture with significant areas of natural vegetation is also adjacent to the urban fabric. Furthermore, the urban fabric is next to a small patch of broad-leaved forest, covering less than 5% of the total area (~72,000 sqm). The landscape is characterized by a mix of agricultural areas and artificial surfaces, with a smaller but notable presence of forest and seminatural areas.",
+    "latitude": 43.27590053553101,
+    "longitude": 22.239784966142075,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07134",
+    "source_row_id": 4090446,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_06___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_6",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_06",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_6",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "bounding box",
+    "task": "point",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Create a bounding box around the land cover class instance found at <point>(0.8, 0.45)</point> in the satellite image.",
+    "output": "[0.44 0.05, 1.0 1.0]",
+    "latitude": 43.27590053553101,
+    "longitude": 22.239784966142075,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "coarse_patch_level_referring_expression",
+    "grounding_resolution_note": "BigEarthNet.txt provides coarse patch-level spatial referring expression supervision on 120x120 pixels. Fine-grained sub-meter object grounding is reserved for Stage 2 (DIOR-RSVG/RSVG)."
+  }
+]

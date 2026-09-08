@@ -62,18 +62,50 @@ def run_micro_overfit_test(
     }
 
     train_path = Path("data/qwen_dataset/train.jsonl")
+    samples = []
     if train_path.exists():
-        samples = []
-        with open(train_path, "r") as f:
+        with open(train_path, "r", encoding="utf-8") as f:
             for line in f:
-                if line.strip():
-                    samples.append(json.loads(line.strip()))
+                if not line.strip():
+                    continue
+                rec = json.loads(line.strip())
+                img_p = Path(rec.get("image", ""))
+                # Prioritize real materialized S1/S2 pairs
+                if img_p.exists():
+                    samples.append(rec)
                 if len(samples) >= num_samples:
                     break
-    else:
-        prep_mod = importlib.import_module("specialists.single_image.training.colab.01_prepare_dataset")
-        samples = prep_mod.generate_curated_rs_dataset(num_samples=num_samples, seed=123)
-    print(f"Loaded {len(samples)} micro-batch samples.")
+
+        # If fewer than num_samples had materialized files, grab remaining from train.jsonl
+        if len(samples) < num_samples:
+            with open(train_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    rec = json.loads(line.strip())
+                    if rec not in samples:
+                        samples.append(rec)
+                    if len(samples) >= num_samples:
+                        break
+
+    if not samples:
+        # Fallback multi-task samples
+        opt_img = "demo_assets/demo_optical_single.png"
+        sar_img = "demo_assets/demo_sar_cross.tif"
+        samples = [
+            {
+                "id": f"micro_sample_{i}",
+                "image": sar_img if i % 2 == 1 else opt_img,
+                "modality": "sar" if i % 2 == 1 else "optical",
+                "task": "grounding" if i % 3 == 0 else ("vqa" if i % 3 == 1 else "caption"),
+                "messages": [
+                    {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": "Locate the primary structure."}]},
+                    {"role": "assistant", "content": "<|box_start|>(200,200),(600,600)<|box_end|>"},
+                ],
+            }
+            for i in range(num_samples)
+        ]
+    print(f"Loaded {len(samples)} micro-batch samples (Real rasters verified: {sum(1 for s in samples if Path(str(s.get('image'))).exists())}/{len(samples)}).")
 
     if is_cuda:
         quant_cfg = QuantizationConfig(load_in_4bit=True)

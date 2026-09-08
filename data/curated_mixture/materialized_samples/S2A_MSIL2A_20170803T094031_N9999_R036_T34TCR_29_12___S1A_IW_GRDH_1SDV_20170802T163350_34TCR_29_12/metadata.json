@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_01135",
+    "source_row_id": 771600,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_29_12___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_29_12",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_29_12",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_29_12",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Provide a description of this satellite image, including its geographic location, season, and land cover types.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a diverse landscape within the \"temperate, no dry season, hot summer\" climate zone. The dominant features are broad-leaved forest (585,000 sqm), distributed across four individual areas, including two smaller patches (343,000 sqm and 212,000 sqm) and two marginal areas, and arable land (538,000 sqm). These two primary classes are adjacent to each other. The broad-leaved forest borders arable land, inland waters (216,000 sqm), and transitional woodland or shrub (101,000 sqm), which is comprised of three individual marginal areas. Furthermore, arable land shares borders with both inland waters and transitional woodland or shrub. Additionally, inland waters are next to transitional woodland or shrub. The landscape presents a mix of forest and seminatural areas, agricultural areas, and water bodies, highlighting the ecological diversity of the region.",
+    "latitude": 45.89886485367789,
+    "longitude": 18.878120495159237,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_01136",
+    "source_row_id": 771586,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_29_12___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_29_12",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_29_12",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_29_12",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Does any arable land abut inland waters in the scene?",
+    "output": "yes",
+    "latitude": 45.89886485367789,
+    "longitude": 18.878120495159237,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

@@ -87,6 +87,7 @@ tmp/
 data/*
 !data/curated_mixture/
 data/curated_mixture/*
+!data/curated_mixture/materialized_samples/
 !data/curated_mixture/bigearthnet_stage1_manifest.jsonl
 !data/curated_mixture/dataset_validation_report.json
 *.zip
