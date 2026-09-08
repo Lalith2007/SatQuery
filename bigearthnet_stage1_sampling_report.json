@@ -163,7 +163,7 @@
   "split_integrity_verified": true,
   "duplicate_count": 0,
   "pair_annotation_density": 2.0,
-  "storage_footprint_manifest_mb": 18.15,
+  "storage_footprint_manifest_mb": 18.16,
   "grounding_semantics": {
     "type": "coarse_patch_level_referring_expression",
     "resolution": "10m-20m (120x120 pixels)",

@@ -1,7 +1,7 @@
 """Generate Stage-1 BigEarthNet.txt Training Shard with Geographic Stratification.
 
 Extracts exactly 8,000 unique co-registered S1/S2 pairs (16,000 examples) from BigEarthNet.txt,
-stratified across all 115 geographic granules and 10 countries in the training partition,
+stratified across all 115 geographic granules and the 8 locked countries in the training partition,
 with 1:1 S1/S2 exposure, strict 2-annotation diversity per pair, and zero leakage from eval splits.
 """
 
@@ -13,6 +13,22 @@ import random
 from typing import Any, Dict, List, Tuple
 import numpy as np
 import pyarrow.parquet as pq
+
+ALLOWED_8_COUNTRIES = {
+    "Austria",
+    "Belgium",
+    "Finland",
+    "Ireland",
+    "Lithuania",
+    "Portugal",
+    "Serbia",
+    "Switzerland",
+}
+
+# Locked task quotas
+LOCKED_CAPTION_TARGET = 6636
+LOCKED_VQA_TARGET = 5228
+LOCKED_GROUNDING_TARGET = 4136
 
 
 def generate_stage1_shard(
@@ -38,18 +54,19 @@ def generate_stage1_shard(
         "country", "season", "climate_zone"
     ]
 
-    # Step 1: Fast PyArrow pass collecting typed candidates per pair (split == 'train' ONLY)
+    # Step 1: Fast PyArrow pass collecting typed candidates per pair (split == 'train' and country in 8 locked countries)
     granule_to_pairs: Dict[str, Dict[str, Dict[str, List[Dict[str, Any]]]]] = {}
     granule_to_country: Dict[str, str] = {}
     pair_to_granule: Dict[str, str] = {}
 
     CAP_CANDIDATE_PAIRS_PER_GRANULE = 130
 
-    print(f"Scanning {num_rg} row groups for training candidates with type awareness...")
+    print(f"Scanning {num_rg} row groups for training candidates across 8 locked countries...")
     for rg_idx in range(num_rg):
         t = pf.read_row_group(rg_idx, columns=cols)
         split_list = t.column("split").to_pylist()
-        train_mask = [s == "train" for s in split_list]
+        country_list = t.column("country").to_pylist()
+        train_mask = [s == "train" and c in ALLOWED_8_COUNTRIES for s, c in zip(split_list, country_list)]
         t_train = t.filter(train_mask)
         if len(t_train) == 0:
             continue
@@ -147,7 +164,8 @@ def generate_stage1_shard(
     assert len(selected_pairs) == target_pairs, f"Expected {target_pairs} pairs, got {len(selected_pairs)}"
     print(f"Selected exactly {len(selected_pairs)} unique image pairs across all {total_granules} granules.")
 
-    # Step 3: Extract exactly 2 diverse annotations per pair with 1:1 S1/S2 sensor exposure
+    # Step 3: Extract exactly 2 diverse annotations per pair matching the locked distribution:
+    # 6,636 captions, 5,228 VQA, 4,136 grounding
     stage1_manifest_records: List[Dict[str, Any]] = []
     
     caption_count = 0
@@ -169,39 +187,36 @@ def generate_stage1_shard(
         grounds = cand["grounds"]
         vqas = cand["vqas"]
 
+        # Determine top 2 task types needed to satisfy locked quotas
+        deficits = [
+            ("caps", LOCKED_CAPTION_TARGET - caption_count, caps),
+            ("ground", LOCKED_GROUNDING_TARGET - grounding_count, grounds),
+            ("vqa", LOCKED_VQA_TARGET - vqa_count, vqas),
+        ]
+        # Filter to types that have available candidates in this pair
+        avail_deficits = [d for d in deficits if len(d[2]) > 0]
+        avail_deficits.sort(key=lambda x: x[1], reverse=True)
+
         selected_annos: List[Dict[str, Any]] = []
 
-        # Target balanced diversity:
-        # Pattern 0 (50%): Caption + Grounding
-        # Pattern 1 (25%): Caption + VQA
-        # Pattern 2 (25%): Grounding + VQA
-        pattern = pair_idx % 4
-
-        if pattern in [0, 1] and caps and grounds:
-            selected_annos = [caps[0], grounds[0]]
-        elif pattern == 2 and caps and vqas:
-            selected_annos = [caps[0], vqas[0]]
-        elif pattern == 3 and grounds and vqas:
-            selected_annos = [grounds[0], vqas[0]]
-        elif caps and grounds:
-            selected_annos = [caps[0], grounds[0]]
-        elif caps and vqas:
-            selected_annos = [caps[0], vqas[0]]
-        elif grounds and vqas:
-            selected_annos = [grounds[0], vqas[0]]
-        elif len(grounds) >= 2:
-            selected_annos = [grounds[0], grounds[1]]
-        elif len(vqas) >= 2:
-            selected_annos = [vqas[0], vqas[1]]
+        if len(avail_deficits) >= 2:
+            t1 = avail_deficits[0]
+            t2 = avail_deficits[1]
+            selected_annos = [t1[2][0], t2[2][0]]
+        elif len(avail_deficits) == 1:
+            t1 = avail_deficits[0]
+            if len(t1[2]) >= 2:
+                selected_annos = [t1[2][0], t1[2][1]]
+            else:
+                all_cands = caps + grounds + vqas
+                selected_annos = [t1[2][0], all_cands[1] if len(all_cands) > 1 else all_cands[0]]
         else:
-            all_avail = caps + grounds + vqas
-            selected_annos = all_avail[:2] if len(all_avail) >= 2 else all_avail * 2
+            all_cands = caps + grounds + vqas
+            selected_annos = all_cands[:2] if len(all_cands) >= 2 else all_cands * 2
 
         assert len(selected_annos) == 2, f"Expected exactly 2 annotations for pair {pair_id}"
 
-        # Alternating sensor mapping so both S1 and S2 get equal exposure to captions, groundings, and VQAs
-        # pair_idx % 2 == 0: Ex 0 is S2, Ex 1 is S1
-        # pair_idx % 2 == 1: Ex 0 is S1, Ex 1 is S2
+        # Alternating sensor mapping so both S1 and S2 get equal exposure
         flip_sensor = (pair_idx % 2 == 1)
 
         for ex_idx, anno in enumerate(selected_annos):
@@ -248,6 +263,9 @@ def generate_stage1_shard(
 
     total_examples = len(stage1_manifest_records)
     assert total_examples == target_pairs * 2, f"Expected {target_pairs * 2} examples, got {total_examples}"
+    assert caption_count == LOCKED_CAPTION_TARGET, f"Expected {LOCKED_CAPTION_TARGET} captions, got {caption_count}"
+    assert vqa_count == LOCKED_VQA_TARGET, f"Expected {LOCKED_VQA_TARGET} VQAs, got {vqa_count}"
+    assert grounding_count == LOCKED_GROUNDING_TARGET, f"Expected {LOCKED_GROUNDING_TARGET} grounding, got {grounding_count}"
 
     # Step 4: Write Manifest JSONL
     out_manifest = Path(output_manifest_path)
@@ -262,9 +280,9 @@ def generate_stage1_shard(
     # Step 5: Compute Audit Statistics
     alloc_values = list(pairs_allocated_per_granule.values())
     pairs_per_country: Dict[str, int] = {}
-    for g, count in pairs_allocated_per_granule.items():
-        c = granule_to_country[g]
-        pairs_per_country[c] = pairs_per_country.get(c, 0) + count
+    for r in stage1_manifest_records[::2]:  # sample once per pair
+        c = r["country"]
+        pairs_per_country[c] = pairs_per_country.get(c, 0) + 1
 
     sampling_report = {
         "dataset_name": "BIFOLD-BigEarthNetv2-0/BigEarthNet.txt",

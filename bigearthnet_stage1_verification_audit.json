@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "manifest_path": "data/curated_mixture/bigearthnet_stage1_manifest.jsonl",
+  "manifest_sha256": "809ff7f4506c8205ac0dc49582041bb0e79c96fa51e57137185b17655e089d7d",
+  "storage_footprint_bytes": 19043401,
+  "storage_footprint_mb": 18.16,
+  "metrics": {
+    "unique_pairs": 8000,
+    "total_examples": 16000,
+    "pair_annotation_density": 2.0,
+    "min_annotations_per_pair": 2,
+    "max_annotations_per_pair": 2,
+    "duplicate_records_count": 0,
+    "granules_count": 115,
+    "countries_count": 8,
+    "countries_list": [
+      "Austria",
+      "Belgium",
+      "Finland",
+      "Ireland",
+      "Lithuania",
+      "Portugal",
+      "Serbia",
+      "Switzerland"
+    ],
+    "sensors": {
+      "Sentinel-2 MSI": 8000,
+      "Sentinel-1 SAR": 8000
+    },
+    "tasks": {
+      "captioning": 6636,
+      "vqa": 5228,
+      "grounding": 4136
+    },
+    "splits": {
+      "train": 16000
+    },
+    "train_source_pct": 100.0,
+    "eval_partitions_used": 0,
+    "grounding_semantic_level_counts": {
+      "coarse_patch_level_referring_expression": 4136
+    },
+    "missing_provenance_fields_count": 0
+  },
+  "assertions": {
+    "unique_pairs_is_8000": true,
+    "total_examples_is_16000": true,
+    "density_is_exactly_2": true,
+    "zero_duplicates": true,
+    "source_is_100pct_train": true,
+    "sensors_are_8000_each": true,
+    "tasks_match_locked_distribution": true,
+    "granules_count_is_115": true,
+    "countries_count_is_8": true,
+    "grounding_semantics_explicitly_coarse": true,
+    "provenance_complete": true
+  }
+}
