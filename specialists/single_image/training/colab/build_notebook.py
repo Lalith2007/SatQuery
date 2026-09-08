@@ -63,6 +63,18 @@ notebook = {
                 "print(f\"Strict Real Data Mode:   {STRICT_REAL_DATA}\")\n",
                 "print(f\"Demo Fallback Allowed:   {DEMO_MODE}\")\n",
                 "\n",
+                "# Export environment variables so bash subprocesses in Colab always receive them\n",
+                "import os\n",
+                "os.environ[\"MODEL_ID\"] = MODEL_ID\n",
+                "os.environ[\"CONFIG_PATH\"] = CONFIG_PATH\n",
+                "os.environ[\"STAGE1_MANIFEST\"] = STAGE1_MANIFEST\n",
+                "os.environ[\"BIGEARTHNET_DATASET_DIR\"] = BIGEARTHNET_DATASET_DIR\n",
+                "os.environ[\"GOOGLE_DRIVE_DIR\"] = GOOGLE_DRIVE_DIR\n",
+                "os.environ[\"OUTPUT_BUNDLE_DIR\"] = OUTPUT_BUNDLE_DIR\n",
+                "os.environ[\"EXECUTION_MODE\"] = EXECUTION_MODE\n",
+                "os.environ[\"STRICT_REAL_DATA\"] = str(STRICT_REAL_DATA).lower()\n",
+                "os.environ[\"DEMO_MODE\"] = str(DEMO_MODE).lower()\n",
+                "\n",
                 "# Hugging Face Authentication (Colab Secrets or Environment Variable)\n",
                 "import os\n",
                 "hf_token = None\n",
@@ -224,9 +236,12 @@ notebook = {
             "source": [
                 "# Execute BigEarthNet Stage 1 Real Image Materialization\n",
                 "!python -m specialists.single_image.training.colab.materialize_bigearthnet \\\n",
-                "    --manifest_path \"$STAGE1_MANIFEST\" \\\n",
-                "    --output_dir \"$BIGEARTHNET_DATASET_DIR\" \\\n",
-                "    --auto_download"
+                "    --manifest_path {STAGE1_MANIFEST} \\\n",
+                "    --output_dir {BIGEARTHNET_DATASET_DIR} \\\n",
+                "    --auto_download\n",
+                "\n",
+                "# Check available Colab disk space after materialization\n",
+                "!df -h /"
             ]
         },
         {

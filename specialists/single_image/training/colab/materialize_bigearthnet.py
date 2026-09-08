@@ -67,7 +67,14 @@ def download_and_extract_hf_s1(
 
     for pf in part_files:
         print(f"Downloading {pf} from Hugging Face Hub (resumable)...")
-        p = hf_hub_download(repo_id=repo_id, filename=pf, repo_type="dataset", local_dir=str(temp_dir), resume_download=True)
+        p = hf_hub_download(
+            repo_id=repo_id,
+            filename=pf,
+            repo_type="dataset",
+            local_dir=str(temp_dir),
+            cache_dir=str(temp_dir / ".hf_cache"),
+            resume_download=True,
+        )
         local_parts.append(Path(p))
 
     print("Opening combined multi-part tar stream for Sentinel-1...")
@@ -121,11 +128,22 @@ def download_and_extract_hf_s1(
             fh.close()
 
     print(f"Sentinel-1 extraction complete: {saved_count} pairs assembled.")
-    print("Deleting temporary S1 archive chunks to reclaim storage...")
+    print("Purging temporary S1 archive chunks and Hugging Face cache to reclaim disk...")
     for lp in local_parts:
         if lp.exists():
-            lp.unlink()
-    print("S1 archives deleted successfully.")
+            try:
+                lp.unlink()
+            except Exception:
+                pass
+    # Aggressively delete local and temp HF caches to free disk space immediately
+    hf_cache_dir = Path.home() / ".cache" / "huggingface" / "hub" / "datasets--torchgeo--bigearthnet"
+    if hf_cache_dir.exists():
+        shutil.rmtree(hf_cache_dir, ignore_errors=True)
+    if (temp_dir / ".hf_cache").exists():
+        shutil.rmtree(temp_dir / ".hf_cache", ignore_errors=True)
+    if temp_dir.exists():
+        shutil.rmtree(temp_dir, ignore_errors=True)
+    print("S1 archives and caches purged successfully.")
     return saved_count
 
 
@@ -151,7 +169,14 @@ def download_and_extract_hf_s2(
 
     for pf in part_files:
         print(f"Downloading {pf} from Hugging Face Hub (resumable)...")
-        p = hf_hub_download(repo_id=repo_id, filename=pf, repo_type="dataset", local_dir=str(temp_dir), resume_download=True)
+        p = hf_hub_download(
+            repo_id=repo_id,
+            filename=pf,
+            repo_type="dataset",
+            local_dir=str(temp_dir),
+            cache_dir=str(temp_dir / ".hf_cache"),
+            resume_download=True,
+        )
         local_parts.append(Path(p))
 
     print("Opening combined multi-part tar stream for Sentinel-2...")
@@ -169,15 +194,9 @@ def download_and_extract_hf_s2(
                 name = member.name
                 if name.endswith("_B04.tif") or name.endswith("_B03.tif") or name.endswith("_B02.tif"):
                     fname = name.rsplit("/", 1)[-1]
-                    if fname.endswith("_B04.tif"):
-                        patch_id = fname[:-8]
-                        band = "B04"
-                    elif fname.endswith("_B03.tif"):
-                        patch_id = fname[:-8]
-                        band = "B03"
-                    else:
-                        patch_id = fname[:-8]
-                        band = "B02"
+                    parts = fname.split("_")
+                    band = parts[-1][:-4]
+                    patch_id = "_".join(parts[:-1])
 
                     if patch_id in needed_s2:
                         f = tar.extractfile(member)
@@ -209,11 +228,22 @@ def download_and_extract_hf_s2(
             fh.close()
 
     print(f"Sentinel-2 extraction complete: {saved_count} pairs assembled.")
-    print("Deleting temporary S2 archive chunks to reclaim storage...")
+    print("Purging temporary S2 archive chunks and Hugging Face cache to reclaim disk...")
     for lp in local_parts:
         if lp.exists():
-            lp.unlink()
-    print("S2 archives deleted successfully.")
+            try:
+                lp.unlink()
+            except Exception:
+                pass
+    # Aggressively delete local and temp HF caches to free disk space immediately
+    hf_cache_dir = Path.home() / ".cache" / "huggingface" / "hub" / "datasets--torchgeo--bigearthnet"
+    if hf_cache_dir.exists():
+        shutil.rmtree(hf_cache_dir, ignore_errors=True)
+    if (temp_dir / ".hf_cache").exists():
+        shutil.rmtree(temp_dir / ".hf_cache", ignore_errors=True)
+    if temp_dir.exists():
+        shutil.rmtree(temp_dir, ignore_errors=True)
+    print("S2 archives and caches purged successfully.")
     return saved_count
 
 
