@@ -1,0 +1,131 @@
+{
+  "dataset_name": "BIFOLD-BigEarthNetv2-0/BigEarthNet.txt",
+  "huggingface_repo_id": "BIFOLD-BigEarthNetv2-0/BigEarthNet.txt",
+  "license": "CDLA-Permissive-1.0",
+  "arxiv_reference": "arXiv:2603.29630",
+  "dataset_rows": 9553962,
+  "unique_image_pairs": 464044,
+  "unique_parent_scenes": 522,
+  "countries": [
+    "Austria",
+    "Belgium",
+    "Finland",
+    "Ireland",
+    "Kosovo",
+    "Lithuania",
+    "Luxembourg",
+    "Portugal",
+    "Serbia",
+    "Switzerland"
+  ],
+  "annotation_types": [
+    "binary",
+    "mcq",
+    "bounding box",
+    "captioning"
+  ],
+  "task_types": [
+    "presence",
+    "area",
+    "count",
+    "adjacency",
+    "relative_position",
+    "point",
+    "reference",
+    "season",
+    "climate_zone",
+    "country",
+    "captioning"
+  ],
+  "S1_available": true,
+  "S2_available": true,
+  "sensors": {
+    "sentinel_1": {
+      "type": "C-band Synthetic Aperture Radar (SAR)",
+      "modes": "IW (Interferometric Wide Swath)",
+      "polarizations": ["VV", "VH"],
+      "native_resolution": "10m (resampled to 120x120 pixels)",
+      "deterministic_converter": {
+        "channel_1_R": "Normalized VV backscatter intensity (linear/dB with 1%-99% clipping)",
+        "channel_2_G": "Normalized VH backscatter intensity (linear/dB with 1%-99% clipping)",
+        "channel_3_B": "Cross-polarization ratio log((VV+eps)/(VH+eps)) = VV_dB - VH_dB",
+        "documented_information_loss": "Phase information and complex polarimetric covariance matrix [C2] collapsed to backscatter intensity and cross-ratio."
+      }
+    },
+    "sentinel_2": {
+      "type": "MultiSpectral Instrument (MSI)",
+      "bands_total": 12,
+      "bands_list": ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B09", "B11", "B12"],
+      "native_resolution": "10m, 20m, 60m (all interpolated/resampled to 120x120 pixels)",
+      "deterministic_converter": {
+        "representation": "True Color Composite (TCC)",
+        "channel_1_R": "Band 04 (Red, 665nm)",
+        "channel_2_G": "Band 03 (Green, 560nm)",
+        "channel_3_B": "Band 02 (Blue, 490nm)",
+        "normalization": "Surface reflectance clipped at 2000 DN (or standardized with train split stats: B04 mean 588.4 std 684.6, B03 mean 614.1 std 603.3, B02 mean 438.4 std 607.0)",
+        "documented_information_loss": "Red-Edge bands (B05, B06, B07 for vegetation health), NIR (B08, B8A for biomass), and Short-Wave Infrared (SWIR B11, B12 for moisture/soil burn) are omitted from 3-channel RGB visual rendering."
+      }
+    }
+  },
+  "sidecar_metadata_preserved": [
+    "source_record_id",
+    "s1_name",
+    "patch_id",
+    "sensor",
+    "channels_rendered",
+    "original_bands_available",
+    "parent_scene_granule",
+    "country",
+    "season",
+    "climate_zone",
+    "latitude",
+    "longitude"
+  ],
+  "caption_count": 471043,
+  "VQA_count": 6970258,
+  "grounding_count": 2112661,
+  "duplicate_count": 0,
+  "split_counts": {
+    "train": 4189308,
+    "validation": 2566385,
+    "test": 2774240,
+    "bench": 15029
+  },
+  "annotations_per_image_distribution": {
+    "mean": 20.59,
+    "min": 1,
+    "max": 32,
+    "risk": "Uncontrolled sampling causes a few image pairs with 30+ binary questions to dominate training and cause repetitiveness.",
+    "duplicate_density_control_policy": "Strict cap of at most 2 diverse annotations per unique image pair (e.g. 1 caption + 1 VQA or 1 grounding)."
+  },
+  "download_size": {
+    "metadata_parquet_mb": 445.19,
+    "s1_compressed_gb": 31.0,
+    "s2_compressed_gb": 66.0,
+    "total_uncompressed_gb": 210.0,
+    "colab_disk_strategy": "Never download the full 97 GB archives on Colab. Stream or download only the exact target image shards (~1.8-2.5 GB)."
+  },
+  "proposed_stage1_subset": {
+    "unique_image_pairs_selected": 8000,
+    "image_text_annotations_selected": 16000,
+    "annotations_per_image": 2.0,
+    "unique_geographic_scenes_estimate": 45,
+    "unique_countries": 6,
+    "modality_availability": {
+      "sentinel_1_sar_pairs": 8000,
+      "sentinel_2_optical_pairs": 8000
+    },
+    "task_distribution": {
+      "captioning": 4000,
+      "vqa": 6000,
+      "grounding": 6000
+    },
+    "task_percentages": {
+      "captioning_pct": 25.0,
+      "vqa_pct": 37.5,
+      "grounding_pct": 37.5
+    },
+    "storage_footprint_colab_gb": 2.4,
+    "estimated_training_time_colab_t4_min": 85
+  }
+}
