@@ -1,16 +1,20 @@
 """Division 2 Specialist: Single-Image Remote-Sensing Intelligence.
 
-Owner: Sruthi
 Implements BaseSpecialistTool for:
 - Single-Image Visual Question Answering (VQA)
 - Text-Guided Visual Grounding (Normalized Bounding Boxes)
 - Scene Captioning & Land-Cover Description
 
-Model: PaliGemma 3B — SatQuery Remote-Sensing Adapted
+Foundation Models:
+- Primary Production Backend: Qwen2.5-VL (Qwen/Qwen2.5-VL-3B-Instruct)
+- Preserved Rollback Backend: PaliGemma 3B (google/paligemma-3b-pt-224)
+Controlled via environment variable: VISION_LANGUAGE_BACKEND (default: "qwen25vl")
 """
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 import time
 from typing import Any, Dict, List, Optional
 
@@ -29,6 +33,8 @@ from core.schemas import (
     ToolResult,
     ToolStatus,
 )
+from specialists.single_image.adaptation.qwen25vl.grounding import QwenGroundingParser
+from specialists.single_image.adaptation.qwen25vl.inference import QwenSingleImageEngine
 from specialists.single_image.grounding import GroundingCoordinateParser
 from specialists.single_image.model import PaliGemmaRSInferenceEngine
 
@@ -36,20 +42,54 @@ logger = get_logger("single_image_specialist")
 
 
 class SingleImageRSSpecialistTool(BaseSpecialistTool):
-    """Real Single-Image Remote-Sensing Intelligence Specialist for Division 2."""
+    """Single-Image Remote-Sensing Intelligence Specialist supporting Qwen2.5-VL and PaliGemma."""
 
     def __init__(
         self,
-        base_model_id: str = "google/paligemma-3b-pt-224",
+        base_model_id: Optional[str] = None,
         adapter_path: Optional[str] = None,
+        backend: Optional[str] = None,
     ) -> None:
-        metadata = ToolMetadata(
-            name="single_image_rs_specialist",
-            description=(
+        self.backend = (backend or os.getenv("VISION_LANGUAGE_BACKEND", "qwen25vl")).lower().strip()
+
+        if self.backend == "qwen25vl":
+            resolved_base_model = base_model_id or os.getenv("MODEL_ID", "Qwen/Qwen2.5-VL-3B-Instruct")
+            default_ad = Path("specialists/single_image/weights/qwen25vl_lora")
+            resolved_adapter = adapter_path or (str(default_ad) if default_ad.exists() else None)
+            desc = (
+                "Single-Image Remote-Sensing Intelligence Specialist powered by Qwen2.5-VL — "
+                "SatQuery Remote-Sensing Adapted. Supports VQA, text-guided visual grounding, "
+                "and scene description across optical and SAR satellite imagery."
+            )
+            model_info_dict = {
+                "base_architecture": "Qwen2.5-VL Vision-Language Transformer",
+                "model_name": "Qwen2.5-VL-3B-Instruct",
+                "backend": "qwen25vl",
+                "base_checkpoint": resolved_base_model,
+                "adaptation_method": "PEFT / QLoRA 4-bit (rank=16, alpha=32)",
+                "coordinate_convention": "[ymin, xmin, ymax, xmax] (normalized 0.0 - 1.0)",
+            }
+        else:
+            resolved_base_model = base_model_id or "google/paligemma-3b-pt-224"
+            default_ad = Path("specialists/single_image/weights/satquery_paligemma_lora")
+            resolved_adapter = adapter_path or (str(default_ad) if default_ad.exists() else None)
+            desc = (
                 "Single-Image Remote-Sensing Specialist powered by PaliGemma 3B — "
                 "SatQuery Remote-Sensing Adapted. Supports VQA, text-guided visual grounding, "
                 "and scene description across optical and multispectral satellite imagery."
-            ),
+            )
+            model_info_dict = {
+                "base_architecture": "SigLIP-So400m + Gemma-2B",
+                "model_name": "PaliGemma 3B — SatQuery Remote-Sensing Adapted",
+                "backend": "paligemma_legacy",
+                "base_checkpoint": resolved_base_model,
+                "adaptation_method": "PEFT / LoRA (rank=8, alpha=16)",
+                "coordinate_convention": "[ymin, xmin, ymax, xmax] (normalized 0.0 - 1.0)",
+            }
+
+        metadata = ToolMetadata(
+            name="single_image_rs_specialist",
+            description=desc,
             version="1.0.0-adapted",
             supported_tasks=[
                 TaskType.SINGLE_IMAGE_VQA,
@@ -64,13 +104,7 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
             min_images=1,
             max_images=1,
             author_or_division="Division 2 (Sruthi)",
-            metadata={
-                "base_architecture": "SigLIP-So400m + Gemma-2B",
-                "model_name": "PaliGemma 3B — SatQuery Remote-Sensing Adapted",
-                "base_checkpoint": base_model_id,
-                "adaptation_method": "PEFT / LoRA (rank=8, alpha=16)",
-                "coordinate_convention": "[ymin, xmin, ymax, xmax] (normalized 0.0 - 1.0)",
-            },
+            metadata=model_info_dict,
         )
         super().__init__(
             name="single_image_rs_specialist",
@@ -79,9 +113,15 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
             version=metadata.version,
             metadata=metadata,
         )
-        self.engine = PaliGemmaRSInferenceEngine.get_instance(
-            base_model_id=base_model_id,
-            adapter_path=adapter_path,
+
+        # Initialize engines
+        self.qwen_engine = QwenSingleImageEngine.get_instance(
+            base_model_id=resolved_base_model if self.backend == "qwen25vl" else "Qwen/Qwen2.5-VL-3B-Instruct",
+            adapter_path=resolved_adapter if self.backend == "qwen25vl" else None,
+        )
+        self.paligemma_engine = PaliGemmaRSInferenceEngine.get_instance(
+            base_model_id=resolved_base_model if self.backend != "qwen25vl" else "google/paligemma-3b-pt-224",
+            adapter_path=resolved_adapter if self.backend != "qwen25vl" else None,
         )
 
     def validate_request(self, request: ToolRequest) -> ValidationResult:
@@ -104,7 +144,6 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
 
     async def execute(self, request: ToolRequest) -> ToolResult:
         """Execute remote sensing inference and return standardized ToolResult."""
-        # 1. Validate request
         val = self.validate_request(request)
         if not val.is_valid:
             logger.warning(f"Request validation failed in {self.name}: {val.errors}")
@@ -126,42 +165,80 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
         trace_entries: List[ExecutionTraceEntry] = []
 
         try:
-            # 2. Route to appropriate inference mode
-            if request.task == TaskType.SINGLE_IMAGE_GROUNDING:
-                answer, raw_tokens, confidence, metrics = self.engine.run_grounding(
-                    image_path=image_input.path_or_uri,
-                    query=request.query,
-                )
-                evidence = GroundingCoordinateParser.parse_location_tokens(
-                    raw_text=raw_tokens,
-                    label=request.query,
-                    image_id=image_input.image_id,
-                    confidence=confidence,
-                )
-                # If parsed evidence, attach evidence trace
-                if evidence:
-                    trace_entries.append(
-                        ExecutionTraceEntry(
-                            stage=ExecutionStage.EVIDENCE_GENERATED,
-                            component=self.name,
-                            status="COMPLETED",
-                            details={"bounding_box_count": len(evidence), "label": request.query},
-                        )
+            if self.backend == "qwen25vl":
+                # --- QWEN2.5-VL PRIMARY INFERENCE PATH ---
+                if request.task == TaskType.SINGLE_IMAGE_GROUNDING:
+                    answer, evidence, confidence, metrics = self.qwen_engine.run_grounding(
+                        image=image_input.path_or_uri,
+                        query=request.query,
+                        image_id=image_input.image_id,
                     )
+                    if evidence:
+                        trace_entries.append(
+                            ExecutionTraceEntry(
+                                stage=ExecutionStage.EVIDENCE_GENERATED,
+                                component=self.name,
+                                status="COMPLETED",
+                                details={"bounding_box_count": len(evidence), "label": request.query},
+                            )
+                        )
+                elif request.task == TaskType.SINGLE_IMAGE_CAPTION:
+                    answer, confidence, metrics = self.qwen_engine.run_captioning(
+                        image=image_input.path_or_uri,
+                    )
+                    evidence = []
+                else:  # SINGLE_IMAGE_VQA
+                    answer, confidence, metrics = self.qwen_engine.run_vqa(
+                        image=image_input.path_or_uri,
+                        query=request.query,
+                    )
+                    evidence = []
 
-            elif request.task == TaskType.SINGLE_IMAGE_CAPTION:
-                answer, confidence, metrics = self.engine.run_captioning(
-                    image_path=image_input.path_or_uri,
-                )
-                evidence = []
+                device_used = metrics.device_used
+                inference_ms = metrics.inference_time_ms
+                preprocessing_ms = metrics.preprocessing_time_ms
+                peak_memory = metrics.peak_memory_mb
+                active_model_name = "Qwen2.5-VL-3B-Instruct"
 
-            else:  # TaskType.SINGLE_IMAGE_VQA
-                answer, confidence, metrics = self.engine.run_vqa(
-                    image_path=image_input.path_or_uri,
-                    query=request.query,
-                )
-                # Ungrounded comparative/statistical VQA queries do not fabricate bounding boxes
-                evidence = []
+            else:
+                # --- PALIGEMMA LEGACY ROLLBACK INFERENCE PATH ---
+                if request.task == TaskType.SINGLE_IMAGE_GROUNDING:
+                    answer, raw_tokens, confidence, metrics = self.paligemma_engine.run_grounding(
+                        image_path=image_input.path_or_uri,
+                        query=request.query,
+                    )
+                    evidence = GroundingCoordinateParser.parse_location_tokens(
+                        raw_text=raw_tokens,
+                        label=request.query,
+                        image_id=image_input.image_id,
+                        confidence=confidence,
+                    )
+                    if evidence:
+                        trace_entries.append(
+                            ExecutionTraceEntry(
+                                stage=ExecutionStage.EVIDENCE_GENERATED,
+                                component=self.name,
+                                status="COMPLETED",
+                                details={"bounding_box_count": len(evidence), "label": request.query},
+                            )
+                        )
+                elif request.task == TaskType.SINGLE_IMAGE_CAPTION:
+                    answer, confidence, metrics = self.paligemma_engine.run_captioning(
+                        image_path=image_input.path_or_uri,
+                    )
+                    evidence = []
+                else:  # SINGLE_IMAGE_VQA
+                    answer, confidence, metrics = self.paligemma_engine.run_vqa(
+                        image_path=image_input.path_or_uri,
+                        query=request.query,
+                    )
+                    evidence = []
+
+                device_used = metrics.device_used
+                inference_ms = metrics.inference_time_ms
+                preprocessing_ms = metrics.preprocessing_time_ms
+                peak_memory = metrics.peak_memory_mb
+                active_model_name = "PaliGemma 3B — SatQuery Remote-Sensing Adapted"
 
             total_dur_ms = round((time.perf_counter() - t0) * 1000.0, 2)
 
@@ -173,10 +250,11 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                     duration_ms=total_dur_ms,
                     details={
                         "task": request.task.value,
-                        "device": metrics.device_used,
-                        "inference_ms": metrics.inference_time_ms,
-                        "preprocessing_ms": metrics.preprocessing_time_ms,
-                        "peak_memory_mb": metrics.peak_memory_mb,
+                        "backend": self.backend,
+                        "device": device_used,
+                        "inference_ms": inference_ms,
+                        "preprocessing_ms": preprocessing_ms,
+                        "peak_memory_mb": peak_memory,
                     },
                 )
             )
@@ -190,11 +268,14 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                 evidence=evidence,
                 artifacts=[],
                 model_info={
-                    "name": "PaliGemma 3B — SatQuery Remote-Sensing Adapted",
-                    "base_model": self.engine.base_model_id,
+                    "name": active_model_name,
+                    "backend": self.backend,
+                    "base_model": self.metadata.metadata.get("base_checkpoint"),
                     "version": self.version,
-                    "author": "Division 2 (Sruthi)",
-                    "device": metrics.device_used,
+                    "author": self.metadata.author_or_division,
+                    "device": device_used,
+                    "is_mock": False,
+                    "is_fallback": False,
                 },
                 parameters={
                     "query": request.query,
@@ -204,18 +285,20 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                 metadata={
                     "performance": {
                         "total_latency_ms": total_dur_ms,
-                        "preprocessing_ms": metrics.preprocessing_time_ms,
-                        "inference_ms": metrics.inference_time_ms,
-                        "postprocessing_ms": metrics.postprocessing_time_ms,
-                        "peak_memory_mb": metrics.peak_memory_mb,
-                        "device": metrics.device_used,
-                    }
+                        "preprocessing_ms": preprocessing_ms,
+                        "inference_ms": inference_ms,
+                        "peak_memory_mb": peak_memory,
+                        "device": device_used,
+                    },
+                    "backend": self.backend,
+                    "is_mock": False,
+                    "is_fallback": False,
                 },
                 execution_trace=trace_entries,
             )
 
         except Exception as e:
-            logger.exception(f"Inference error in {self.name}: {e}")
+            logger.exception(f"Inference error in {self.name} ({self.backend}): {e}")
             return ToolResult(
                 request_id=request.request_id,
                 task=request.task,
@@ -226,13 +309,13 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                 artifacts=[],
                 model_info=self.metadata.metadata,
                 parameters={"query": request.query},
-                metadata={"error": str(e)},
+                metadata={"error": str(e), "backend": self.backend},
                 execution_trace=[
                     ExecutionTraceEntry(
                         stage=ExecutionStage.ERROR_ENCOUNTERED,
                         component=self.name,
                         status="FAILED",
-                        details={"error": str(e)},
+                        details={"error": str(e), "backend": self.backend},
                     )
                 ],
             )
@@ -240,6 +323,8 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
     def health_check(self) -> bool:
         """Check specialist health and device readiness."""
         try:
-            return self.engine is not None
+            if self.backend == "qwen25vl":
+                return self.qwen_engine is not None
+            return self.paligemma_engine is not None
         except Exception:
             return False

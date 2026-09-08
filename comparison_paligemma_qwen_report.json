@@ -1,0 +1,87 @@
+{
+  "timestamp": "2026-09-08 06:50:40Z",
+  "test_dataset": "data/qwen_dataset/test.jsonl",
+  "sample_count": 10,
+  "results": {
+    "paligemma_legacy": {
+      "backend": "paligemma_legacy",
+      "sample_count": 10,
+      "latency": {
+        "mean_ms": 2.4,
+        "median_ms": 2.15,
+        "p95_ms": 5.14
+      },
+      "grounding": {
+        "mean_iou": 0.0,
+        "median_iou": 0.0,
+        "recall_at_50_pct": 0.0,
+        "recall_at_75_pct": 0.0,
+        "evaluated_samples": 0
+      },
+      "vqa": {
+        "total_questions": 8,
+        "responsive_answers": 8,
+        "accuracy_pct": 100.0
+      },
+      "captioning": {
+        "mean_word_count": 16.0,
+        "evaluated_samples": 2
+      },
+      "modality_breakdown": {
+        "optical": {
+          "count": 8,
+          "mean_grounding_iou": 0.0,
+          "vqa_rate_pct": 100.0
+        },
+        "sar": {
+          "count": 2,
+          "mean_grounding_iou": 0.0,
+          "vqa_rate_pct": 100.0
+        }
+      }
+    },
+    "qwen25vl": {
+      "backend": "qwen25vl",
+      "sample_count": 10,
+      "latency": {
+        "mean_ms": 1.8,
+        "median_ms": 1.8,
+        "p95_ms": 2.77
+      },
+      "grounding": {
+        "mean_iou": 0.0,
+        "median_iou": 0.0,
+        "recall_at_50_pct": 0.0,
+        "recall_at_75_pct": 0.0,
+        "evaluated_samples": 0
+      },
+      "vqa": {
+        "total_questions": 8,
+        "responsive_answers": 8,
+        "accuracy_pct": 100.0
+      },
+      "captioning": {
+        "mean_word_count": 29.0,
+        "evaluated_samples": 2
+      },
+      "modality_breakdown": {
+        "optical": {
+          "count": 8,
+          "mean_grounding_iou": 0.0,
+          "vqa_rate_pct": 100.0
+        },
+        "sar": {
+          "count": 2,
+          "mean_grounding_iou": 0.0,
+          "vqa_rate_pct": 100.0
+        }
+      }
+    }
+  },
+  "deltas": {
+    "grounding_mean_iou_diff": 0.0,
+    "grounding_recall_50_diff": 0.0,
+    "latency_mean_ms_diff": -0.6,
+    "vqa_accuracy_diff": 0.0
+  }
+}

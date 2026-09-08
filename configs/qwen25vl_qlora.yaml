@@ -1,0 +1,49 @@
+# SatQuery AI — Division 2 Qwen2.5-VL Production QLoRA Training Configuration
+# Target Runtime: Google Colab NVIDIA CUDA (T4 / L4 / A100 >= 15GB VRAM)
+
+model_id: "Qwen/Qwen2.5-VL-3B-Instruct"
+output_dir: "specialists/single_image/weights/qwen25vl_lora"
+
+# Quantization
+load_in_4bit: true
+bnb_4bit_quant_type: "nf4"
+bnb_4bit_use_double_quant: true
+compute_dtype: "bfloat16"
+
+# PEFT LoRA Adaptation
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_bias: "none"
+lora_task_type: "CAUSAL_LM"
+target_modules_regex: ".*language_model.*\\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)|.*merger\\.mlp\\.[02]"
+
+# Resolution Controls
+min_pixels: 200704   # 256 * 28 * 28 (~448x448)
+max_pixels: 802816   # 1024 * 28 * 28 (~896x896)
+
+# Optimization & Schedule
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+gradient_checkpointing: true
+optimizer: "paged_adamw_8bit"
+
+learning_rate: 2.0e-4
+lr_scheduler_type: "cosine"
+warmup_ratio: 0.03
+weight_decay: 0.01
+max_grad_norm: 1.0
+num_train_epochs: 3
+
+# Logging & Checkpointing
+logging_steps: 10
+eval_strategy: "steps"
+eval_steps: 50
+save_strategy: "steps"
+save_steps: 50
+save_total_limit: 2
+max_length: null  # Multimodal sequences must not be truncated blindly
+
+# Hardware & Seeds
+seed: 42
+production_backend: "qwen25vl"

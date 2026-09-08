@@ -6,7 +6,11 @@ Model: PaliGemma 3B — SatQuery Remote-Sensing Adapted
 
 from __future__ import annotations
 
-from registry.registry import ToolRegistry, default_registry
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from registry.registry import ToolRegistry
+
 from specialists.single_image.grounding import GroundingCoordinateParser
 from specialists.single_image.model import PaliGemmaRSInferenceEngine
 from specialists.single_image.specialist import SingleImageRSSpecialistTool
@@ -14,6 +18,7 @@ from specialists.single_image.specialist import SingleImageRSSpecialistTool
 
 def register_single_image_specialist(registry: ToolRegistry | None = None) -> SingleImageRSSpecialistTool:
     """Register the real Division 2 SingleImageRSSpecialistTool into the provided or default registry."""
+    from registry.registry import default_registry
     reg = registry or default_registry
     tool = SingleImageRSSpecialistTool()
     reg.register(tool, overwrite=True)
