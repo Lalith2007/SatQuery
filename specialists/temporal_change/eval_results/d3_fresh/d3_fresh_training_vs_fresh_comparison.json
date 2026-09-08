@@ -1,0 +1,67 @@
+{
+  "historical_metrics": {
+    "dataset": "LEVIR-CD+ (Reported N=348)",
+    "test_samples": 348,
+    "threshold": 0.5,
+    "overall_accuracy": 0.973,
+    "f1": 0.6654,
+    "iou": 0.4986,
+    "precision": 0.6726,
+    "recall": 0.6583,
+    "mean_latency_ms": 15.49,
+    "hardware": "NVIDIA Tesla T4 (Cloud GPU)"
+  },
+  "fresh_authoritative_metrics": {
+    "dataset": "Official LEVIR-CD Held-Out Test Set (Verified 128 Parent Scenes)",
+    "test_samples": 128,
+    "threshold": 0.5,
+    "raw_metrics": {
+      "overall_accuracy": 0.9799,
+      "f1": 0.7954,
+      "iou": 0.6603,
+      "precision": 0.827,
+      "recall": 0.7662,
+      "dice": 0.7954,
+      "specificity": 0.9914,
+      "tp": 327477,
+      "fp": 68505,
+      "fn": 99937,
+      "tn": 7892689
+    },
+    "production_postprocessed_metrics": {
+      "overall_accuracy": 0.9799,
+      "f1": 0.7931,
+      "iou": 0.6571,
+      "precision": 0.8336,
+      "recall": 0.7563,
+      "dice": 0.7931,
+      "specificity": 0.9919,
+      "tp": 323254,
+      "fp": 64540,
+      "fn": 104160,
+      "tn": 7896654
+    },
+    "runtime": {
+      "device": "mps",
+      "total_evaluation_time_seconds": 10.84,
+      "scenes_evaluated": 128,
+      "mean_latency_ms": 27.32,
+      "median_latency_ms": 26.98,
+      "p95_latency_ms": 28.23,
+      "p99_latency_ms": 34.96,
+      "min_latency_ms": 26.66,
+      "max_latency_ms": 37.44,
+      "throughput_fps": 36.61
+    }
+  },
+  "deltas": {
+    "raw_f1_delta": 0.13,
+    "raw_iou_delta": 0.1617,
+    "raw_prec_delta": 0.1544,
+    "raw_rec_delta": 0.1079,
+    "raw_oa_delta": 0.0069,
+    "post_f1_delta": 0.1277,
+    "post_iou_delta": 0.1585
+  },
+  "protocol_discrepancy_explanation": "Historical benchmark reported N=348 based on LEVIR-CD+ (an extended 985-pair dataset: 542 train, 95 val, 348 test). The verified HuggingFace Hub download archive 'test.zip' (496,305,323 bytes) provides the authoritative standard LEVIR-CD benchmark test split (128 full-scale 1024x1024 parent scenes). Both evaluations measure change detection with threshold 0.50 on authentic LEVIR-CD optical satellite pairs."
+}
