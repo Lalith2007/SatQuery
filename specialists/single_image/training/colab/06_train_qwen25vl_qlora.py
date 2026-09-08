@@ -132,6 +132,14 @@ def train_qwen25vl_qlora(
     if resume_checkpoint:
         print(f"Resuming training from checkpoint: {resume_checkpoint}")
 
+    # Calculate warmup steps from warmup_ratio
+    warmup_ratio = float(cfg_dict.get("warmup_ratio", 0.03))
+    train_count = len(dataset["train"])
+    steps_per_epoch = max(1, train_count // (batch_size * grad_accum))
+    total_steps = steps_per_epoch * epochs
+    warmup_steps = int(cfg_dict.get("warmup_steps", max(10, int(total_steps * warmup_ratio))))
+    print(f"Calculated warmup_steps: {warmup_steps} (total steps: ~{total_steps})")
+
     training_args = SFTConfig(
         output_dir=str(checkpoint_dir),
         per_device_train_batch_size=batch_size,
@@ -141,7 +149,8 @@ def train_qwen25vl_qlora(
         gradient_checkpointing_kwargs={"use_reentrant": False},
         learning_rate=lr,
         lr_scheduler_type="cosine",
-        warmup_ratio=0.03,
+        warmup_steps=warmup_steps,
+        optim=cfg_dict.get("optimizer", "paged_adamw_8bit"),
         weight_decay=0.01,
         max_grad_norm=1.0,
         num_train_epochs=epochs,
