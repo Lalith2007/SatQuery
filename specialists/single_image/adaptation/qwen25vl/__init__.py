@@ -1,5 +1,12 @@
 """Qwen2.5-VL Remote-Sensing Adaptation Subsystem for SatQuery AI Division 2."""
 
+import sys
+# Colab runtime compatibility: neutralize torchaudio if CUDA version mismatch causes RuntimeError on import
+try:
+    import torchaudio  # noqa: F401
+except (RuntimeError, Exception):
+    sys.modules["torchaudio"] = None
+
 from specialists.single_image.adaptation.qwen25vl.config import (
     LoraConfigQwen,
     ModelConfig,

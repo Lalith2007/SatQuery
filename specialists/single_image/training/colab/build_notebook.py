@@ -169,7 +169,9 @@ notebook = {
             "outputs": [],
             "source": [
                 "# Ensure clean environment and install vetted packages\n",
-                "!pip uninstall -y torchao || true\n",
+                "# Neutralize torchaudio and torchao (Colab has a CUDA mismatch: PyTorch CUDA 13.0 vs torchaudio 12.8)\n",
+                "# SatQuery vision-language fine-tuning does not use audio.\n",
+                "!pip uninstall -y torchaudio torchao || true\n",
                 "!pip install -q --upgrade \\\n",
                 "    \"transformers>=4.49.0\" \\\n",
                 "    \"peft>=0.14.0\" \\\n",
@@ -182,7 +184,8 @@ notebook = {
                 "    \"tifffile>=2024.8.30\" \\\n",
                 "    \"zstandard>=0.23.0\" \\\n",
                 "    \"pyyaml\" \\\n",
-                "    \"matplotlib\""
+                "    \"matplotlib\"\n",
+                "!pip uninstall -y torchaudio || true\n"
             ]
         },
         {
@@ -199,6 +202,13 @@ notebook = {
             "metadata": {},
             "outputs": [],
             "source": [
+                "import sys\n",
+                "# Neutralize torchaudio if CUDA mismatch causes RuntimeError on import\n",
+                "try:\n",
+                "    import torchaudio\n",
+                "except (RuntimeError, Exception):\n",
+                "    sys.modules[\"torchaudio\"] = None\n",
+                "\n",
                 "import torch\n",
                 "\n",
                 "# Strict CUDA Guard\n",

@@ -185,6 +185,12 @@ class Qwen25VLFullConfig:
 
 def inspect_hardware() -> Dict[str, Any]:
     """Inspect and report the runtime hardware and package versions."""
+    import sys
+    try:
+        import torchaudio  # noqa: F401
+    except (RuntimeError, Exception):
+        sys.modules["torchaudio"] = None
+
     import transformers
     import peft
 

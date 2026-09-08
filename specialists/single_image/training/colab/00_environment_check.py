@@ -14,6 +14,13 @@ import subprocess
 import sys
 import time
 from typing import Any, Dict
+
+# Colab runtime compatibility: neutralize torchaudio if CUDA version mismatch causes RuntimeError
+try:
+    import torchaudio  # noqa: F401
+except (RuntimeError, Exception):
+    sys.modules["torchaudio"] = None
+
 import torch
 
 from core.logging import get_logger
