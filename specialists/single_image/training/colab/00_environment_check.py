@@ -116,12 +116,18 @@ def run_environment_check(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Colab Environment Diagnostics")
-    parser.add_argument("--output_path", default="environment_manifest.json")
+    parser.add_argument("--output_path", default=None, help="Output path for environment_manifest.json")
+    parser.add_argument("--manifest_path", default=None, help="Alias for --output_path")
     parser.add_argument("--allow_non_cuda", action="store_true", help="Allow non-CUDA for local testing")
+    parser.add_argument("--strict", action="store_true", help="Enforce strict CUDA hardware checks")
     args = parser.parse_args()
 
+    target_out = args.manifest_path or args.output_path or "environment_manifest.json"
+    req_cuda = not args.allow_non_cuda or args.strict
+    allow_non_cuda = args.allow_non_cuda and not args.strict
+
     run_environment_check(
-        output_path=args.output_path,
-        require_cuda=not args.allow_non_cuda,
-        allow_non_cuda=args.allow_non_cuda,
+        output_path=target_out,
+        require_cuda=req_cuda,
+        allow_non_cuda=allow_non_cuda,
     )

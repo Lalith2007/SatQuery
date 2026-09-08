@@ -243,15 +243,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--test_file", default="data/qwen_dataset/test.jsonl")
     parser.add_argument("--model_id", default="Qwen/Qwen2.5-VL-3B-Instruct")
-    parser.add_argument("--adapter", default="specialists/single_image/weights/qwen25vl_lora")
-    parser.add_argument("--output", default="data/qwen_dataset/evaluation_report.json")
+    parser.add_argument("--adapter", default=None)
+    parser.add_argument("--adapter_path", default=None, help="Alias for --adapter")
+    parser.add_argument("--output", default=None)
+    parser.add_argument("--output_report", default=None, help="Alias for --output")
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args()
+
+    adapter_p = args.adapter_path or args.adapter or "specialists/single_image/weights/qwen25vl_lora"
+    output_p = args.output_report or args.output or "data/qwen_dataset/evaluation_report.json"
 
     evaluate_test_split(
         test_file=args.test_file,
         model_id=args.model_id,
-        adapter_path=args.adapter,
-        output_path=args.output,
+        adapter_path=adapter_p,
+        output_path=output_p,
         limit=args.limit,
     )

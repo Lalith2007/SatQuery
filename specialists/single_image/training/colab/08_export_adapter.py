@@ -295,19 +295,37 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Export Adapter and Merge Full Checkpoint")
     parser.add_argument("--adapter_dir", default="specialists/single_image/weights/qwen25vl_lora")
     parser.add_argument("--base_model", default="Qwen/Qwen2.5-VL-3B-Instruct")
+    parser.add_argument("--base_model_id", default=None, help="Alias for --base_model")
+    parser.add_argument("--output_dir", default=None, help="Destination to export verified adapter")
     parser.add_argument("--merged_dir", default="artifacts/qwen25vl_stage1/merged_full")
+    parser.add_argument("--merged_output_dir", default=None, help="Alias for --merged_dir")
+    parser.add_argument("--merge_full", action="store_true", help="Perform full checkpoint merge")
     parser.add_argument("--skip_merge", action="store_true", help="Only verify adapter without merging")
     parser.add_argument("--validate_only", action="store_true", help="Only validate existing merged checkpoint")
+    parser.add_argument("--verify_merged", action="store_true", help="Alias for --validate_only")
     args = parser.parse_args()
 
-    if args.validate_only:
-        validate_independent_merged_checkpoint(merged_dir=args.merged_dir)
+    base_model = args.base_model_id or args.base_model
+    merged_dir = args.merged_output_dir or args.merged_dir
+    validate_only = args.validate_only or args.verify_merged
+
+    if validate_only:
+        validate_independent_merged_checkpoint(merged_dir=merged_dir)
     else:
+        # Verify adapter
         verify_adapter(args.adapter_dir)
-        if not args.skip_merge:
+        if args.output_dir and Path(args.adapter_dir).resolve() != Path(args.output_dir).resolve():
+            out_p = Path(args.output_dir)
+            out_p.mkdir(parents=True, exist_ok=True)
+            for f in Path(args.adapter_dir).glob("*"):
+                if f.is_file():
+                    shutil.copy2(f, out_p / f.name)
+            print(f"Adapter exported to: {out_p.resolve()}")
+
+        if args.merge_full or not args.skip_merge and not args.output_dir:
             merge_full_checkpoint(
-                base_model_id=args.base_model,
-                adapter_dir=args.adapter_dir,
-                merged_output_dir=args.merged_dir,
+                base_model_id=base_model,
+                adapter_dir=args.output_dir or args.adapter_dir,
+                merged_output_dir=merged_dir,
             )
-            validate_independent_merged_checkpoint(merged_dir=args.merged_dir)
+            validate_independent_merged_checkpoint(merged_dir=merged_dir)

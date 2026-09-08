@@ -210,13 +210,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_id", default="Qwen/Qwen2.5-VL-3B-Instruct")
     parser.add_argument("--steps", type=int, default=25)
+    parser.add_argument("--num_steps", type=int, default=None, help="Alias for --steps")
+    parser.add_argument("--num_samples", type=int, default=8, help="Number of samples to overfit")
     parser.add_argument("--report_path", default="micro_overfit_report.json")
     parser.add_argument("--allow_non_cuda", action="store_true")
     args = parser.parse_args()
 
+    steps = args.num_steps if args.num_steps is not None else args.steps
     run_micro_overfit_test(
         model_id=args.model_id,
-        num_steps=args.steps,
+        num_steps=steps,
+        num_samples=args.num_samples,
         report_path=args.report_path,
         allow_non_cuda=args.allow_non_cuda,
     )

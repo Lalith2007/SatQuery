@@ -325,14 +325,25 @@ if __name__ == "__main__":
     parser.add_argument("--adapter_dir", default="specialists/single_image/weights/qwen25vl_lora")
     parser.add_argument("--merged_dir", default="artifacts/qwen25vl_stage1/merged_full")
     parser.add_argument("--eval_dir", default="artifacts/qwen25vl_stage1/evaluation")
+    parser.add_argument("--eval_report", default=None, help="Path to evaluation_report.json")
     parser.add_argument("--output_bundle", default="artifacts/qwen25vl_stage1")
+    parser.add_argument("--output_bundle_dir", default=None, help="Alias for --output_bundle")
     parser.add_argument("--google_drive_dir", default=None)
+    parser.add_argument("--run_dir", default=None, help="Alias for --google_drive_dir")
     args = parser.parse_args()
+
+    gdrive_dir = args.run_dir or args.google_drive_dir
+    bundle_dir = args.output_bundle_dir or args.output_bundle
+    eval_dir = args.eval_dir
+    if args.eval_report:
+        eval_p = Path(args.eval_report)
+        if eval_p.exists():
+            eval_dir = str(eval_p.parent)
 
     package_and_export(
         adapter_dir=args.adapter_dir,
         merged_dir=args.merged_dir,
-        eval_dir=args.eval_dir,
-        output_bundle_dir=args.output_bundle,
-        google_drive_dir=args.google_drive_dir,
+        eval_dir=eval_dir,
+        output_bundle_dir=bundle_dir,
+        google_drive_dir=gdrive_dir,
     )

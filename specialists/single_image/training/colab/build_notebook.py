@@ -270,7 +270,8 @@ notebook = {
             "metadata": {},
             "outputs": [],
             "source": [
-                "!python -m specialists.single_image.training.colab.03_inspect_tokens_and_lora"
+                "!python -m specialists.single_image.training.colab.03_inspect_qwen \\\n",
+                "    --model_id \"$MODEL_ID\""
             ]
         },
         {
@@ -287,7 +288,7 @@ notebook = {
             "metadata": {},
             "outputs": [],
             "source": [
-                "!python -m specialists.single_image.training.colab.04_cuda_smoke_test \\\n",
+                "!python -m specialists.single_image.training.colab.04_smoke_test \\\n",
                 "    --model_id \"$MODEL_ID\""
             ]
         },
