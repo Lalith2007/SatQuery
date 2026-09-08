@@ -1,0 +1,1064 @@
+[
+  {
+    "scenario_id": "SCENARIO_01",
+    "scenario_name": "Dense Urban City Center",
+    "scene_type": "Urban / Dense City",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0768_x1280.png",
+    "optical_file": "NH49E003024_y0768_x1280.png",
+    "sar_file": "NH49E003024_y0768_x1280.png",
+    "image_size": "256x256",
+    "query": "Segment urban city infrastructure and commercial buildings",
+    "target_intent": "City",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6114308834075928,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6114308834075928
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.18217265605926514
+      },
+      {
+        "class": "Village",
+        "prob": 0.0867232233285904
+      }
+    ],
+    "ground_truth_dominant_class": "City",
+    "ground_truth_dominant_pct": 0.62042236328125,
+    "pixel_accuracy": 0.0204315185546875,
+    "mean_iou": 0.5102157592773438,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.0204315185546875,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.04004485981308411,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 218.6937000369653,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_02",
+    "scenario_name": "Rural Residential Village",
+    "scene_type": "Residential Village",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y1280_x5376.png",
+    "optical_file": "NH49E003024_y1280_x5376.png",
+    "sar_file": "NH49E003024_y1280_x5376.png",
+    "image_size": "256x256",
+    "query": "Identify residential village settlements and rural structures",
+    "target_intent": "Village",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.4900854229927063,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.4900854229927063
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.22934025526046753
+      },
+      {
+        "class": "Water",
+        "prob": 0.10917481034994125
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.3276519775390625,
+    "pixel_accuracy": 0.0,
+    "mean_iou": 0.0,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 0.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.0,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 0.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.0,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 10.969199996907264,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_03",
+    "scenario_name": "Intensive Agricultural Farmland",
+    "scene_type": "Agricultural Farmland",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E005023_y3584_x3072.png",
+    "optical_file": "NH49E005023_y3584_x3072.png",
+    "sar_file": "NH49E005023_y3584_x3072.png",
+    "image_size": "256x256",
+    "query": "Classify agricultural farmland and active cultivation fields",
+    "target_intent": "Farmland",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.5659340620040894,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.5659340620040894
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.19975920021533966
+      },
+      {
+        "class": "Village",
+        "prob": 0.09271477162837982
+      }
+    ],
+    "ground_truth_dominant_class": "Background",
+    "ground_truth_dominant_pct": 0.53125,
+    "pixel_accuracy": 0.000946044921875,
+    "mean_iou": 0.6669820149739584,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 0.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.000946044921875,
+      "Road": 0.0,
+      "Others": 1.0
+    },
+    "per_class_dice": {
+      "Background": 0.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.001890301533583341,
+      "Road": 0.0,
+      "Others": 1.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 9.462099988013506,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_04",
+    "scenario_name": "Dense Canopy Forest",
+    "scene_type": "Forest / Dense Vegetation",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x3328.png",
+    "optical_file": "NH49E003024_y0000_x3328.png",
+    "sar_file": "NH49E003024_y0000_x3328.png",
+    "image_size": "256x256",
+    "query": "Detect dense forest tree canopy and heavy woodland vegetation",
+    "target_intent": "Forest",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.5607540011405945,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.5607540011405945
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.1999358832836151
+      },
+      {
+        "class": "Village",
+        "prob": 0.09402181953191757
+      }
+    ],
+    "ground_truth_dominant_class": "Forest",
+    "ground_truth_dominant_pct": 0.9068145751953125,
+    "pixel_accuracy": 0.9068145751953125,
+    "mean_iou": 0.9767036437988281,
+    "target_class_iou": 0.9068145751953125,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.9068145751953125,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.9511303164886168,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": true,
+    "inference_latency_ms": 9.964899974875152,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_05",
+    "scenario_name": "Open Water Body / Reservoir",
+    "scene_type": "Open Water / Lake / Reservoir",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x4864.png",
+    "optical_file": "NH49E003024_y0000_x4864.png",
+    "sar_file": "NH49E003024_y0000_x4864.png",
+    "image_size": "256x256",
+    "query": "Delineate open water reservoir and surrounding banks",
+    "target_intent": "Water",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6035313606262207,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6035313606262207
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.18527129292488098
+      },
+      {
+        "class": "Village",
+        "prob": 0.08784983307123184
+      }
+    ],
+    "ground_truth_dominant_class": "Forest",
+    "ground_truth_dominant_pct": 0.55987548828125,
+    "pixel_accuracy": 0.55987548828125,
+    "mean_iou": 0.91197509765625,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 1.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.55987548828125,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 1.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.7178463825957663,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": true,
+    "inference_latency_ms": 8.74010002007708,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_06",
+    "scenario_name": "River Corridor & Riverbank",
+    "scene_type": "River / Water Corridor",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x2304.png",
+    "optical_file": "NH49E003024_y0000_x2304.png",
+    "sar_file": "NH49E003024_y0000_x2304.png",
+    "image_size": "256x256",
+    "query": "Map natural river corridor and riparian boundary",
+    "target_intent": "Water",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.5576907992362976,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.5576907992362976
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.2007506936788559
+      },
+      {
+        "class": "Village",
+        "prob": 0.09452091157436371
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.7161712646484375,
+    "pixel_accuracy": 0.0656585693359375,
+    "mean_iou": 0.8131317138671875,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.0656585693359375,
+      "Road": 1.0,
+      "Others": 1.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.12322627758129412,
+      "Road": 1.0,
+      "Others": 1.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 9.70749999396503,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_07",
+    "scenario_name": "Major Highway & Road Corridor",
+    "scene_type": "Major Road / Transportation Network",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0768_x0000.png",
+    "optical_file": "NH49E003024_y0768_x0000.png",
+    "sar_file": "NH49E003024_y0768_x0000.png",
+    "image_size": "256x256",
+    "query": "Trace major transportation roads and transit corridors",
+    "target_intent": "Road",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6168183088302612,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6168183088302612
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.17988473176956177
+      },
+      {
+        "class": "Village",
+        "prob": 0.08598928153514862
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.603240966796875,
+    "pixel_accuracy": 0.0944061279296875,
+    "mean_iou": 0.7736015319824219,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.0944061279296875,
+      "Road": 0.0,
+      "Others": 1.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.17252485255775693,
+      "Road": 0.0,
+      "Others": 1.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 8.862800023052841,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_08",
+    "scenario_name": "Mixed Urban & Forest Boundary",
+    "scene_type": "Mixed Urban + Vegetation",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0768_x4864.png",
+    "optical_file": "NH49E003024_y0768_x4864.png",
+    "sar_file": "NH49E003024_y0768_x4864.png",
+    "image_size": "256x256",
+    "query": "Differentiate suburban city housing from adjacent forest reserve",
+    "target_intent": "City",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6443660855293274,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6443660855293274
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.17563746869564056
+      },
+      {
+        "class": "Village",
+        "prob": 0.0789840817451477
+      }
+    ],
+    "ground_truth_dominant_class": "Forest",
+    "ground_truth_dominant_pct": 0.6364593505859375,
+    "pixel_accuracy": 0.6364593505859375,
+    "mean_iou": 0.8788197835286459,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 1.0,
+      "Water": 0.0,
+      "Forest": 0.6364593505859375,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 1.0,
+      "Water": 0.0,
+      "Forest": 0.7778492638488722,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "is_correct": true,
+    "inference_latency_ms": 9.5135000301525,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_09",
+    "scenario_name": "Mixed Farmland & Village Settlement",
+    "scene_type": "Mixed Farmland + Village",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x1280.png",
+    "optical_file": "NH49E003024_y0000_x1280.png",
+    "sar_file": "NH49E003024_y0000_x1280.png",
+    "image_size": "256x256",
+    "query": "Segment village homesteads situated within agricultural farmland",
+    "target_intent": "Village",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6595160365104675,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6595160365104675
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.16982106864452362
+      },
+      {
+        "class": "Village",
+        "prob": 0.0761917233467102
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.4431610107421875,
+    "pixel_accuracy": 0.0986785888671875,
+    "mean_iou": 0.6995595296223959,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.0986785888671875,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.17963140424704527,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 9.458800021093339,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_10",
+    "scenario_name": "Urban Waterfront & Port Interface",
+    "scene_type": "Urban + Water Interface",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0768_x1792.png",
+    "optical_file": "NH49E003024_y0768_x1792.png",
+    "sar_file": "NH49E003024_y0768_x1792.png",
+    "image_size": "256x256",
+    "query": "Analyze urban infrastructure along water boundaries",
+    "target_intent": "City",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6462557315826416,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6462557315826416
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.1746949851512909
+      },
+      {
+        "class": "Village",
+        "prob": 0.0787789449095726
+      }
+    ],
+    "ground_truth_dominant_class": "City",
+    "ground_truth_dominant_pct": 0.3787689208984375,
+    "pixel_accuracy": 0.053497314453125,
+    "mean_iou": 0.6844991048177084,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.053497314453125,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.10156136844239738,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 11.33409998146817,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_11",
+    "scenario_name": "Forest-Farmland Agroforestry Zone",
+    "scene_type": "Forest + Farmland Interface",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x1792.png",
+    "optical_file": "NH49E003024_y0000_x1792.png",
+    "sar_file": "NH49E003024_y0000_x1792.png",
+    "image_size": "256x256",
+    "query": "Classify agroforestry interface between woods and crop fields",
+    "target_intent": "Forest",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6411021947860718,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6411021947860718
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.17740580439567566
+      },
+      {
+        "class": "Village",
+        "prob": 0.07922923564910889
+      }
+    ],
+    "ground_truth_dominant_class": "Forest",
+    "ground_truth_dominant_pct": 0.5560455322265625,
+    "pixel_accuracy": 0.5560455322265625,
+    "mean_iou": 0.8520151774088541,
+    "target_class_iou": 0.5560455322265625,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.5560455322265625,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.7146905674809025,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": true,
+    "inference_latency_ms": 8.980799990240484,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_12",
+    "scenario_name": "Sparse Rural Mosaic Landscape",
+    "scene_type": "Sparse Rural Landscape",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x0512.png",
+    "optical_file": "NH49E003024_y0000_x0512.png",
+    "sar_file": "NH49E003024_y0000_x0512.png",
+    "image_size": "256x256",
+    "query": "Map rural landscape consisting of crops, tree stands, and houses",
+    "target_intent": "Farmland",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.7267888784408569,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.7267888784408569
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.14617303013801575
+      },
+      {
+        "class": "Village",
+        "prob": 0.06010771170258522
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.5613555908203125,
+    "pixel_accuracy": 0.2366180419921875,
+    "mean_iou": 0.8091545104980469,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.2366180419921875,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.3826857347334131,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 9.639600000809878,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_13",
+    "scenario_name": "High-Density Built-up Downtown",
+    "scene_type": "Dense Built-up / City Center",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0768_x1536.png",
+    "optical_file": "NH49E003024_y0768_x1536.png",
+    "sar_file": "NH49E003024_y0768_x1536.png",
+    "image_size": "256x256",
+    "query": "Detect high-density municipal built-up city district",
+    "target_intent": "City",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.5792046189308167,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.5792046189308167
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.1933307945728302
+      },
+      {
+        "class": "Village",
+        "prob": 0.09159646928310394
+      }
+    ],
+    "ground_truth_dominant_class": "City",
+    "ground_truth_dominant_pct": 0.7861480712890625,
+    "pixel_accuracy": 0.005462646484375,
+    "mean_iou": 0.668487548828125,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.005462646484375,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.010865936200564544,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 8.0304000293836,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_14",
+    "scenario_name": "Infrastructure & Industrial Complex",
+    "scene_type": "Scene Dominated by Infrastructure",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y1024_x2816.png",
+    "optical_file": "NH49E003024_y1024_x2816.png",
+    "sar_file": "NH49E003024_y1024_x2816.png",
+    "image_size": "256x256",
+    "query": "Segment civil infrastructure and transportation access routes",
+    "target_intent": "City",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6863664388656616,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6863664388656616
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.15936271846294403
+      },
+      {
+        "class": "Village",
+        "prob": 0.07098448276519775
+      }
+    ],
+    "ground_truth_dominant_class": "City",
+    "ground_truth_dominant_pct": 0.4316558837890625,
+    "pixel_accuracy": 0.04205322265625,
+    "mean_iou": 0.521026611328125,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.04205322265625,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.08071223569378551,
+      "Road": 0.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 8.559100038837641,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_15",
+    "scenario_name": "Highly Heterogeneous Mosaic",
+    "scene_type": "Highly Heterogeneous Mixed Land Cover",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x0000.png",
+    "optical_file": "NH49E003024_y0000_x0000.png",
+    "sar_file": "NH49E003024_y0000_x0000.png",
+    "image_size": "256x256",
+    "query": "Analyze multi-class terrain containing farmland, forest, and structures",
+    "target_intent": "Farmland",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.7885469198226929,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.7885469198226929
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.11860369890928268
+      },
+      {
+        "class": "Village",
+        "prob": 0.04620728641748428
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.7116851806640625,
+    "pixel_accuracy": 0.0417938232421875,
+    "mean_iou": 0.7604484558105469,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.0417938232421875,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.08023434639326255,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 66.49439997272566,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_16",
+    "scenario_name": "Mountainous Forest & Highland Slopes",
+    "scene_type": "Mountainous / Hilly Terrain",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0768_x3584.png",
+    "optical_file": "NH49E003024_y0768_x3584.png",
+    "sar_file": "NH49E003024_y0768_x3584.png",
+    "image_size": "256x256",
+    "query": "Segment highland mountain forest vegetation",
+    "target_intent": "Forest",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.6246000528335571,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.6246000528335571
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.17797908186912537
+      },
+      {
+        "class": "Village",
+        "prob": 0.08440935611724854
+      }
+    ],
+    "ground_truth_dominant_class": "Forest",
+    "ground_truth_dominant_pct": 0.796875,
+    "pixel_accuracy": 0.796875,
+    "mean_iou": 0.9322916666666666,
+    "target_class_iou": 0.796875,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.796875,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 0.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.8869565217391304,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": true,
+    "inference_latency_ms": 64.74829994840547,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_17",
+    "scenario_name": "Large-Scale Agricultural Plain",
+    "scene_type": "Large Agricultural Field System",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E006022_y2048_x2048.png",
+    "optical_file": "NH49E006022_y2048_x2048.png",
+    "sar_file": "NH49E006022_y2048_x2048.png",
+    "image_size": "256x256",
+    "query": "Map expansive commercial farmland cropland acreage",
+    "target_intent": "Farmland",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.5833239555358887,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.5833239555358887
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.19279733300209045
+      },
+      {
+        "class": "Village",
+        "prob": 0.09070289134979248
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.9043426513671875,
+    "pixel_accuracy": 0.002899169921875,
+    "mean_iou": 0.800579833984375,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.002899169921875,
+      "Road": 1.0,
+      "Others": 1.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.005781578066518577,
+      "Road": 1.0,
+      "Others": 1.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 101.56639997148886,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  },
+  {
+    "scenario_id": "SCENARIO_18",
+    "scenario_name": "Complex Multi-Class Ecotone",
+    "scene_type": "Complex Multi-Class Scene",
+    "dataset": "WHU-OPT-SAR (Official Held-Out Test Split)",
+    "provenance": "data/official_whu_opt_sar/test/optical/NH49E003024_y0000_x0768.png",
+    "optical_file": "NH49E003024_y0000_x0768.png",
+    "sar_file": "NH49E003024_y0000_x0768.png",
+    "image_size": "256x256",
+    "query": "Perform comprehensive multi-class land cover segmentation",
+    "target_intent": "Farmland",
+    "predicted_dominant_class": "Forest",
+    "predicted_dominant_pct": 1.0,
+    "top1_confidence": 0.8429790139198303,
+    "top3_predictions": [
+      {
+        "class": "Forest",
+        "prob": 0.8429790139198303
+      },
+      {
+        "class": "Farmland",
+        "prob": 0.0909096896648407
+      },
+      {
+        "class": "Village",
+        "prob": 0.03284129500389099
+      }
+    ],
+    "ground_truth_dominant_class": "Farmland",
+    "ground_truth_dominant_pct": 0.5703125,
+    "pixel_accuracy": 0.259918212890625,
+    "mean_iou": 0.8149795532226562,
+    "target_class_iou": 0.0,
+    "per_class_iou": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.259918212890625,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "per_class_dice": {
+      "Background": 1.0,
+      "Farmland": 0.0,
+      "City": 1.0,
+      "Village": 0.0,
+      "Water": 0.0,
+      "Forest": 0.412595373622381,
+      "Road": 1.0,
+      "Others": 0.0
+    },
+    "is_correct": false,
+    "inference_latency_ms": 81.71070000389591,
+    "model_device": "cuda",
+    "is_mock": false,
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9"
+  }
+]

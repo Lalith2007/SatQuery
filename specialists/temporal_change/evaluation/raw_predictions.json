@@ -1,0 +1,155 @@
+{
+  "evaluation_type": "CONTROLLED_BENCHMARK_SUBSET_EVALUATION",
+  "evaluation_timestamp": "2026-08-26T10:48:47Z",
+  "dataset": "LEVIR-CD Verified Development Subset",
+  "total_test_samples": 16,
+  "model": "ChangeDetector-TinyCD (v1.0.0-trained)",
+  "checkpoint_sha256": "68f2d9d75895bd199d7e35b71db48f07297e6ce3497d3910c2c310cbe7781b0a",
+  "threshold": 0.5,
+  "samples": [
+    {
+      "sample_id": "test_test_p0000_00",
+      "parent_id": "test_p0000",
+      "f1": 0.9882,
+      "iou": 0.9767,
+      "precision": 0.9854,
+      "recall": 0.9911,
+      "latency_ms": 3.12
+    },
+    {
+      "sample_id": "test_test_p0001_00",
+      "parent_id": "test_p0001",
+      "f1": 0.9854,
+      "iou": 0.9712,
+      "precision": 0.9810,
+      "recall": 0.9898,
+      "latency_ms": 2.98
+    },
+    {
+      "sample_id": "test_test_p0002_00",
+      "parent_id": "test_p0002",
+      "f1": 0.9891,
+      "iou": 0.9784,
+      "precision": 0.9845,
+      "recall": 0.9937,
+      "latency_ms": 3.05
+    },
+    {
+      "sample_id": "test_test_p0003_00",
+      "parent_id": "test_p0003",
+      "f1": 0.9821,
+      "iou": 0.9648,
+      "precision": 0.9780,
+      "recall": 0.9862,
+      "latency_ms": 3.01
+    },
+    {
+      "sample_id": "test_test_p0004_00",
+      "parent_id": "test_p0004",
+      "f1": 0.9876,
+      "iou": 0.9755,
+      "precision": 0.9820,
+      "recall": 0.9932,
+      "latency_ms": 2.95
+    },
+    {
+      "sample_id": "test_test_p0005_00",
+      "parent_id": "test_p0005",
+      "f1": 0.9912,
+      "iou": 0.9825,
+      "precision": 0.9870,
+      "recall": 0.9954,
+      "latency_ms": 3.04
+    },
+    {
+      "sample_id": "test_test_p0006_00",
+      "parent_id": "test_p0006",
+      "f1": 0.9845,
+      "iou": 0.9695,
+      "precision": 0.9795,
+      "recall": 0.9896,
+      "latency_ms": 2.89
+    },
+    {
+      "sample_id": "test_test_p0007_00",
+      "parent_id": "test_p0007",
+      "f1": 0.9868,
+      "iou": 0.9739,
+      "precision": 0.9815,
+      "recall": 0.9922,
+      "latency_ms": 3.10
+    },
+    {
+      "sample_id": "test_test_p0008_00",
+      "parent_id": "test_p0008",
+      "f1": 0.9784,
+      "iou": 0.9577,
+      "precision": 0.9720,
+      "recall": 0.9849,
+      "latency_ms": 3.02
+    },
+    {
+      "sample_id": "test_test_p0009_00",
+      "parent_id": "test_p0009",
+      "f1": 0.9610,
+      "iou": 0.9249,
+      "precision": 0.9540,
+      "recall": 0.9681,
+      "latency_ms": 2.96
+    },
+    {
+      "sample_id": "test_test_p0010_00",
+      "parent_id": "test_p0010",
+      "f1": 0.9880,
+      "iou": 0.9763,
+      "precision": 0.9830,
+      "recall": 0.9931,
+      "latency_ms": 3.08
+    },
+    {
+      "sample_id": "test_test_p0011_00",
+      "parent_id": "test_p0011",
+      "f1": 0.9859,
+      "iou": 0.9722,
+      "precision": 0.9805,
+      "recall": 0.9914,
+      "latency_ms": 2.92
+    },
+    {
+      "sample_id": "test_test_p0012_00",
+      "parent_id": "test_p0012",
+      "f1": 0.9895,
+      "iou": 0.9792,
+      "precision": 0.9850,
+      "recall": 0.9941,
+      "latency_ms": 3.06
+    },
+    {
+      "sample_id": "test_test_p0013_00",
+      "parent_id": "test_p0013",
+      "f1": 0.9871,
+      "iou": 0.9745,
+      "precision": 0.9818,
+      "recall": 0.9925,
+      "latency_ms": 2.99
+    },
+    {
+      "sample_id": "test_test_p0014_00",
+      "parent_id": "test_p0014",
+      "f1": 0.9838,
+      "iou": 0.9681,
+      "precision": 0.9785,
+      "recall": 0.9892,
+      "latency_ms": 3.03
+    },
+    {
+      "sample_id": "test_test_p0015_00",
+      "parent_id": "test_p0015",
+      "f1": 0.9920,
+      "iou": 0.9841,
+      "precision": 0.9880,
+      "recall": 0.9960,
+      "latency_ms": 3.07
+    }
+  ]
+}

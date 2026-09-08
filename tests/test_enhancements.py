@@ -184,8 +184,8 @@ def test_api_presentation_ui(api_client: TestClient):
     res = api_client.get("/")
     assert res.status_code == 200
     assert "SatQuery AI" in res.text
-    assert "Specialist Tool Registry" in res.text
 
     res_demo = api_client.get("/demo")
     assert res_demo.status_code == 200
     assert "SatQuery AI" in res_demo.text
+    assert "Specialist Tool Registry" in res_demo.text

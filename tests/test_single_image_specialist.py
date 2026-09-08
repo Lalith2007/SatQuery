@@ -224,3 +224,44 @@ def test_reproducibility_manifest_generation():
     assert manifest["datasets"]["split_sample_counts"]["test_samples"] == 150
     assert "git" in manifest
     assert "commit_hash" in manifest["git"]
+
+
+@pytest.mark.asyncio
+async def test_vqa_least_vs_dominant_responsiveness(optical_image_input: ImageInput):
+    """Regression test: verify 'least land covered' returns minimum category, not dominant response."""
+    specialist = SingleImageRSSpecialistTool()
+
+    # Query 1: Least land cover
+    req_least = ToolRequest(
+        task=TaskType.SINGLE_IMAGE_VQA,
+        query="What is the least land covered in this image?",
+        images=[optical_image_input],
+    )
+    res_least = await specialist.execute(req_least)
+    assert res_least.status == ToolStatus.SUCCESS
+    assert "water" in res_least.answer.lower() or "18%" in res_least.answer
+    assert "predominantly" not in res_least.answer.lower()
+    assert res_least.evidence == []
+
+    # Query 2: Dominant land cover
+    req_dom = ToolRequest(
+        task=TaskType.SINGLE_IMAGE_VQA,
+        query="What is the dominant land cover?",
+        images=[optical_image_input],
+    )
+    res_dom = await specialist.execute(req_dom)
+    assert res_dom.status == ToolStatus.SUCCESS
+    assert "commercial" in res_dom.answer.lower() or "54%" in res_dom.answer
+    assert res_dom.evidence == []
+
+    # Query 3: Grounding still produces dynamic bounding box
+    req_ground = ToolRequest(
+        task=TaskType.SINGLE_IMAGE_GROUNDING,
+        query="Where is the water?",
+        images=[optical_image_input],
+    )
+    res_ground = await specialist.execute(req_ground)
+    assert res_ground.status == ToolStatus.SUCCESS
+    assert len(res_ground.evidence) >= 1
+    assert res_ground.evidence[0].type == EvidenceType.BOUNDING_BOX
+

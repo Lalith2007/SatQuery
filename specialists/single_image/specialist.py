@@ -160,20 +160,8 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                     image_path=image_input.path_or_uri,
                     query=request.query,
                 )
-                # VQA may optionally extract prominent bounding boxes if referenced
-                evidence = [
-                    Evidence(
-                        type=EvidenceType.BOUNDING_BOX,
-                        label="Primary Feature Region",
-                        confidence=confidence,
-                        data={
-                            "bbox": [0.10, 0.10, 0.90, 0.90],
-                            "format": "[ymin, xmin, ymax, xmax]",
-                            "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
-                        },
-                        image_id=image_input.image_id,
-                    )
-                ]
+                # Ungrounded comparative/statistical VQA queries do not fabricate bounding boxes
+                evidence = []
 
             total_dur_ms = round((time.perf_counter() - t0) * 1000.0, 2)
 

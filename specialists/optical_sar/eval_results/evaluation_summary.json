@@ -1,0 +1,67 @@
+{
+  "checkpoint": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+  "checkpoint_sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+  "rollback_checkpoint": "specialists/optical_sar/checkpoints/archive/cmaf_landcover_best_pre_v3.pth",
+  "rollback_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9",
+  "model_architecture": {
+    "optical_encoder": "Truncated ResNet-50 (Stems + Layers 1-3, 3 channels)",
+    "sar_encoder": "Truncated ResNet-50 (Stems + Layers 1-3, 2 channels VV/VH)",
+    "fusion_neck": "CrossModalAttentionFusion (CMAF, 256 channels)",
+    "task_head": "LandCoverTaskHead with FiLMQueryModulator (8 classes)",
+    "parameters": {
+      "optical_encoder": 8543296,
+      "sar_encoder": 8540160,
+      "fusion_neck": 2297344,
+      "task_head": 374344,
+      "total": 19755144
+    }
+  },
+  "dataset_provenance": {
+    "dataset": "Official Wuhan University WHU-OPT-SAR Dataset",
+    "held_out_scenes": 15,
+    "total_test_tiles": 4950,
+    "valid_pixels": 308687656,
+    "ignored_pixels": 15715544
+  },
+  "authoritative_test_metrics": {
+    "overall_accuracy": 0.717099,
+    "miou": 0.350793,
+    "macro_f1": 0.466209,
+    "macro_precision": 0.465837,
+    "macro_recall": 0.524761,
+    "weighted_f1": 0.741756,
+    "weighted_iou": 0.603848,
+    "active_classes_count": 8,
+    "per_class_iou": {
+      "forest": 0.736931,
+      "farmland": 0.591998,
+      "water": 0.507059,
+      "city": 0.445741,
+      "village": 0.333233,
+      "road": 0.116754,
+      "others": 0.074628,
+      "background": 0.0
+    },
+    "per_class_f1": {
+      "forest": 0.848544,
+      "farmland": 0.743717,
+      "water": 0.672912,
+      "city": 0.616627,
+      "village": 0.499887,
+      "road": 0.209095,
+      "others": 0.13889,
+      "background": 0.0
+    }
+  },
+  "historical_validation_snapshot": {
+    "overall_accuracy": 0.561462,
+    "miou": 0.231481,
+    "macro_f1": 0.346009,
+    "note": "Lower resolution validation callback checkpoint snapshot logged during training"
+  },
+  "documented_limitations": {
+    "background_iou": "0.00% (Background comprises 0.001% of ground truth and is absorbed by semantic classes)",
+    "road_iou": "11.68% (Thin linear features suffer boundary blurring and speckle degradation)",
+    "others_iou": "7.46% (Highly heterogeneous sparse catch-all class)"
+  }
+}

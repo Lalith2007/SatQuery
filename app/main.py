@@ -6,6 +6,7 @@ Division 1: Agent Core + Backend + Orchestration.
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,6 +44,23 @@ async def lifespan(app: FastAPI):
         logger.info(f"Registered real Division 2 specialist: '{div2_tool.name}' (v{div2_tool.version})")
     except Exception as e:
         logger.warning(f"Could not register real Division 2 specialist: {e}")
+
+    # Register real Division 3 specialist (BiTemporalChangeSpecialistTool)
+    try:
+        from specialists.temporal_change import register_temporal_change_specialist
+        div3_tool = register_temporal_change_specialist(default_registry)
+        logger.info(f"Registered real Division 3 specialist: '{div3_tool.name}' (v{div3_tool.version})")
+    except Exception as e:
+        logger.warning(f"Could not register real Division 3 specialist: {e}")
+
+    # Register real Division 4 specialist (OpticalSarSpecialist)
+    try:
+        from specialists.optical_sar.service import OpticalSarSpecialist
+        div4_tool = OpticalSarSpecialist()
+        default_registry.register(div4_tool, overwrite=True)
+        logger.info(f"Registered real Division 4 specialist: '{div4_tool.name}' (v{div4_tool.version})")
+    except Exception as e:
+        logger.warning(f"Could not register real Division 4 specialist: {e}")
 
     # Ensure demo assets exist on disk for judging presets
     try:
@@ -86,6 +104,22 @@ async def satquery_exception_handler(request: Request, exc: SatQueryException):
         status_code=exc.status_code,
         content={"error": exc.to_error_detail().model_dump()},
     )
+
+
+from fastapi.staticfiles import StaticFiles
+
+# Mount static asset directories
+frontend_dist = Path("frontend/dist")
+if (frontend_dist / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+
+demo_assets = Path("demo_assets")
+if demo_assets.exists():
+    app.mount("/demo_assets", StaticFiles(directory=str(demo_assets)), name="demo_assets")
+
+artifacts_storage = Path("artifacts_storage")
+if artifacts_storage.exists():
+    app.mount("/artifacts_storage", StaticFiles(directory=str(artifacts_storage)), name="artifacts_storage")
 
 
 # Include API routes

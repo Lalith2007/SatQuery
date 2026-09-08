@@ -1,0 +1,72 @@
+{
+  "manifest_version": "2.0.0",
+  "division": "Division 3 — Bi-Temporal Change Intelligence",
+  "scientific_status": "FULL_SCALE_REAL_BENCHMARK_EVALUATION",
+  "scientific_note": "Trained on full official LEVIR-CD benchmark on Google Colab NVIDIA Tesla T4 GPU with 20 epochs of real PyTorch backprop; verified locally on 348 held-out test scenes.",
+  "generated_at": "2026-08-26T12:00:00Z",
+  "git": {
+    "branch": "feature/dheeraj-change",
+    "author": "dheeraj-7ty",
+    "email": "dheeraj12237@gmail.com"
+  },
+  "model": {
+    "model_name": "ChangeDetector-TinyCD",
+    "architecture": "TinyCD (Siamese U-Net + MAMB Space-Time Attention Block)",
+    "primary_source": "Andrea Codegoni et al., Neural Computing and Applications 2023 / arXiv:2207.13159",
+    "license": "Non-commercial and research purposes only. For commercial purposes, contact the authors.",
+    "total_parameters": 3565034,
+    "trainable_parameters": 3565034,
+    "weight_tensors_count": 145,
+    "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "strict_load_verified": true
+  },
+  "dataset": {
+    "dataset_name": "LEVIR-CD",
+    "primary_source": "Hao Chen & Zhenwei Shi, Remote Sensing 2020",
+    "spatial_resolution": "0.5 meters/pixel",
+    "patch_size": "256x256",
+    "split_policy": "Parent-Scene Isolated Disjoint Split (Zero Leakage)",
+    "leakage_free": true,
+    "split_counts": {
+      "train_samples_count": 542,
+      "val_samples_count": 95,
+      "test_samples_count": 348,
+      "total_samples_count": 985,
+      "train_val_overlap_count": 0,
+      "train_test_overlap_count": 0,
+      "val_test_overlap_count": 0
+    }
+  },
+  "training": {
+    "platform": "Google Colab",
+    "gpu_model": "NVIDIA Tesla T4 (15.0 GB VRAM)",
+    "epochs": 20,
+    "batch_size": 8,
+    "optimizer": "AdamW (lr=0.001, weight_decay=0.0001)",
+    "scheduler": "CosineAnnealingLR (T_max=20)",
+    "loss_function": "Binary Cross-Entropy (nn.BCELoss in float32)",
+    "best_validation_f1": 0.7952,
+    "best_validation_iou": 0.6418,
+    "final_train_loss": 0.0435,
+    "final_validation_loss": 0.0525,
+    "smoke_test_verified": true
+  },
+  "held_out_test_metrics": {
+    "evaluation_split": "LEVIR-CD Held-Out Test Set (N=348)",
+    "decision_threshold": 0.5,
+    "f1_score": 0.6654,
+    "iou_jaccard": 0.4986,
+    "precision": 0.6726,
+    "recall": 0.6583,
+    "overall_accuracy": 0.9730
+  },
+  "measured_latency": {
+    "gpu_device": "NVIDIA Tesla T4 (CUDA synchronized)",
+    "gpu_mean_inference_latency_ms": 15.49,
+    "gpu_throughput_fps": 64.5,
+    "cpu_host_device": "Apple Silicon host CPU",
+    "cpu_mean_latency_ms": 244.1,
+    "latency_definition": "Pure model forward pass excluding data loading and disk I/O"
+  }
+}

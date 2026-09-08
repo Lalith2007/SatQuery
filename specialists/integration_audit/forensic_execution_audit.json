@@ -1,0 +1,94 @@
+{
+  "D2": {
+    "adapter_exists": true,
+    "adapter_size_mb": 43.16,
+    "adapter_sha256": "152075b5450b9aa7acb0e0a01a8599e4f1662b7d3cf6b251dc4376e82a7c738d",
+    "base_model_id": "google/paligemma-3b-pt-224",
+    "is_real_model_loaded": false,
+    "hardware_reason": "RAM (15.8 GB) < 24.0 GB threshold for unquantized PaliGemma 3B + gated HF authentication",
+    "verdict": "REAL_MODEL_UNAVAILABLE"
+  },
+  "D3": {
+    "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "total_parameters": 3565034,
+    "sensitivity_differential": 0.9870508313179016,
+    "is_mock": false,
+    "verdict": "REAL_MODEL_VERIFIED"
+  },
+  "D4": {
+    "checkpoint_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+    "checkpoint_sha256": "8a3baac9269db8423a472a6814d7820b8cfea67994305ad2e70541d6a1d1f1c9",
+    "total_parameters": 19755144,
+    "sensitivity_differential": 0.12445390224456787,
+    "is_mock": false,
+    "verdict": "REAL_MODEL_VERIFIED"
+  },
+  "demos": [
+    {
+      "demo_id": "demo-a",
+      "name": "Demo A: Single-Image VQA",
+      "specialist": "single_image_rs_specialist",
+      "cold_latency_ms": 175.34,
+      "warm_latency_ms": 6.56,
+      "inference_duration_ms": 334.77,
+      "evidence_duration_ms": 0.0,
+      "distinct_request_ids": true,
+      "artifacts_count": 0,
+      "evidence_count": 0,
+      "verdict": "REAL_MODEL_UNAVAILABLE"
+    },
+    {
+      "demo_id": "demo-b",
+      "name": "Demo B: Spatial Grounding",
+      "specialist": "single_image_rs_specialist",
+      "cold_latency_ms": 54.69,
+      "warm_latency_ms": 53.54,
+      "inference_duration_ms": 13.05,
+      "evidence_duration_ms": 0.0,
+      "distinct_request_ids": true,
+      "artifacts_count": 2,
+      "evidence_count": 1,
+      "verdict": "REAL_MODEL_UNAVAILABLE"
+    },
+    {
+      "demo_id": "demo-c",
+      "name": "Demo C: Bi-Temporal Change",
+      "specialist": "bitemporal_change_specialist",
+      "cold_latency_ms": 332.93,
+      "warm_latency_ms": 59.94,
+      "inference_duration_ms": 518.48,
+      "evidence_duration_ms": 0.0,
+      "distinct_request_ids": true,
+      "artifacts_count": 7,
+      "evidence_count": 6,
+      "verdict": "REAL_MODEL_VERIFIED"
+    },
+    {
+      "demo_id": "demo-d",
+      "name": "Demo D: Optical-SAR Fusion",
+      "specialist": "optical_sar_cross_modal_specialist",
+      "cold_latency_ms": 259.57,
+      "warm_latency_ms": 252.84,
+      "inference_duration_ms": 316.77,
+      "evidence_duration_ms": 114.5,
+      "distinct_request_ids": true,
+      "artifacts_count": 6,
+      "evidence_count": 4,
+      "verdict": "REAL_MODEL_VERIFIED"
+    },
+    {
+      "demo_id": "demo-e",
+      "name": "Demo E: Multi-Tool Workflow",
+      "specialist": "bitemporal_change_specialist",
+      "cold_latency_ms": 62.38,
+      "warm_latency_ms": 61.34,
+      "inference_duration_ms": 25.16,
+      "evidence_duration_ms": 0.0,
+      "distinct_request_ids": true,
+      "artifacts_count": 7,
+      "evidence_count": 6,
+      "verdict": "REAL_MODEL_VERIFIED"
+    }
+  ]
+}

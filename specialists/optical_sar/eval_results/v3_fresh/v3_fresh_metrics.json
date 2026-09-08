@@ -1,0 +1,306 @@
+{
+  "total_test_tiles": 4950,
+  "total_valid_pixels": 308687656,
+  "total_ignored_pixels": 15715544,
+  "overall_accuracy": 0.717099,
+  "miou": 0.350793,
+  "macro_precision": 0.465837,
+  "macro_recall": 0.524761,
+  "macro_f1": 0.466209,
+  "weighted_iou": 0.603848,
+  "weighted_precision": 0.776939,
+  "weighted_recall": 0.717099,
+  "weighted_f1": 0.741756,
+  "per_class": {
+    "background": {
+      "class_index": 0,
+      "class_name": "Background",
+      "iou": 0.0,
+      "f1": 0.0,
+      "dice": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0,
+      "fp": 2946950,
+      "fn": 1973,
+      "gt_pixels": 1973,
+      "pred_pixels": 2946950,
+      "gt_percentage": 0.001,
+      "pred_percentage": 0.955
+    },
+    "farmland": {
+      "class_index": 1,
+      "class_name": "Farmland",
+      "iou": 0.591998,
+      "f1": 0.743717,
+      "dice": 0.743717,
+      "precision": 0.759605,
+      "recall": 0.728479,
+      "tp": 81090930,
+      "fp": 25663088,
+      "fn": 30224396,
+      "gt_pixels": 111315326,
+      "pred_pixels": 106754018,
+      "gt_percentage": 36.061,
+      "pred_percentage": 34.583
+    },
+    "city": {
+      "class_index": 2,
+      "class_name": "City",
+      "iou": 0.445741,
+      "f1": 0.616627,
+      "dice": 0.616627,
+      "precision": 0.684306,
+      "recall": 0.56113,
+      "tp": 7417501,
+      "fp": 3421946,
+      "fn": 5801367,
+      "gt_pixels": 13218868,
+      "pred_pixels": 10839447,
+      "gt_percentage": 4.282,
+      "pred_percentage": 3.511
+    },
+    "village": {
+      "class_index": 3,
+      "class_name": "Village",
+      "iou": 0.333233,
+      "f1": 0.499887,
+      "dice": 0.499887,
+      "precision": 0.441512,
+      "recall": 0.576049,
+      "tp": 9717374,
+      "fp": 12291918,
+      "fn": 7151630,
+      "gt_pixels": 16869004,
+      "pred_pixels": 22009292,
+      "gt_percentage": 5.465,
+      "pred_percentage": 7.13
+    },
+    "water": {
+      "class_index": 4,
+      "class_name": "Water",
+      "iou": 0.507059,
+      "f1": 0.672912,
+      "dice": 0.672912,
+      "precision": 0.692433,
+      "recall": 0.654462,
+      "tp": 26716511,
+      "fp": 11866998,
+      "fn": 14105602,
+      "gt_pixels": 40822113,
+      "pred_pixels": 38583509,
+      "gt_percentage": 13.224,
+      "pred_percentage": 12.499
+    },
+    "forest": {
+      "class_index": 5,
+      "class_name": "Forest",
+      "iou": 0.736931,
+      "f1": 0.848544,
+      "dice": 0.848544,
+      "precision": 0.922688,
+      "recall": 0.785429,
+      "tp": 93356674,
+      "fp": 7822373,
+      "fn": 25504050,
+      "gt_pixels": 118860724,
+      "pred_pixels": 101179047,
+      "gt_percentage": 38.505,
+      "pred_percentage": 32.777
+    },
+    "road": {
+      "class_index": 6,
+      "class_name": "Road",
+      "iou": 0.116754,
+      "f1": 0.209095,
+      "dice": 0.209095,
+      "precision": 0.123631,
+      "recall": 0.6773,
+      "tp": 2088756,
+      "fp": 14806310,
+      "fn": 995187,
+      "gt_pixels": 3083943,
+      "pred_pixels": 16895066,
+      "gt_percentage": 0.999,
+      "pred_percentage": 5.473
+    },
+    "others": {
+      "class_index": 7,
+      "class_name": "Others",
+      "iou": 0.074628,
+      "f1": 0.13889,
+      "dice": 0.13889,
+      "precision": 0.102523,
+      "recall": 0.215239,
+      "tp": 971956,
+      "fp": 8508371,
+      "fn": 3543749,
+      "gt_pixels": 4515705,
+      "pred_pixels": 9480327,
+      "gt_percentage": 1.463,
+      "pred_percentage": 3.071
+    }
+  },
+  "active_classes_count": 8,
+  "active_classes": [
+    "Background",
+    "Farmland",
+    "City",
+    "Village",
+    "Water",
+    "Forest",
+    "Road",
+    "Others"
+  ],
+  "top_10_confusions": [
+    {
+      "gt_class": "Forest",
+      "pred_class": "Farmland",
+      "pixel_count": 14411773,
+      "pct_of_gt": 12.12
+    },
+    {
+      "gt_class": "Farmland",
+      "pred_class": "Water",
+      "pixel_count": 8151523,
+      "pct_of_gt": 7.32
+    },
+    {
+      "gt_class": "Farmland",
+      "pred_class": "Village",
+      "pixel_count": 6447174,
+      "pct_of_gt": 5.79
+    },
+    {
+      "gt_class": "Water",
+      "pred_class": "Farmland",
+      "pixel_count": 5954585,
+      "pct_of_gt": 14.59
+    },
+    {
+      "gt_class": "Farmland",
+      "pred_class": "Forest",
+      "pixel_count": 5560010,
+      "pct_of_gt": 4.99
+    },
+    {
+      "gt_class": "Farmland",
+      "pred_class": "Road",
+      "pixel_count": 5257941,
+      "pct_of_gt": 4.72
+    },
+    {
+      "gt_class": "Forest",
+      "pred_class": "Road",
+      "pixel_count": 3111480,
+      "pct_of_gt": 2.62
+    },
+    {
+      "gt_class": "Village",
+      "pred_class": "Farmland",
+      "pixel_count": 2974760,
+      "pct_of_gt": 17.63
+    },
+    {
+      "gt_class": "Farmland",
+      "pred_class": "Others",
+      "pixel_count": 2910306,
+      "pct_of_gt": 2.61
+    },
+    {
+      "gt_class": "Forest",
+      "pred_class": "Others",
+      "pixel_count": 2684686,
+      "pct_of_gt": 2.26
+    }
+  ],
+  "confusion_matrix": [
+    [
+      0,
+      759,
+      65,
+      136,
+      626,
+      155,
+      144,
+      88
+    ],
+    [
+      782484,
+      81090930,
+      1114958,
+      6447174,
+      8151523,
+      5560010,
+      5257941,
+      2910306
+    ],
+    [
+      22023,
+      998393,
+      7417501,
+      1108432,
+      268990,
+      358994,
+      2294082,
+      750453
+    ],
+    [
+      73713,
+      2974760,
+      734751,
+      9717374,
+      615951,
+      659035,
+      1440032,
+      653388
+    ],
+    [
+      1652723,
+      5954585,
+      442735,
+      1943190,
+      26716511,
+      824659,
+      1915399,
+      1372311
+    ],
+    [
+      373324,
+      14411773,
+      587553,
+      2189321,
+      2145913,
+      93356674,
+      3111480,
+      2684686
+    ],
+    [
+      3308,
+      260719,
+      247505,
+      158527,
+      95744,
+      92245,
+      2088756,
+      137139
+    ],
+    [
+      39375,
+      1062099,
+      294379,
+      445138,
+      588251,
+      327275,
+      787232,
+      971956
+    ]
+  ],
+  "latency_stats": {
+    "mean_batch_ms": 126.91,
+    "median_batch_ms": 82.81,
+    "p95_batch_ms": 361.9,
+    "mean_per_tile_ms": 7.93,
+    "throughput_fps": 19.76
+  }
+}

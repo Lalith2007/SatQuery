@@ -1,0 +1,362 @@
+[
+  {
+    "epoch": 1,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.114070616532142,
+    "val_loss": 2.2537518928790914,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 2,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.098691438120435,
+    "val_loss": 2.3871307644350774,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 3,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0987380863359126,
+    "val_loss": 2.2292101638070467,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 4,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.093056244612703,
+    "val_loss": 2.244383689452862,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 5,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.092776159097818,
+    "val_loss": 2.2227397187002773,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 6,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0901577530446316,
+    "val_loss": 2.251222540592325,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 7,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.090090844865442,
+    "val_loss": 2.254171313088516,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 8,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0859366775682124,
+    "val_loss": 2.381834100854808,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 9,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0810549559214553,
+    "val_loss": 2.242358557109175,
+    "metrics": {
+      "pixel_acc": 0.30541778040046214,
+      "iou_background": 0.0,
+      "iou_farmland": 0.1327351223404706,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.2658531917455489,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.049823539260752434
+    }
+  },
+  {
+    "epoch": 10,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0744506555482807,
+    "val_loss": 2.3975380428906146,
+    "metrics": {
+      "pixel_acc": 0.28166921900799,
+      "iou_background": 0.0,
+      "iou_farmland": 0.00015781656438370163,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.2816556555192674,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03522668401045639
+    }
+  },
+  {
+    "epoch": 11,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0656535312593545,
+    "val_loss": 2.2863236937029607,
+    "metrics": {
+      "pixel_acc": 0.21855295158615018,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.03749219517975234,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.2578060008960889,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.036912274509480154
+    }
+  },
+  {
+    "epoch": 12,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.057272733300724,
+    "val_loss": 2.274473418038467,
+    "metrics": {
+      "pixel_acc": 0.2794449793291452,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.014628419292967156,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.28235418298534676,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03712282528478924
+    }
+  },
+  {
+    "epoch": 13,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0498074063702836,
+    "val_loss": 2.3429818145160017,
+    "metrics": {
+      "pixel_acc": 0.16429131211002657,
+      "iou_background": 0.0,
+      "iou_farmland": 0.01697981661541734,
+      "iou_city": 0.03788391103157184,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.2236927092814125,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03481955461605021
+    }
+  },
+  {
+    "epoch": 14,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.047496634569335,
+    "val_loss": 2.2736343244026447,
+    "metrics": {
+      "pixel_acc": 0.2626107999912923,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0030389552349976414,
+      "iou_city": 0.03235155035197882,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.27593421025600706,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03891558948037294
+    }
+  },
+  {
+    "epoch": 15,
+    "stage": "stage1_frozen_encoders",
+    "train_loss": 2.0398614729076505,
+    "val_loss": 2.255276786047837,
+    "metrics": {
+      "pixel_acc": 0.26537249050313555,
+      "iou_background": 0.0,
+      "iou_farmland": 0.14526532811827225,
+      "iou_city": 0.034151528028471746,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.24060899206773043,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.0525032310268093
+    }
+  },
+  {
+    "epoch": 16,
+    "stage": "stage2_finetune",
+    "train_loss": 2.022629398677102,
+    "val_loss": 2.406945823800975,
+    "metrics": {
+      "pixel_acc": 0.28134655969268835,
+      "iou_background": 0.0,
+      "iou_farmland": 9.250332086448902e-05,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.2813315975063657,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03517801260340377
+    }
+  },
+  {
+    "epoch": 17,
+    "stage": "stage2_finetune",
+    "train_loss": 2.017332707086771,
+    "val_loss": 2.3391720344280373,
+    "metrics": {
+      "pixel_acc": 0.22965188085786215,
+      "iou_background": 0.0,
+      "iou_farmland": 0.05867824200341601,
+      "iou_city": 0.03490345568860627,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.2509890064596041,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.0430713380189533
+    }
+  },
+  {
+    "epoch": 18,
+    "stage": "stage2_finetune",
+    "train_loss": 2.0133998209502786,
+    "val_loss": 2.4250465064213196,
+    "metrics": {
+      "pixel_acc": 0.2816209461033923,
+      "iou_background": 0.0,
+      "iou_farmland": 0.000896605916575167,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.2814447575054358,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03529267042775137
+    }
+  },
+  {
+    "epoch": 19,
+    "stage": "stage2_finetune",
+    "train_loss": 2.0104523985414775,
+    "val_loss": 2.5206506868888594,
+    "metrics": {
+      "pixel_acc": 0.281599752951575,
+      "iou_background": 0.0,
+      "iou_farmland": 0.0,
+      "iou_city": 0.0,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.281599752951575,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03519996911894688
+    }
+  },
+  {
+    "epoch": 20,
+    "stage": "stage2_finetune",
+    "train_loss": 2.008561448967473,
+    "val_loss": 2.352076532100809,
+    "metrics": {
+      "pixel_acc": 0.27829321864679707,
+      "iou_background": 0.0,
+      "iou_farmland": 0.009431792628130608,
+      "iou_city": 0.01809532645622466,
+      "iou_village": 0.0,
+      "iou_water": 0.0,
+      "iou_forest": 0.27916611636926925,
+      "iou_road": 0.0,
+      "iou_others": 0.0,
+      "mIoU": 0.03833665443170307
+    }
+  }
+]

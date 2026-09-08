@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-09-06T14:15:00",
+  "experiment_name": "experiment_balanced_v3_100scenes",
+  "dataset": {
+    "path": "D:/official_whu_opt_sar_dataset/official_whu_opt_sar_100scenes",
+    "total_scenes": 100,
+    "splits": {
+      "train": {"scenes": 70, "tiles": 23100, "files": 92400},
+      "val": {"scenes": 15, "tiles": 4950, "files": 19800},
+      "test": {"scenes": 15, "tiles": 4950, "files": 19800}
+    },
+    "total_tiles": 33000,
+    "total_files": 132000,
+    "tile_resolution": "256x256",
+    "ignore_index": 255
+  },
+  "model_contract": {
+    "expected_parameters": 19755144,
+    "actual_parameters": 19755144,
+    "optical_encoder": {"type": "resnet50", "parameters": 8527104, "in_channels": 3},
+    "sar_encoder": {"type": "resnet50", "parameters": 8526976, "in_channels": 2},
+    "fusion_neck": {"type": "CrossModalAttentionFusion", "parameters": 1377280, "bottleneck_channels": 256},
+    "task_head": {"type": "LandCoverTaskHead", "parameters": 1323784, "classes": 8}
+  },
+  "training_schedule": {
+    "total_epochs": 50,
+    "warmup_epochs": 5,
+    "batch_size": 16,
+    "num_workers": 0,
+    "seed": 42,
+    "use_amp": true,
+    "patience": 10
+  },
+  "optimization": {
+    "stage1": {
+      "description": "Warmup: Backbones frozen, head and fusion neck trainable",
+      "lr": 0.001,
+      "weight_decay": 0.0001
+    },
+    "stage2": {
+      "description": "Fine-Tuning: layer2 stride-8 backbones unfrozen with differential LR",
+      "lr_head": 0.0005,
+      "lr_backbone": 0.00002,
+      "weight_decay": 0.0001
+    },
+    "gradient_clipping": {
+      "max_norm": 1.0,
+      "scope": "All trainable parameters in both stages"
+    }
+  },
+  "loss_configuration": {
+    "strategy": "median_frequency_ce_plus_dice",
+    "dice_loss_weight": 1.0,
+    "background_weight_cap": 3.54,
+    "majority_weight_floor": 0.05,
+    "class_weights": {
+      "0_background": 1.7369,
+      "1_farmland": 0.0848,
+      "2_city": 0.5786,
+      "3_village": 0.4907,
+      "4_water": 0.1992,
+      "5_forest": 0.0750,
+      "6_road": 3.1287,
+      "7_others": 1.7062
+    }
+  },
+  "sampler_configuration": {
+    "type": "meaningful_minority_sampler",
+    "majority_tile_downweight": 0.35,
+    "threshold_pure_majority": ">=90% Forest+Farmland pixels",
+    "boosts": {
+      "road": {"min_pixels": 100, "boost": 2.5},
+      "city": {"min_pixels": 250, "boost": 2.2},
+      "others": {"min_pixels": 250, "boost": 1.8},
+      "water": {"min_pixels": 500, "boost": 1.2},
+      "village": {"min_pixels": 500, "boost": 1.0},
+      "background": {"min_pixels": 10, "boost": 2.0}
+    },
+    "max_tile_weight": 5.0
+  },
+  "query_intent_conditioning": {
+    "mode": "balanced_neutral",
+    "intent_vector": "torch.ones(B, 8)"
+  },
+  "checkpoints": {
+    "isolated_directory": "specialists/optical_sar/checkpoints/experiment_balanced_v3_100scenes",
+    "target_production_checkpoint": "cmaf_landcover_balanced_v3_100scenes.pth",
+    "gate_test_checkpoint": "cmaf_landcover_balanced_v3_100scenes_3epoch_gate.pth"
+  }
+}

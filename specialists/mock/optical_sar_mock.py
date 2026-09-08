@@ -43,7 +43,7 @@ class MockOpticalSARAnalysisTool(BaseSpecialistTool):
                 required_modalities=[ImageModality.OPTICAL, ImageModality.SAR],
                 min_images=2,
                 max_images=2,
-                author_or_division="Division 4 (Laksh Mock)",
+                author_or_division="Optical-SAR Cross-Modal Intelligence (Mock)",
                 metadata={"fusion_method": "Cross-Attention-Latent-Fusion-Mock", "supports_cloud_penetration": True},
             ),
         )

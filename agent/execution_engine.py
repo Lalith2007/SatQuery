@@ -93,11 +93,16 @@ class ExecutionEngine:
         tool = self.registry.get(step.tool_name)
         
         # Prepare step-specific request
+        step_images = base_request.images
+        meta = getattr(tool, "metadata", None)
+        if meta and meta.max_images == 1 and len(step_images) > 1:
+            step_images = [step_images[-1]]  # Target post-change / latest acquisition image
+
         step_request = ToolRequest(
             request_id=base_request.request_id,
             task=step.task,
             query=base_request.query,
-            images=base_request.images,
+            images=step_images,
             metadata=base_request.metadata,
             config=base_request.config,
             context=context if step.pass_context_from_previous else {},

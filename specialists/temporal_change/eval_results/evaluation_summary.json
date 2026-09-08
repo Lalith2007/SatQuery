@@ -1,0 +1,80 @@
+{
+  "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+  "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+  "model_architecture": {
+    "name": "TinyCD",
+    "backbone": "Siamese U-Net with 3-Stage Mixing Mask Attention Blocks (MAMB)",
+    "input_channels": 3,
+    "base_features": 32,
+    "parameters": {
+      "total": 3565034,
+      "trainable": 3565034,
+      "weight_tensors": 145
+    }
+  },
+  "dataset_provenance": {
+    "dataset": "Official Standard LEVIR-CD Held-Out Test Set",
+    "source": "satellite-image-deep-learning/LEVIR-CD (test.zip)",
+    "held_out_scenes": 128,
+    "evaluated_pixels": 8388608,
+    "ground_truth_changed_pixels": 427414,
+    "ground_truth_unchanged_pixels": 7961194,
+    "ground_truth_change_percentage": 5.0952,
+    "ground_truth_unchanged_percentage": 94.9048,
+    "class_imbalance_ratio": "1 : 18.6"
+  },
+  "authoritative_test_metrics": {
+    "evaluation_protocol": "Fresh held-out evaluation on standard LEVIR-CD test split",
+    "threshold": 0.5,
+    "raw_metrics": {
+      "overall_accuracy": 0.97992,
+      "precision": 0.827,
+      "recall": 0.766182,
+      "f1": 0.79543,
+      "iou": 0.660344,
+      "dice": 0.79543,
+      "specificity": 0.991395,
+      "tp": 327477,
+      "fp": 68505,
+      "fn": 99937,
+      "tn": 7892689
+    },
+    "production_postprocessed_metrics": {
+      "overall_accuracy": 0.979889,
+      "precision": 0.833571,
+      "recall": 0.756302,
+      "f1": 0.793059,
+      "iou": 0.657082,
+      "dice": 0.793059,
+      "specificity": 0.991893,
+      "tp": 323254,
+      "fp": 64540,
+      "fn": 104160,
+      "tn": 7896654
+    },
+    "runtime": {
+      "device": "mps",
+      "mean_latency_ms": 27.32,
+      "median_latency_ms": 26.98,
+      "p95_latency_ms": 28.23,
+      "throughput_fps": 36.61
+    }
+  },
+  "historical_comparison": {
+    "historical_dataset": "LEVIR-CD+ (Reported N=348)",
+    "historical_f1": 0.6654,
+    "historical_iou": 0.4986,
+    "historical_oa": 0.973,
+    "historical_precision": 0.6726,
+    "historical_recall": 0.6583,
+    "historical_latency_ms": 15.49,
+    "historical_device": "NVIDIA Tesla T4 (Cloud GPU)",
+    "protocol_distinction": "Earlier preliminary report used the extended LEVIR-CD+ split (N=348). Authoritative result uses the standard LEVIR-CD test benchmark (N=128)."
+  },
+  "documented_limitations": {
+    "thin_boundaries": "High-contrast rooftop edges occasionally exhibit 1-pixel dilation/erosion offsets between T0 and T1 ground truths.",
+    "shadow_variation": "High solar angle shifts create shadowing adjacent to multi-story buildings that model occasionally flags as false positive changes.",
+    "class_imbalance": "Building changes represent only 5.0952% of total pixels; natural background terrain comprises 94.9048%.",
+    "small_component_dropout": "Postprocessing with min_region_area=100 filters out noise but suppresses tiny structures under 100 pixels."
+  }
+}
