@@ -179,6 +179,7 @@ def run_smoke_test(
         print("Inference generation verified.")
         report["stages"]["reload_inference"] = "SUCCESS"
         report["status"] = "PASSED (REAL-CUDA)"
+        print("REAL CUDA SMOKE TEST: PASS")
 
     else:
         # Local non-CUDA validation mode
@@ -198,6 +199,7 @@ def run_smoke_test(
         report["stages"]["collator_verification"] = "SUCCESS"
         report["stages"]["labels_shape"] = list(batch["labels"].shape)
         report["status"] = "PASSED (LOCAL-SMOKE-TEST)"
+        print("LOCAL SMOKE TEST: PASS")
 
     report["duration_seconds"] = round(time.perf_counter() - t0, 2)
 

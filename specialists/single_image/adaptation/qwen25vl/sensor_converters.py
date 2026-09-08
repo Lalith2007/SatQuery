@@ -34,9 +34,10 @@ class Sentinel1SARConverter:
     """Deterministic converter for Sentinel-1 dual-polarization (VV/VH) SAR.
 
     Maps 2-channel microwave backscatter into a 3-channel representation:
-    - Channel 1 (R): Calibrated linear / dB VV backscatter
-    - Channel 2 (G): Calibrated linear / dB VH backscatter
-    - Channel 3 (B): Logarithmic cross-polarization ratio log((VV + eps) / (VH + eps)) = VV_dB - VH_dB
+    - Channel 1 (R): Calibrated dB VV backscatter (normalized from [-25.0, 0.0] dB -> [0, 1])
+    - Channel 2 (G): Calibrated dB VH backscatter (normalized from [-32.0, -5.0] dB -> [0, 1])
+    - Channel 3 (B): Canonical cross-polarization ratio VV_dB - VH_dB, which equals
+      10 * log10(VV_linear / VH_linear), normalized from [-5.0, 20.0] dB -> [0, 1].
     """
 
     VV_DEFAULT_MIN = -25.0  # dB
@@ -67,7 +68,7 @@ class Sentinel1SARConverter:
         vh = np.asarray(vh_array, dtype=np.float32)
 
         if not is_db:
-            # Convert linear amplitude to decibels
+            # Convert linear power/intensity to decibels (dB)
             vv = 10.0 * np.log10(np.maximum(vv, cls.EPSILON))
             vh = 10.0 * np.log10(np.maximum(vh, cls.EPSILON))
 
@@ -75,7 +76,7 @@ class Sentinel1SARConverter:
         ch_r = np.clip((vv - cls.VV_DEFAULT_MIN) / (cls.VV_DEFAULT_MAX - cls.VV_DEFAULT_MIN), 0.0, 1.0)
         # Channel 2: VH normalized to [0, 1]
         ch_g = np.clip((vh - cls.VH_DEFAULT_MIN) / (cls.VH_DEFAULT_MAX - cls.VH_DEFAULT_MIN), 0.0, 1.0)
-        # Channel 3: Cross-ratio log(VV / VH) = VV_dB - VH_dB normalized from [-5, 20] dB
+        # Channel 3: Cross-polarization ratio VV_dB - VH_dB = 10 * log10(VV_linear / VH_linear)
         ratio_db = vv - vh
         ch_b = np.clip((ratio_db - (-5.0)) / (20.0 - (-5.0)), 0.0, 1.0)
 

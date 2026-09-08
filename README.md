@@ -68,12 +68,14 @@ SatQuery is organized into decoupled, production-grade subsystems:
 * **Result Aggregator (`agent/result_aggregator.py`)**: Assembles structured `QueryResponse` dossiers with comprehensive execution audit logs.
 
 ### 🛰️ Division 2 — Single-Image Remote-Sensing Intelligence
-* **Vision-Language Specialist (`specialists/single_image/`)**: Adapted vision-language model integrating Google's **PaliGemma 3B** (`google/paligemma-3b-pt-224`) with a task-specific **SatQuery PEFT LoRA adapter** (414 trainable tensors, $45.26\text{ MB}$).
+* **Vision-Language Foundation (`specialists/single_image/`)**: Adapted vision-language model powered by Alibaba Cloud's **Qwen2.5-VL-3B-Instruct** (`Qwen/Qwen2.5-VL-3B-Instruct`), fine-tuned via 4-bit QLoRA on the BigEarthNet Stage 1 curated mixture (8,000 unique pairs / 16,000 supervised training examples; 1:1 Sentinel-1 SAR and Sentinel-2 MSI balance).
+* **Colab CUDA Training Protocol**: Model training is strictly performed on physical NVIDIA GPUs in Google Colab (`colab_qwen25vl_training.ipynb`). The local repository is strictly for development, validation, and test harness execution.
+* **Dual Checkpoint Artifacts**: The training pipeline exports BOTH a LoRA adapter (`adapter/`) and a complete standalone merged model (`merged_full/` with safetensors shards, loadable independently without PEFT). Multi-GB weights are stored outside Git in persistent Google Drive storage (`/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/`).
 * **Supported Tasks**:
-  * `SINGLE_IMAGE_VQA`: Natural language question answering over optical and multispectral remote-sensing rasters.
-  * `SINGLE_IMAGE_GROUNDING`: Object localization returning normalized bounding boxes (`[ymin, xmin, ymax, xmax]`).
-  * `SINGLE_IMAGE_CAPTION`: Comprehensive semantic scene description.
-* **Offline Fallback**: Deterministic remote-sensing visual synthesizer ensuring continuous operation and 100% test pass rate even in offline or unauthenticated CPU/MPS environments.
+  * `SINGLE_IMAGE_VQA`: Natural language question answering over optical and Sentinel-1 SAR rasters.
+  * `SINGLE_IMAGE_GROUNDING`: Object localization returning native bounding boxes mapped to ToolResult coordinates (`[ymin, xmin, ymax, xmax]`).
+  * `SINGLE_IMAGE_CAPTION`: High-fidelity domain-specific scene descriptions.
+* **Dual-Backend Support & Safe Fallback**: Modern `qwen25vl` backend by default, with preserved `paligemma_legacy` compatibility. If Qwen is selected and weights fail to load, the system fails loudly rather than silently degrading.
 
 ### ⏱️ Division 3 — Bi-Temporal Change Intelligence
 * **Neural Change Specialist (`specialists/temporal_change/`)**: Full neural implementation of **TinyCD** (3,565,034 parameters, 145 PyTorch weight tensors) featuring Siamese multi-scale convolutions and space-time cross-attention (`mamb` blocks).

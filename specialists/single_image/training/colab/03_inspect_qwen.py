@@ -131,6 +131,9 @@ def inspect_model_architecture_and_lora_targets(
 def run_full_inspection(model_id: str = "Qwen/Qwen2.5-VL-3B-Instruct") -> Dict[str, Any]:
     tok_res = inspect_tokenizer_grounding_tokens(model_id)
     mod_res = inspect_model_architecture_and_lora_targets(model_id)
+    if not tok_res["all_required_present"]:
+        raise ValueError(f"Missing required grounding tokens: {tok_res['missing_tokens']}")
+    print("QWEN ARCHITECTURE INSPECTION: PASS")
     return {"tokenizer": tok_res, "model": mod_res}
 
 

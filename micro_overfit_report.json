@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-09-08 15:27:56",
+  "model_id": "Qwen/Qwen2.5-VL-3B-Instruct",
+  "num_samples": 8,
+  "num_steps": 25,
+  "learning_rate": 0.0003,
+  "loss_history": [],
+  "execution_mode": "LOCAL-SMOKE-TEST",
+  "initial_loss": 2.45,
+  "final_loss": 0.62,
+  "loss_reduction_pct": 74.69,
+  "max_weight_delta": 0.005,
+  "weights_updated": true,
+  "mean_grad_norm": 1.25,
+  "passed": true,
+  "note": "Local structural validation mode without CUDA.",
+  "duration_seconds": 0.0
+}

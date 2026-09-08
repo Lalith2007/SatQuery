@@ -1,5 +1,7 @@
 {
-  "timestamp": "2.14.0",
+  "execution_mode": "LOCAL-SMOKE-TEST",
+  "timestamp": "2026-09-08 10:23:56Z",
+  "python_version": "3.11.15",
   "hardware": {
     "torch_version": "2.14.0",
     "transformers_version": "5.16.1",
@@ -19,6 +21,7 @@
     "bf16_supported": false,
     "fp16_supported": false
   },
+  "flash_attn_available": false,
   "nvidia_smi": "",
   "recommended_dtype": "float16",
   "recommended_quantization": "none"

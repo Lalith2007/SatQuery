@@ -3,8 +3,15 @@
 
 model_id: "Qwen/Qwen2.5-VL-3B-Instruct"
 output_dir: "specialists/single_image/weights/qwen25vl_lora"
+google_drive_dir: "/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run"
 
-# Quantization
+# Dataset Configuration
+dataset_manifest: "data/curated_mixture/bigearthnet_stage1_manifest.jsonl"
+dataset_manifest_sha256: "809ff7f4506c8205ac0dc49582041bb0e79c96fa51e57137185b17655e089d7d"
+expected_pairs: 8000
+expected_examples: 16000
+
+# Quantization (4-bit NF4)
 load_in_4bit: true
 bnb_4bit_quant_type: "nf4"
 bnb_4bit_use_double_quant: true
@@ -47,3 +54,5 @@ max_length: null  # Multimodal sequences must not be truncated blindly
 # Hardware & Seeds
 seed: 42
 production_backend: "qwen25vl"
+push_to_hub: false
+

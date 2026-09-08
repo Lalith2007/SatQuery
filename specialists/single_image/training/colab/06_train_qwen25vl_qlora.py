@@ -124,8 +124,16 @@ def train_qwen25vl_qlora(
     lr = float(cfg_dict.get("learning_rate", 2e-4))
     epochs = int(cfg_dict.get("num_train_epochs", 3))
 
+    # Check for existing checkpoint to resume
+    checkpoint_dir = out_dir / "checkpoints"
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    existing_checkpoints = sorted(list(checkpoint_dir.glob("checkpoint-*")), key=lambda p: int(p.name.split("-")[-1]) if p.name.split("-")[-1].isdigit() else 0)
+    resume_checkpoint = str(existing_checkpoints[-1]) if existing_checkpoints else None
+    if resume_checkpoint:
+        print(f"Resuming training from checkpoint: {resume_checkpoint}")
+
     training_args = SFTConfig(
-        output_dir=str(out_dir / "checkpoints"),
+        output_dir=str(checkpoint_dir),
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=1,
         gradient_accumulation_steps=grad_accum,
@@ -142,7 +150,7 @@ def train_qwen25vl_qlora(
         eval_steps=50,
         save_strategy="steps",
         save_steps=50,
-        save_total_limit=2,
+        save_total_limit=3,
         max_length=None,  # Do not truncate multimodal sequences
         dataset_text_field=None,
         dataset_kwargs={"skip_prepare_dataset": True},
@@ -161,12 +169,25 @@ def train_qwen25vl_qlora(
     )
 
     print("Launching SFTTrainer optimization loop...")
-    train_result = trainer.train()
+    train_result = trainer.train(resume_from_checkpoint=resume_checkpoint)
 
     # 7. Save Final Adapter and Artifacts
     print(f"Saving final trained adapter to: {out_dir}...")
     trainer.model.save_pretrained(out_dir)
     processor.save_pretrained(out_dir)
+
+    # Sync checkpoints and adapter to Google Drive if configured
+    gdrive_dir = cfg_dict.get("google_drive_dir")
+    if gdrive_dir and Path(gdrive_dir).parent.exists():
+        import shutil
+        gdrive_p = Path(gdrive_dir) / "checkpoints"
+        gdrive_p.mkdir(parents=True, exist_ok=True)
+        print(f"Syncing adapter and checkpoints to persistent Google Drive: {gdrive_p}...")
+        try:
+            shutil.copytree(out_dir, Path(gdrive_dir) / "adapter", dirs_exist_ok=True)
+            print(f"Persistent backup to Google Drive completed: {Path(gdrive_dir) / 'adapter'}")
+        except Exception as e:
+            logger.warning(f"Google Drive sync warning: {e}")
 
     # Calculate adapter SHA-256
     safetensors_path = out_dir / "adapter_model.safetensors"
@@ -205,6 +226,7 @@ def train_qwen25vl_qlora(
         f.write(readme_content)
 
     print(f"Training completed successfully! Adapter SHA-256: {adapter_sha}")
+    print("FULL STAGE 1 QLORA TRAINING: PASS")
     print("=" * 60)
     return metrics
 
