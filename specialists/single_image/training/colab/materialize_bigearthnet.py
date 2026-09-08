@@ -247,71 +247,49 @@ def download_and_extract_hf_s2(
     return saved_count
 
 
-def compute_sha256(file_path: Path) -> str:
-    """Compute SHA-256 hash of a file."""
-    sha = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            sha.update(chunk)
-    return sha.hexdigest()
+def validate_and_hash_raster(file_path: Path, expected_modality: str) -> Tuple[bool, Optional[str], Dict[str, Any], str, int]:
+    """Validate raster file integrity, band count, finite values, and compute SHA-256 in a single I/O pass using tifffile."""
+    if not file_path.exists():
+        return False, "File does not exist", {}, "", 0
+
+    try:
+        raw_bytes = file_path.read_bytes()
+        sz = len(raw_bytes)
+        if sz == 0:
+            return False, "File is empty (0 bytes)", {}, "", 0
+
+        sha = hashlib.sha256(raw_bytes).hexdigest()
+        stats: Dict[str, Any] = {"size_bytes": sz}
+
+        import tifffile
+        arr = tifffile.imread(io.BytesIO(raw_bytes))
+        stats["shape"] = list(arr.shape)
+        stats["dtype"] = str(arr.dtype)
+        bands = arr.shape[0] if arr.ndim == 3 else 1
+        stats["bands"] = bands
+
+        if expected_modality == "sar" and bands < 2:
+            return False, f"Expected at least 2 SAR bands (VV, VH), got {bands}", stats, sha, sz
+        elif expected_modality == "optical" and bands < 3:
+            return False, f"Expected at least 3 Optical bands, got {bands}", stats, sha, sz
+
+        if np.isnan(arr).any():
+            return False, "Raster contains NaN values", stats, sha, sz
+        if np.isinf(arr).any():
+            return False, "Raster contains Inf values", stats, sha, sz
+
+        stats["min"] = float(np.min(arr))
+        stats["max"] = float(np.max(arr))
+        stats["mean"] = float(np.mean(arr))
+        return True, None, stats, sha, sz
+    except Exception as e:
+        return False, f"Failed to read/decode raster: {e}", {}, "", 0
 
 
 def validate_raster_file(file_path: Path, expected_modality: str) -> Tuple[bool, Optional[str], Dict[str, Any]]:
-    """Validate raster file integrity, band count, and finite numeric values."""
-    if not file_path.exists():
-        return False, "File does not exist", {}
-
-    if file_path.stat().st_size == 0:
-        return False, "File is empty (0 bytes)", {}
-
-    stats: Dict[str, Any] = {
-        "size_bytes": file_path.stat().st_size,
-    }
-
-    try:
-        # Attempt rasterio first if installed, fallback to tifffile / PIL
-        try:
-            import rasterio
-            with rasterio.open(file_path) as src:
-                stats["shape"] = (src.count, src.height, src.width)
-                stats["dtype"] = str(src.dtypes[0])
-                stats["bands"] = src.count
-
-                if expected_modality == "sar" and src.count < 2:
-                    return False, f"Expected at least 2 SAR bands (VV, VH), got {src.count}", stats
-                elif expected_modality == "optical" and src.count < 3:
-                    return False, f"Expected at least 3 Optical bands, got {src.count}", stats
-
-                # Sample read to check for NaN/Inf
-                arr = src.read()
-                if np.isnan(arr).any():
-                    return False, "Raster contains NaN values", stats
-                if np.isinf(arr).any():
-                    return False, "Raster contains Inf values", stats
-                stats["min"] = float(np.min(arr))
-                stats["max"] = float(np.max(arr))
-                stats["mean"] = float(np.mean(arr))
-                return True, None, stats
-        except ImportError:
-            # Fallback to tifffile or PIL
-            try:
-                import tifffile
-                arr = tifffile.imread(file_path)
-                stats["shape"] = list(arr.shape)
-                stats["dtype"] = str(arr.dtype)
-                if np.isnan(arr).any():
-                    return False, "Raster contains NaN values", stats
-                if np.isinf(arr).any():
-                    return False, "Raster contains Inf values", stats
-                return True, None, stats
-            except ImportError:
-                from PIL import Image
-                with Image.open(file_path) as img:
-                    stats["size"] = img.size
-                    stats["mode"] = img.mode
-                return True, None, stats
-    except Exception as e:
-        return False, f"Failed to read/decode raster: {e}", stats
+    """Legacy wrapper for validate_raster_file."""
+    ok, err, stats, _, _ = validate_and_hash_raster(file_path, expected_modality)
+    return ok, err, stats
 
 
 def load_unique_pairs_from_manifest(manifest_path: Path) -> List[Dict[str, Any]]:
@@ -481,18 +459,16 @@ def materialize_bigearthnet_pairs(
             if not target_s2_alias.exists():
                 shutil.copy2(s2_file, target_s2_alias)
 
-        # Validate S1
+        # Validate S1 in single-pass
         s1_ok = False
         s1_sha = ""
         if s1_file and s1_file.exists():
             s1_resolved += 1
-            sz1 = s1_file.stat().st_size
+            is_valid, err_msg, stats1, s1_sha, sz1 = validate_and_hash_raster(s1_file, expected_modality="sar")
             s1_total_bytes += sz1
-            is_valid, err_msg, stats1 = validate_raster_file(s1_file, expected_modality="sar")
             if is_valid:
                 s1_valid += 1
                 s1_ok = True
-                s1_sha = compute_sha256(s1_file)
                 checksum_lines.append(f"{s1_sha}  pairs/{pid}/sentinel1.tif")
             else:
                 corrupt_count += 1
@@ -501,18 +477,16 @@ def materialize_bigearthnet_pairs(
         else:
             missing_s1 += 1
 
-        # Validate S2
+        # Validate S2 in single-pass
         s2_ok = False
         s2_sha = ""
         if s2_file and s2_file.exists():
             s2_resolved += 1
-            sz2 = s2_file.stat().st_size
+            is_valid, err_msg, stats2, s2_sha, sz2 = validate_and_hash_raster(s2_file, expected_modality="optical")
             s2_total_bytes += sz2
-            is_valid, err_msg, stats2 = validate_raster_file(s2_file, expected_modality="optical")
             if is_valid:
                 s2_valid += 1
                 s2_ok = True
-                s2_sha = compute_sha256(s2_file)
                 checksum_lines.append(f"{s2_sha}  pairs/{pid}/sentinel2.tif")
             else:
                 corrupt_count += 1
@@ -537,8 +511,9 @@ def materialize_bigearthnet_pairs(
             "s2_path": str(target_s2_tif) if s2_ok else None,
         })
 
-        if idx % 1000 == 0 or idx == expected_pairs_count:
-            print(f"Processed {idx}/{expected_pairs_count} pairs... (S1 valid: {s1_valid}, S2 valid: {s2_valid})")
+        if idx % 250 == 0 or idx == expected_pairs_count:
+            pct = (idx / expected_pairs_count) * 100
+            print(f"Audited {idx}/{expected_pairs_count} pairs ({pct:.1f}%) — S1 valid: {s1_valid}, S2 valid: {s2_valid}")
 
     combined_bytes = s1_total_bytes + s2_total_bytes
     combined_gib = combined_bytes / (1024 ** 3)
