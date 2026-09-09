@@ -363,31 +363,27 @@ def materialize_bigearthnet_pairs(
         needed_s1: Dict[str, str] = {}
         needed_s2: Dict[str, str] = {}
 
-        def check_existing_pair(pinfo: Dict[str, Any]):
+        existing_dirs = set()
+        if pairs_dir.exists():
+            try:
+                existing_dirs.update(os.listdir(pairs_dir))
+            except Exception:
+                pass
+        for cand in local_candidates:
+            if cand.exists():
+                try:
+                    existing_dirs.update(os.listdir(cand))
+                except Exception:
+                    pass
+
+        for pinfo in unique_pairs:
             pid = pinfo["pair_id"]
-            target_pair_dir = pairs_dir / pid
-            s1_exists = (target_pair_dir / "sentinel1.tif").exists() or (target_pair_dir / "s1_2bands.tif").exists()
-            s2_exists = (target_pair_dir / "sentinel2.tif").exists() or (target_pair_dir / "s2_10bands.tif").exists()
+            if pid not in existing_dirs:
+                needed_s1[pinfo["s1_name"]] = pid
+                needed_s2[pinfo["patch_id"]] = pid
 
-            if not s1_exists or not s2_exists:
-                for cand in local_candidates:
-                    if not s1_exists and ((cand / pid / "sentinel1.tif").exists() or (cand / pid / "s1_2bands.tif").exists()):
-                        s1_exists = True
-                    if not s2_exists and ((cand / pid / "sentinel2.tif").exists() or (cand / pid / "s2_10bands.tif").exists()):
-                        s2_exists = True
-                    if s1_exists and s2_exists:
-                        break
-            return pid, pinfo["s1_name"], pinfo["patch_id"], s1_exists, s2_exists
-
-        import concurrent.futures
-        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
-            for i, (pid, s1_name, patch_id, s1_ok, s2_ok) in enumerate(executor.map(check_existing_pair, unique_pairs), 1):
-                if not s1_ok:
-                    needed_s1[s1_name] = pid
-                if not s2_ok:
-                    needed_s2[patch_id] = pid
-                if i % 1000 == 0 or i == len(unique_pairs):
-                    print(f"Storage scan: {i}/{len(unique_pairs)} pairs checked — Missing S1: {len(needed_s1)}, Missing S2: {len(needed_s2)}")
+        found_count = len(unique_pairs) - max(len(needed_s1), len(needed_s2))
+        print(f"Storage scan: {found_count}/{len(unique_pairs)} pairs already present — Missing S1: {len(needed_s1)}, Missing S2: {len(needed_s2)}")
 
         temp_dir = out_p / "temp_archives"
         if needed_s1:
