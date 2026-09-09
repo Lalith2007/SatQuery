@@ -147,6 +147,7 @@ class QwenModelLoader:
             bias=lora_cfg.bias,
             task_type=lora_cfg.task_type,
             target_modules=lora_cfg.target_modules_regex,
+            use_dora=lora_cfg.use_dora,
         )
 
         peft_model = get_peft_model(model, peft_config)
@@ -163,6 +164,7 @@ class QwenModelLoader:
             "target_regex": lora_cfg.target_modules_regex,
             "r": lora_cfg.r,
             "lora_alpha": lora_cfg.lora_alpha,
+            "use_dora": lora_cfg.use_dora,
         }
 
         logger.info(

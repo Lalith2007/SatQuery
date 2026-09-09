@@ -119,6 +119,7 @@ def train_qwen25vl_qlora(
         r=int(cfg_dict.get("lora_r", 64)),
         lora_alpha=int(cfg_dict.get("lora_alpha", 128)),
         lora_dropout=float(cfg_dict.get("lora_dropout", 0.05)),
+        use_dora=bool(cfg_dict.get("use_dora", True)),
         target_modules_regex=cfg_dict.get(
             "target_modules_regex",
             LoraConfigQwen.target_modules_regex,
@@ -157,11 +158,19 @@ def train_qwen25vl_qlora(
                 with open(chk_cfg_path, "r", encoding="utf-8") as f:
                     chk_cfg = json.load(f)
                 chk_r = chk_cfg.get("r")
+                chk_dora = chk_cfg.get("use_dora", False)
                 if chk_r is not None and chk_r != lora_cfg.r:
                     print(
                         f"Found existing checkpoint '{resume_checkpoint}' with rank r={chk_r}, "
                         f"but target configuration specifies rank r={lora_cfg.r}. "
                         f"LoRA dimensions differ. Starting clean training run with upgraded r={lora_cfg.r}."
+                    )
+                    resume_checkpoint = None
+                elif chk_dora != lora_cfg.use_dora:
+                    print(
+                        f"Found existing checkpoint '{resume_checkpoint}' with use_dora={chk_dora}, "
+                        f"but target configuration specifies use_dora={lora_cfg.use_dora}. "
+                        f"DoRA mode differs. Starting clean training run with use_dora={lora_cfg.use_dora}."
                     )
                     resume_checkpoint = None
             except Exception as e:

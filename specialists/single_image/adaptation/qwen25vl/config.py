@@ -48,6 +48,7 @@ class LoraConfigQwen:
     lora_dropout: float = 0.05
     bias: str = "none"
     task_type: str = "CAUSAL_LM"
+    use_dora: bool = False
     # Explicit regex targeting language decoder and visual merger, freezing vision blocks
     target_modules_regex: str = (
         r".*language_model.*\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)|.*merger\.mlp\.[02]"

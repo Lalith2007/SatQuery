@@ -23,7 +23,8 @@ lora_alpha: 128
 lora_dropout: 0.05
 lora_bias: "none"
 lora_task_type: "CAUSAL_LM"
-target_modules_regex: ".*language_model.*\\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)|.*merger\\.mlp\\.[02]"
+use_dora: true
+target_modules_regex: ".*language_model.*\\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)|.*merger\\.mlp\\.[02]|.*visual\\.blocks.*attn\\.(qkv|proj)"
 
 # Resolution Controls
 min_pixels: 200704   # 256 * 28 * 28 (~448x448)
@@ -48,7 +49,7 @@ eval_strategy: "steps"
 eval_steps: 250
 save_strategy: "steps"
 save_steps: 250
-save_total_limit: 3
+save_total_limit: 5
 max_length: null  # Multimodal sequences must not be truncated blindly
 remove_unused_columns: false  # Preserve multimodal dataset columns (modality, sensor, image, messages, pair_id)
 
