@@ -50,37 +50,24 @@ def build_qwen_chatml_record(
     else:
         formatted_output = raw_output
 
-    # Determine image path with deterministic resolution
+    # Determine image path with deterministic resolution (zero FUSE file-system roundtrips)
     patch_id = record.get("patch_id", pair_id.split("___")[0])
     s1_name = record.get("s1_name", pair_id.split("___")[-1] if "___" in pair_id else "")
     target_filename = "s1_2bands.tif" if is_sar else "s2_10bands.tif"
-    alt_filename = "sentinel1.tif" if is_sar else "sentinel2.tif"
 
-    candidate_roots = []
-    if image_dir:
-        candidate_roots.append(Path(image_dir))
-    candidate_roots.extend([
-        Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1/pairs"),
-        Path("data/curated_mixture/materialized_samples"),
-    ])
-
-    image_path = None
-    for root in candidate_roots:
-        if root.exists():
-            pair_dir = root / pair_id
-            if pair_dir.exists():
-                f1 = pair_dir / target_filename
-                f2 = pair_dir / alt_filename
-                if f1.exists():
-                    image_path = str(f1)
-                    break
-                elif f2.exists():
-                    image_path = str(f2)
-                    break
-
-    if image_path is None:
+    if image_dir is not None:
+        image_path = str(Path(image_dir) / pair_id / target_filename)
+    else:
         # Default canonical relative path pointer
-        base_dir = candidate_roots[0] if candidate_roots else Path("data/curated_mixture/materialized_samples")
+        candidate_roots = [
+            Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1/pairs"),
+            Path("data/curated_mixture/materialized_samples"),
+        ]
+        base_dir = candidate_roots[0]
+        for root in candidate_roots:
+            if root.exists():
+                base_dir = root
+                break
         image_path = str(base_dir / pair_id / target_filename)
 
     user_prompt = record["input"]
@@ -281,34 +268,42 @@ def prepare_and_export_splits(
     mf_p = Path(manifest_path)
     img_p = Path(image_dir) if image_dir else None
 
-    logger.info(f"Loading Stage 1 manifest from: {mf_p}")
+    print("=" * 60)
+    print("SatQuery AI — Phase C: Stage 1 Dataset Preparation")
+    print("=" * 60)
+    print(f"Loading Stage 1 manifest from: {mf_p}...")
     raw_records = load_stage1_manifest(mf_p)
-    logger.info(f"Loaded {len(raw_records)} raw records from manifest.")
+    print(f"Loaded {len(raw_records)} records from manifest.")
 
+    print(f"Formatting ChatML records with image directory: {img_p}...")
     formatted_samples = [build_qwen_chatml_record(r, image_dir=img_p) for r in raw_records]
+    print(f"Formatted all {len(formatted_samples)} ChatML records.")
 
+    print("Partitioning samples by parent granule (Train: 14,304, Val: 846, Test: 850)...")
     train_s, val_s, test_s, split_report = partition_by_parent_granule(
         formatted_samples, val_count=val_count, test_count=test_count, seed=seed
     )
 
+    print(f"Writing split files to {out_p}...")
     save_jsonl(train_s, out_p / "train.jsonl")
     save_jsonl(val_s, out_p / "val.jsonl")
     save_jsonl(test_s, out_p / "test.jsonl")
 
     with open(out_p / "dataset_split_report.json", "w", encoding="utf-8") as f:
         json.dump(split_report, f, indent=2)
+    print(f"Splits exported: {len(train_s)} train, {len(val_s)} val, {len(test_s)} test.")
 
-    # Mirror to persistent Google Drive backup if storage root exists
+    # Mirror to persistent Google Drive backup via fast block copy
     drive_backup = Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/qwen_dataset")
     if drive_backup.parent.exists():
         try:
             drive_backup.mkdir(parents=True, exist_ok=True)
-            save_jsonl(train_s, drive_backup / "train.jsonl")
-            save_jsonl(val_s, drive_backup / "val.jsonl")
-            save_jsonl(test_s, drive_backup / "test.jsonl")
-            with open(drive_backup / "dataset_split_report.json", "w", encoding="utf-8") as f:
-                json.dump(split_report, f, indent=2)
-            logger.info(f"Successfully mirrored dataset splits to Google Drive backup: {drive_backup}")
+            import shutil
+            shutil.copy2(out_p / "train.jsonl", drive_backup / "train.jsonl")
+            shutil.copy2(out_p / "val.jsonl", drive_backup / "val.jsonl")
+            shutil.copy2(out_p / "test.jsonl", drive_backup / "test.jsonl")
+            shutil.copy2(out_p / "dataset_split_report.json", drive_backup / "dataset_split_report.json")
+            print(f"Mirrored dataset splits to Google Drive backup: {drive_backup}")
         except Exception as e:
             logger.warning(f"Could not mirror dataset splits to Drive: {e}")
 
