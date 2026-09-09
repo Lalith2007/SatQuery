@@ -18,13 +18,13 @@ bnb_4bit_use_double_quant: true
 compute_dtype: "bfloat16"
 
 # PEFT LoRA Adaptation
-lora_r: 64
-lora_alpha: 128
+lora_r: 16
+lora_alpha: 32
 lora_dropout: 0.05
 lora_bias: "none"
 lora_task_type: "CAUSAL_LM"
-use_dora: true
-target_modules_regex: ".*language_model.*\\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)|.*merger\\.mlp\\.[02]|.*visual\\.blocks.*attn\\.(qkv|proj)"
+use_dora: false
+target_modules_regex: ".*language_model.*\\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)|.*merger\\.mlp\\.[02]"
 
 # Resolution Controls
 min_pixels: 200704   # 256 * 28 * 28 (~448x448)

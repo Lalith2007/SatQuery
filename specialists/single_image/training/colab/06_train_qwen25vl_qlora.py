@@ -119,10 +119,10 @@ def train_qwen25vl_qlora(
 
     # 4. LoRA Setup
     lora_cfg = LoraConfigQwen(
-        r=int(cfg_dict.get("lora_r", 64)),
-        lora_alpha=int(cfg_dict.get("lora_alpha", 128)),
+        r=int(cfg_dict.get("lora_r", 16)),
+        lora_alpha=int(cfg_dict.get("lora_alpha", 32)),
         lora_dropout=float(cfg_dict.get("lora_dropout", 0.05)),
-        use_dora=bool(cfg_dict.get("use_dora", True)),
+        use_dora=bool(cfg_dict.get("use_dora", False)),
         target_modules_regex=cfg_dict.get(
             "target_modules_regex",
             LoraConfigQwen.target_modules_regex,
