@@ -18,8 +18,8 @@ bnb_4bit_use_double_quant: true
 compute_dtype: "bfloat16"
 
 # PEFT LoRA Adaptation
-lora_r: 16
-lora_alpha: 32
+lora_r: 64
+lora_alpha: 128
 lora_dropout: 0.05
 lora_bias: "none"
 lora_task_type: "CAUSAL_LM"
