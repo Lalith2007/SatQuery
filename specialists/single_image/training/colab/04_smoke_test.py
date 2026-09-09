@@ -27,18 +27,108 @@ from specialists.single_image.adaptation.qwen25vl.config import (
     verify_cuda_available,
 )
 from specialists.single_image.adaptation.qwen25vl.grounding import QwenGroundingParser
-from specialists.single_image.adaptation.qwen25vl.model import QwenModelLoader
+from specialists.single_image.adaptation.qwen25vl.model import (
+    QwenModelLoader,
+    sanitize_peft_torchao_compatibility,
+)
+
+# Apply compatibility fix for torchao in Colab environments
+sanitize_peft_torchao_compatibility()
 
 logger = get_logger("colab_smoke_test")
 
 
-def create_smoke_test_samples() -> List[Dict[str, Any]]:
-    """Construct 5 diverse multimodal samples covering Optical and SAR across tasks."""
+def create_smoke_test_samples(
+    data_split_path: str = "data/qwen_dataset/train.jsonl",
+    allow_demo: bool = False,
+) -> List[Dict[str, Any]]:
+    """Construct multi-task test samples covering Optical and SAR using real BigEarthNet data."""
+    split_p = Path(data_split_path)
+    real_samples: List[Dict[str, Any]] = []
+    has_optical = False
+    has_sar = False
+
+    # 1. Primary path: load directly from prepared train.jsonl or val.jsonl
+    candidate_splits = [split_p, Path("data/qwen_dataset/val.jsonl"), Path("data/qwen_dataset/test.jsonl")]
+    for sp in candidate_splits:
+        if sp.exists():
+            with open(sp, "r", encoding="utf-8") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    rec = json.loads(line.strip())
+                    img_p = Path(rec.get("image", ""))
+                    # Strictly ensure real materialized image file exists
+                    if img_p.exists() and "demo" not in str(img_p).lower() and "fallback" not in str(img_p).lower():
+                        mod = rec.get("modality", "")
+                        if mod == "optical" and not has_optical:
+                            real_samples.append(rec)
+                            has_optical = True
+                        elif mod == "sar" and not has_sar:
+                            real_samples.append(rec)
+                            has_sar = True
+                        elif len(real_samples) < 5:
+                            real_samples.append(rec)
+                    if len(real_samples) >= 5 and has_optical and has_sar:
+                        break
+        if len(real_samples) >= 5 and has_optical and has_sar:
+            break
+
+    if len(real_samples) >= 2:
+        logger.info(f"Loaded {len(real_samples)} real BigEarthNet samples from {data_split_path} for smoke test.")
+        return real_samples
+
+    # 2. Check candidate roots if train.jsonl split file was not created yet
+    candidate_roots = [
+        Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1/pairs"),
+        Path("data/curated_mixture/materialized_samples"),
+    ]
+    manifest_p = Path("data/curated_mixture/bigearthnet_stage1_manifest.jsonl")
+    if manifest_p.exists():
+        import importlib
+        try:
+            prep_module = importlib.import_module("specialists.single_image.training.colab.01_prepare_dataset")
+            build_qwen_chatml_record = getattr(prep_module, "build_qwen_chatml_record")
+            with open(manifest_p, "r", encoding="utf-8") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    rec = json.loads(line.strip())
+                    for root in candidate_roots:
+                        if root.exists():
+                            q_rec = build_qwen_chatml_record(rec, image_dir=root)
+                            img_p = Path(q_rec.get("image", ""))
+                            if img_p.exists() and "demo" not in str(img_p).lower() and "fallback" not in str(img_p).lower():
+                                mod = q_rec.get("modality", "")
+                                if mod == "optical" and not has_optical:
+                                    real_samples.append(q_rec)
+                                    has_optical = True
+                                elif mod == "sar" and not has_sar:
+                                    real_samples.append(q_rec)
+                                    has_sar = True
+                                elif len(real_samples) < 5:
+                                    real_samples.append(q_rec)
+                                break
+                    if len(real_samples) >= 5 and has_optical and has_sar:
+                        break
+        except Exception as e:
+            logger.warning(f"Failed searching candidate roots directly: {e}")
+
+    if len(real_samples) >= 2:
+        logger.info(f"Resolved {len(real_samples)} real BigEarthNet pairs for smoke test.")
+        return real_samples
+
+    # 3. If real samples are unavailable and demo mode is forbidden, raise integrity error
+    if not allow_demo:
+        raise RuntimeError(
+            f"Phase E smoke test requires real materialized BigEarthNet imagery, but could not find verified images "
+            f"in '{split_p}' or candidate storage roots. Please ensure Phase B (Materialization) and Phase C (Preparation) ran."
+        )
+
+    # 4. Fallback demo samples ONLY for offline non-CUDA unit testing (--allow_non_cuda)
     opt_img = "demo_assets/demo_optical_single.png"
     sar_img = "demo_assets/demo_sar_cross.tif"
-
-    samples = [
-        # 1. Optical VQA
+    return [
         {
             "id": "smoke_opt_vqa_01",
             "image": opt_img,
@@ -49,62 +139,22 @@ def create_smoke_test_samples() -> List[Dict[str, Any]]:
                 {"role": "assistant", "content": "The dominant land cover is an operational airport facility."},
             ],
         },
-        # 2. Optical Grounding
         {
-            "id": "smoke_opt_ground_02",
-            "image": opt_img,
-            "modality": "optical",
-            "task": "grounding",
-            "width": 1024,
-            "height": 1024,
-            "bbox": [400, 80, 620, 940],
-            "messages": [
-                {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": "Locate the primary runway."}]},
-                {"role": "assistant", "content": "The primary runway is localized here <|object_ref_start|>runway<|object_ref_end|><|box_start|>(78,390),(918,605)<|box_end|>."},
-            ],
-        },
-        # 3. Optical Captioning
-        {
-            "id": "smoke_opt_cap_03",
-            "image": opt_img,
-            "modality": "optical",
-            "task": "caption",
-            "messages": [
-                {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": "Describe this satellite image."}]},
-                {"role": "assistant", "content": "An optical satellite scene displaying airport runways and surrounding terrain."},
-            ],
-        },
-        # 4. SAR VQA
-        {
-            "id": "smoke_sar_vqa_04",
+            "id": "smoke_sar_vqa_02",
             "image": sar_img,
             "modality": "sar",
             "task": "vqa",
             "messages": [
                 {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": "Analyze the surface backscatter."}]},
-                {"role": "assistant", "content": "The SAR observation indicates strong double-bounce scattering from built structures."},
-            ],
-        },
-        # 5. SAR Grounding
-        {
-            "id": "smoke_sar_ground_05",
-            "image": sar_img,
-            "modality": "sar",
-            "task": "grounding",
-            "width": 1024,
-            "height": 1024,
-            "bbox": [200, 200, 500, 500],
-            "messages": [
-                {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": "Locate the urban structural cluster."}]},
-                {"role": "assistant", "content": "The structural cluster is localized here <|object_ref_start|>structures<|object_ref_end|><|box_start|>(195,195),(488,488)<|box_end|>."},
+                {"role": "assistant", "content": "The SAR observation indicates strong double-bounce scattering."},
             ],
         },
     ]
-    return samples
 
 
 def run_smoke_test(
     model_id: str = "Qwen/Qwen2.5-VL-3B-Instruct",
+    data_split_path: str = "data/qwen_dataset/train.jsonl",
     output_dir: str = "scratch/smoke_test_adapter",
     report_path: str = "smoke_test_report.json",
     allow_non_cuda: bool = False,
@@ -131,9 +181,11 @@ def run_smoke_test(
     device = "cuda" if is_cuda else ("mps" if hw.get("mps_available") else "cpu")
     print(f"Executing smoke test on device: '{device}'...")
 
-    samples = create_smoke_test_samples()
-    print(f"Created {len(samples)} multi-task test samples (Optical & SAR).")
+    samples = create_smoke_test_samples(data_split_path=data_split_path, allow_demo=allow_non_cuda)
+    is_real = all("demo" not in str(s.get("image", "")).lower() for s in samples)
+    print(f"Prepared {len(samples)} test samples ({'REAL BIGEARTHNET' if is_real else 'DEMO'}).")
     report["stages"]["samples_created"] = len(samples)
+    report["stages"]["real_bigearthnet_data"] = is_real
 
     if is_cuda:
         # Load actual base model with 4-bit quantization and PEFT
@@ -146,7 +198,11 @@ def run_smoke_test(
         peft_model, stats = QwenModelLoader.apply_lora_adaptation(model, LoraConfigQwen())
         peft_model.train()
 
-        collator = Qwen25VLDataCollator(processor=processor)
+        collator = Qwen25VLDataCollator(
+            processor=processor,
+            strict_real_data=is_real,
+            demo_mode=not is_real,
+        )
         batch = collator(samples[:2])
         batch = {k: v.to(device) for k, v in batch.items() if isinstance(v, torch.Tensor)}
 
@@ -186,7 +242,11 @@ def run_smoke_test(
         print("Local non-CUDA mode: Verifying collator and tokenization mechanics...")
         from transformers import AutoProcessor
         processor = AutoProcessor.from_pretrained(model_id, trust_remote_code=True)
-        collator = Qwen25VLDataCollator(processor=processor)
+        collator = Qwen25VLDataCollator(
+            processor=processor,
+            strict_real_data=is_real,
+            demo_mode=not is_real,
+        )
         batch = collator(samples[:2])
 
         assert "input_ids" in batch
@@ -216,6 +276,7 @@ def run_smoke_test(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_id", default="Qwen/Qwen2.5-VL-3B-Instruct")
+    parser.add_argument("--data_split_path", default="data/qwen_dataset/train.jsonl")
     parser.add_argument("--output_dir", default="scratch/smoke_test_adapter")
     parser.add_argument("--report_path", default="smoke_test_report.json")
     parser.add_argument("--allow_non_cuda", action="store_true")
@@ -223,6 +284,7 @@ if __name__ == "__main__":
 
     run_smoke_test(
         model_id=args.model_id,
+        data_split_path=args.data_split_path,
         output_dir=args.output_dir,
         report_path=args.report_path,
         allow_non_cuda=args.allow_non_cuda,
