@@ -514,8 +514,9 @@ def materialize_bigearthnet_kaggle(
         }
         materialized_manifest_records.append(manifest_rec)
 
-        if idx % 1000 == 0 or idx == expected_pairs_count:
-            print(f"Audited {idx}/{expected_pairs_count} pairs... (S1 valid: {s1_valid}, S2 valid: {s2_valid})")
+        if idx % 100 == 0 or idx == expected_pairs_count:
+            pct = (idx / expected_pairs_count) * 100
+            print(f"Audited {idx}/{expected_pairs_count} pairs ({pct:.1f}%) — S1 valid: {s1_valid}, S2 valid: {s2_valid}")
 
     # Write materialization manifest
     manifest_out = out_p / "materialization_manifest.jsonl"
