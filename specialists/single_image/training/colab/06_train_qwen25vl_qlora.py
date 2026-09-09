@@ -107,6 +107,7 @@ def train_qwen25vl_qlora(
         bnb_4bit_quant_type=cfg_dict.get("bnb_4bit_quant_type", "nf4"),
         bnb_4bit_use_double_quant=cfg_dict.get("bnb_4bit_use_double_quant", True),
         compute_dtype="bfloat16" if hw.get("bf16_supported") else "float16",
+        llm_int8_skip_modules=cfg_dict.get("llm_int8_skip_modules", ["visual"]),
     )
 
     print("Loading base Qwen2.5-VL model and processor...")

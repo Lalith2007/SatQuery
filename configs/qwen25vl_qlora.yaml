@@ -11,11 +11,12 @@ dataset_manifest_sha256: "809ff7f4506c8205ac0dc49582041bb0e79c96fa51e57137185b17
 expected_pairs: 8000
 expected_examples: 16000
 
-# Quantization (4-bit NF4)
+# Quantization (4-bit QLoRA with full-precision 16-bit visual encoder)
 load_in_4bit: true
 bnb_4bit_quant_type: "nf4"
 bnb_4bit_use_double_quant: true
 compute_dtype: "bfloat16"
+llm_int8_skip_modules: ["visual"]
 
 # PEFT LoRA Adaptation
 lora_r: 64

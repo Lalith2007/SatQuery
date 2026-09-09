@@ -70,6 +70,7 @@ class QwenModelLoader:
             bnb_4bit_quant_type=quant_cfg.bnb_4bit_quant_type,
             bnb_4bit_use_double_quant=quant_cfg.bnb_4bit_use_double_quant,
             bnb_4bit_compute_dtype=compute_dtype,
+            llm_int8_skip_modules=quant_cfg.llm_int8_skip_modules,
         )
 
     @classmethod
