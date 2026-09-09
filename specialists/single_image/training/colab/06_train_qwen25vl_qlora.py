@@ -60,6 +60,7 @@ def train_qwen25vl_qlora(
     output_dir: Optional[str] = None,
     allow_non_cuda: bool = False,
     resume: Optional[bool] = None,
+    save_steps: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Execute complete Qwen2.5-VL QLoRA training on CUDA."""
     print("=" * 60)
@@ -73,6 +74,8 @@ def train_qwen25vl_qlora(
 
     t_start = time.perf_counter()
     cfg_dict = load_yaml_config(config_path)
+    if save_steps is not None:
+        cfg_dict["save_steps"] = int(save_steps)
 
     model_id = cfg_dict.get("model_id", "Qwen/Qwen2.5-VL-3B-Instruct")
     out_dir = Path(output_dir or cfg_dict.get("output_dir", "specialists/single_image/weights/qwen25vl_lora"))
@@ -189,8 +192,8 @@ def train_qwen25vl_qlora(
     eval_strategy = str(cfg_dict.get("eval_strategy", "steps"))
     eval_steps = int(cfg_dict.get("eval_steps", 250))
     save_strategy = str(cfg_dict.get("save_strategy", "steps"))
-    save_steps = int(cfg_dict.get("save_steps", 250))
-    save_total_limit = int(cfg_dict.get("save_total_limit", 3))
+    save_steps = int(cfg_dict.get("save_steps", 50))
+    save_total_limit = int(cfg_dict.get("save_total_limit", 5))
 
     training_args = SFTConfig(
         output_dir=str(checkpoint_dir),
@@ -302,6 +305,7 @@ if __name__ == "__main__":
     parser.add_argument("--allow_non_cuda", action="store_true")
     parser.add_argument("--resume", action="store_true", default=None, help="Force resume from existing checkpoint if valid")
     parser.add_argument("--fresh", "--no_resume", dest="fresh", action="store_true", default=False, help="Start fresh run, ignoring existing checkpoints")
+    parser.add_argument("--save_steps", type=int, default=None, help="Checkpoint save frequency in steps (default from config: 50)")
     args = parser.parse_args()
 
     resume_flag = False if args.fresh else (True if args.resume else None)
@@ -313,4 +317,5 @@ if __name__ == "__main__":
         output_dir=args.output_dir,
         allow_non_cuda=args.allow_non_cuda,
         resume=resume_flag,
+        save_steps=args.save_steps,
     )
