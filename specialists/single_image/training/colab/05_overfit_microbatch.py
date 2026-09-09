@@ -62,6 +62,15 @@ def run_micro_overfit_test(
     }
 
     train_path = Path("data/qwen_dataset/train.jsonl")
+    if not train_path.exists():
+        import importlib
+        try:
+            prep_module = importlib.import_module("specialists.single_image.training.colab.01_prepare_dataset")
+            ensure_splits = getattr(prep_module, "ensure_dataset_splits")
+            ensure_splits(train_file=str(train_path))
+        except Exception as e:
+            logger.warning(f"Auto-restoration of dataset splits encountered: {e}")
+
     samples = []
     if not train_path.exists():
         raise FileNotFoundError(

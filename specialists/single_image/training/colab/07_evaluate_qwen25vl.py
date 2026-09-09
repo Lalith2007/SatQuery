@@ -40,6 +40,15 @@ def evaluate_test_split(
     t0 = time.perf_counter()
     test_p = Path(test_file)
     if not test_p.exists():
+        import importlib
+        try:
+            prep_module = importlib.import_module("specialists.single_image.training.colab.01_prepare_dataset")
+            ensure_splits = getattr(prep_module, "ensure_dataset_splits")
+            ensure_splits(test_file=test_file)
+        except Exception as e:
+            logger.warning(f"Auto-restoration of dataset splits encountered: {e}")
+
+    if not test_p.exists():
         raise FileNotFoundError(f"Test split file not found: {test_file}")
 
     test_samples: List[Dict[str, Any]] = []

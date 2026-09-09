@@ -82,7 +82,15 @@ def train_qwen25vl_qlora(
     print(f"Train File:  {train_file}")
     print(f"Val File:    {val_file}")
 
-    # 2. Load Dataset Splits
+    # 2. Load Dataset Splits (auto-restore or generate if needed)
+    import importlib
+    try:
+        prep_module = importlib.import_module("specialists.single_image.training.colab.01_prepare_dataset")
+        ensure_splits = getattr(prep_module, "ensure_dataset_splits")
+        ensure_splits(train_file=train_file, val_file=val_file)
+    except Exception as e:
+        logger.warning(f"Auto-restoration of dataset splits encountered: {e}")
+
     dataset = load_dataset(
         "json",
         data_files={"train": train_file, "validation": val_file},

@@ -298,6 +298,20 @@ def prepare_and_export_splits(
     with open(out_p / "dataset_split_report.json", "w", encoding="utf-8") as f:
         json.dump(split_report, f, indent=2)
 
+    # Mirror to persistent Google Drive backup if storage root exists
+    drive_backup = Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/qwen_dataset")
+    if drive_backup.parent.exists():
+        try:
+            drive_backup.mkdir(parents=True, exist_ok=True)
+            save_jsonl(train_s, drive_backup / "train.jsonl")
+            save_jsonl(val_s, drive_backup / "val.jsonl")
+            save_jsonl(test_s, drive_backup / "test.jsonl")
+            with open(drive_backup / "dataset_split_report.json", "w", encoding="utf-8") as f:
+                json.dump(split_report, f, indent=2)
+            logger.info(f"Successfully mirrored dataset splits to Google Drive backup: {drive_backup}")
+        except Exception as e:
+            logger.warning(f"Could not mirror dataset splits to Drive: {e}")
+
     # Compute task x sensor distribution matrix
     matrix: Dict[str, Dict[str, int]] = {
         "optical": {"vqa": 0, "grounding": 0, "caption": 0},
@@ -327,6 +341,52 @@ def prepare_and_export_splits(
         "split_report": split_report,
         "task_sensor_report": task_sensor_report,
     }
+
+
+def ensure_dataset_splits(
+    train_file: str = "data/qwen_dataset/train.jsonl",
+    val_file: str = "data/qwen_dataset/val.jsonl",
+    test_file: Optional[str] = "data/qwen_dataset/test.jsonl",
+    manifest_path: str = "data/curated_mixture/bigearthnet_stage1_manifest.jsonl",
+) -> None:
+    """Ensure dataset split files exist locally, restoring from Google Drive or auto-generating if needed."""
+    train_p = Path(train_file)
+    val_p = Path(val_file)
+    test_p = Path(test_file) if test_file else None
+
+    # Check if requested files already exist
+    splits_exist = train_p.exists() and val_p.exists() and (test_p is None or test_p.exists())
+    if splits_exist:
+        return
+
+    import shutil
+
+    # 1. Try restoring from Google Drive persistent backup
+    drive_backup = Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/qwen_dataset")
+    if drive_backup.exists() and (drive_backup / "train.jsonl").exists():
+        logger.info(f"Restoring prepared dataset splits from Google Drive persistent backup: {drive_backup}")
+        train_p.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(drive_backup / "train.jsonl", train_p)
+        if (drive_backup / "val.jsonl").exists():
+            shutil.copy2(drive_backup / "val.jsonl", val_p)
+        if test_p and (drive_backup / "test.jsonl").exists():
+            shutil.copy2(drive_backup / "test.jsonl", test_p)
+        if (drive_backup / "dataset_split_report.json").exists():
+            shutil.copy2(drive_backup / "dataset_split_report.json", train_p.parent / "dataset_split_report.json")
+        logger.info(f"Restored dataset splits to {train_p.parent}")
+        return
+
+    # 2. Auto-generate from Google Drive pairs if present
+    drive_pairs = Path("/content/drive/MyDrive/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1/pairs")
+    local_samples = Path("data/curated_mixture/materialized_samples")
+    image_dir = str(drive_pairs) if drive_pairs.exists() else (str(local_samples) if local_samples.exists() else None)
+
+    logger.info(f"Dataset splits missing at '{train_p}'. Auto-preparing from image source: {image_dir}...")
+    prepare_and_export_splits(
+        manifest_path=manifest_path,
+        output_dir=str(train_p.parent),
+        image_dir=image_dir,
+    )
 
 
 if __name__ == "__main__":
