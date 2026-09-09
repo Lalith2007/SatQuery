@@ -412,44 +412,92 @@ def materialize_bigearthnet_pairs(
     s1_total_bytes = 0
     s2_total_bytes = 0
 
-    print(f"\nAuditing / Materializing {expected_pairs_count} pairs (parallel audit)...")
-    t_audit_start = time.perf_counter()
-
-    def audit_single_pair(pinfo: Dict[str, Any]):
+    print(f"\nAuditing / Materializing {expected_pairs_count} pairs...")
+    for idx, pinfo in enumerate(unique_pairs, 1):
         pid = pinfo["pair_id"]
         patch_id = pinfo["patch_id"]
         s1_name = pinfo["s1_name"]
 
         target_pair_dir = pairs_dir / pid
+        target_pair_dir.mkdir(parents=True, exist_ok=True)
+
         target_s1_tif = target_pair_dir / "sentinel1.tif"
         target_s1_alias = target_pair_dir / "s1_2bands.tif"
         target_s2_tif = target_pair_dir / "sentinel2.tif"
         target_s2_alias = target_pair_dir / "s2_10bands.tif"
 
+        # Check if already present in target
         s1_file = target_s1_tif if target_s1_tif.exists() else (target_s1_alias if target_s1_alias.exists() else None)
         s2_file = target_s2_tif if target_s2_tif.exists() else (target_s2_alias if target_s2_alias.exists() else None)
 
-        # Validate S1
+        # If missing and not verify_only, search in local candidate directories
+        if not s1_file or not s2_file:
+            for cand_root in local_candidates:
+                cand_pair_dir = cand_root / pid
+                if cand_pair_dir.exists():
+                    cand_s1 = cand_pair_dir / "s1_2bands.tif" if (cand_pair_dir / "s1_2bands.tif").exists() else (cand_pair_dir / "sentinel1.tif")
+                    cand_s2 = cand_pair_dir / "s2_10bands.tif" if (cand_pair_dir / "s2_10bands.tif").exists() else (cand_pair_dir / "sentinel2.tif")
+                    if cand_s1.exists() and not s1_file:
+                        shutil.copy2(cand_s1, target_s1_tif)
+                        if not target_s1_alias.exists():
+                            shutil.copy2(cand_s1, target_s1_alias)
+                        s1_file = target_s1_tif
+                    if cand_s2.exists() and not s2_file:
+                        shutil.copy2(cand_s2, target_s2_tif)
+                        if not target_s2_alias.exists():
+                            shutil.copy2(cand_s2, target_s2_alias)
+                        s2_file = target_s2_tif
+
+        # Ensure both alias and canonical names exist
+        if s1_file:
+            if not target_s1_tif.exists():
+                shutil.copy2(s1_file, target_s1_tif)
+            if not target_s1_alias.exists():
+                shutil.copy2(s1_file, target_s1_alias)
+        if s2_file:
+            if not target_s2_tif.exists():
+                shutil.copy2(s2_file, target_s2_tif)
+            if not target_s2_alias.exists():
+                shutil.copy2(s2_file, target_s2_alias)
+
+        # Validate S1 in single-pass
         s1_ok = False
         s1_sha = ""
-        sz1 = 0
-        err1 = None
-        if s1_file:
-            is_valid, err1, _, s1_sha, sz1 = validate_and_hash_raster(s1_file, expected_modality="sar")
+        if s1_file and s1_file.exists():
+            s1_resolved += 1
+            is_valid, err_msg, stats1, s1_sha, sz1 = validate_and_hash_raster(s1_file, expected_modality="sar")
+            s1_total_bytes += sz1
             if is_valid:
+                s1_valid += 1
                 s1_ok = True
+                checksum_lines.append(f"{s1_sha}  pairs/{pid}/sentinel1.tif")
+            else:
+                corrupt_count += 1
+                if "NaN" in str(err_msg) or "Inf" in str(err_msg):
+                    nan_inf_count += 1
+        else:
+            missing_s1 += 1
 
-        # Validate S2
+        # Validate S2 in single-pass
         s2_ok = False
         s2_sha = ""
-        sz2 = 0
-        err2 = None
-        if s2_file:
-            is_valid, err2, _, s2_sha, sz2 = validate_and_hash_raster(s2_file, expected_modality="optical")
+        if s2_file and s2_file.exists():
+            s2_resolved += 1
+            is_valid, err_msg, stats2, s2_sha, sz2 = validate_and_hash_raster(s2_file, expected_modality="optical")
+            s2_total_bytes += sz2
             if is_valid:
+                s2_valid += 1
                 s2_ok = True
+                checksum_lines.append(f"{s2_sha}  pairs/{pid}/sentinel2.tif")
+            else:
+                corrupt_count += 1
+                if "NaN" in str(err_msg) or "Inf" in str(err_msg):
+                    nan_inf_count += 1
+        else:
+            missing_s2 += 1
 
-        manifest_rec = {
+        # Record manifest entry
+        materialized_manifest_records.append({
             "pair_id": pid,
             "patch_id": patch_id,
             "s1_name": s1_name,
@@ -462,45 +510,11 @@ def materialize_bigearthnet_pairs(
             "s2_sha256": s2_sha,
             "s1_path": str(target_s1_tif) if s1_ok else None,
             "s2_path": str(target_s2_tif) if s2_ok else None,
-        }
-        return pid, s1_ok, s2_ok, s1_sha, s2_sha, sz1, sz2, err1, err2, manifest_rec
+        })
 
-    import concurrent.futures
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-        for idx, (pid, s1_ok, s2_ok, s1_sha, s2_sha, sz1, sz2, err1, err2, manifest_rec) in enumerate(
-            executor.map(audit_single_pair, unique_pairs), 1
-        ):
-            if s1_ok:
-                s1_resolved += 1
-                s1_valid += 1
-                s1_total_bytes += sz1
-                checksum_lines.append(f"{s1_sha}  pairs/{pid}/sentinel1.tif")
-            else:
-                missing_s1 += 1
-                if err1:
-                    corrupt_count += 1
-                    if "NaN" in str(err1) or "Inf" in str(err1):
-                        nan_inf_count += 1
-
-            if s2_ok:
-                s2_resolved += 1
-                s2_valid += 1
-                s2_total_bytes += sz2
-                checksum_lines.append(f"{s2_sha}  pairs/{pid}/sentinel2.tif")
-            else:
-                missing_s2 += 1
-                if err2:
-                    corrupt_count += 1
-                    if "NaN" in str(err2) or "Inf" in str(err2):
-                        nan_inf_count += 1
-
-            materialized_manifest_records.append(manifest_rec)
-
-            if idx % 100 == 0 or idx == expected_pairs_count:
-                elapsed = time.perf_counter() - t_audit_start
-                speed = idx / max(elapsed, 0.001)
-                pct = (idx / expected_pairs_count) * 100
-                print(f"Audited {idx}/{expected_pairs_count} pairs ({pct:.1f}%) — S1 valid: {s1_valid}, S2 valid: {s2_valid} [{speed:.1f} pairs/s]")
+        if idx % 250 == 0 or idx == expected_pairs_count:
+            pct = (idx / expected_pairs_count) * 100
+            print(f"Audited {idx}/{expected_pairs_count} pairs ({pct:.1f}%) — S1 valid: {s1_valid}, S2 valid: {s2_valid}")
 
     combined_bytes = s1_total_bytes + s2_total_bytes
     combined_gib = combined_bytes / (1024 ** 3)

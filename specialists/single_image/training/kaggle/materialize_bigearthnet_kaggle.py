@@ -23,38 +23,121 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 
-class CombinedStream(io.RawIOBase):
-    """Sequential reader over multiple file-like or HTTP network streams."""
+class LazyResilientHTTPCombinedStream(io.RawIOBase):
+    """Sequential, auto-reconnecting reader over multiple HTTP chunk URLs.
+    
+    Key features:
+    1. Lazy loading: Opens the next HTTP stream ONLY when the previous stream reaches EOF.
+       This completely prevents Cloudflare/HuggingFace idle socket disconnects on the 2nd archive.
+    2. Automatic Resumption: If network drops, TCP resets, or urllib3 raises IncompleteRead/ProtocolError,
+       it automatically reconnects using HTTP `Range: bytes={offset}-` headers to seamlessly resume
+       without losing a single byte of the gzip decompression stream.
+    """
 
-    def __init__(self, streams: List[Any]):
-        self.streams = list(streams)
-        self.idx = 0
+    def __init__(self, urls: List[str], headers: Dict[str, str], max_retries: int = 15, timeout: int = 90):
+        self.urls = list(urls)
+        self.headers = dict(headers)
+        self.max_retries = max_retries
+        self.timeout = timeout
+        self.url_idx = 0
+        self.bytes_in_curr_url = 0
+        self.resp = None
+        self.raw = None
+        self._open_current()
 
     def readable(self) -> bool:
         return True
 
-    def readinto(self, b) -> int:
-        while self.idx < len(self.streams):
+    def seekable(self) -> bool:
+        return False
+
+    def _open_current(self, offset: int = 0):
+        if self.raw:
             try:
-                n = self.streams[self.idx].readinto(b)
-            except AttributeError:
-                data = self.streams[self.idx].read(len(b))
-                n = len(data)
-                b[:n] = data
-            if n > 0:
-                return n
-            self.idx += 1
-        return 0
+                self.raw.close()
+            except Exception:
+                pass
+        if self.resp:
+            try:
+                self.resp.close()
+            except Exception:
+                pass
+
+        if self.url_idx >= len(self.urls):
+            self.raw = None
+            self.resp = None
+            return
+
+        import requests
+        url = self.urls[self.url_idx]
+        chunk_name = url.split("?")[0].split("/")[-1]
+        req_headers = dict(self.headers)
+        if offset > 0:
+            req_headers["Range"] = f"bytes={offset}-"
+            print(f"Reconnecting to {chunk_name} from byte offset {offset:,} (HTTP Range)...")
+        else:
+            print(f"Connecting to stream chunk {self.url_idx + 1}/{len(self.urls)}: {chunk_name}...")
+
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                self.resp = requests.get(url, stream=True, headers=req_headers, timeout=self.timeout)
+                self.resp.raise_for_status()
+                self.raw = self.resp.raw
+                self.bytes_in_curr_url = offset
+                return
+            except Exception as e:
+                print(f"Stream connection attempt {attempt}/{self.max_retries} failed: {e}. Retrying in {attempt * 2}s...")
+                time.sleep(attempt * 2)
+
+        raise RuntimeError(f"Failed to connect to stream {url} after {self.max_retries} attempts.")
+
+    def readinto(self, b) -> int:
+        chunk = self.read(len(b))
+        n = len(chunk)
+        b[:n] = chunk
+        return n
 
     def read(self, size: int = -1) -> bytes:
         if size is None or size < 0:
             size = 65536
-        while self.idx < len(self.streams):
-            chunk = self.streams[self.idx].read(size)
-            if chunk:
-                return chunk
-            self.idx += 1
+
+        while self.url_idx < len(self.urls):
+            if not self.raw:
+                self._open_current(self.bytes_in_curr_url)
+                if not self.raw:
+                    return b""
+
+            try:
+                chunk = self.raw.read(size)
+                if chunk:
+                    self.bytes_in_curr_url += len(chunk)
+                    return chunk
+
+                # Current chunk reached EOF
+                url = self.urls[self.url_idx]
+                chunk_name = url.split("?")[0].split("/")[-1]
+                print(f"Finished stream chunk {self.url_idx + 1}: {chunk_name}.")
+                self.url_idx += 1
+                self.bytes_in_curr_url = 0
+                self._open_current(0)
+            except Exception as e:
+                print(f"\nNetwork hiccup ({type(e).__name__}: {e}) at byte {self.bytes_in_curr_url:,}. Auto-resuming with HTTP Range...")
+                time.sleep(2)
+                self._open_current(self.bytes_in_curr_url)
+
         return b""
+
+    def close(self):
+        if self.raw:
+            try:
+                self.raw.close()
+            except Exception:
+                pass
+        if self.resp:
+            try:
+                self.resp.close()
+            except Exception:
+                pass
 
 
 def get_hf_headers(token: Optional[str] = None) -> Dict[str, str]:
@@ -80,7 +163,6 @@ def stream_and_extract_hf_s1(
     hf_token: Optional[str] = None,
 ) -> int:
     """Stream S1 multi-part archive over HTTP directly into memory and extract needed patches."""
-    import requests
     import tarfile
     import tifffile
     from huggingface_hub import hf_hub_url
@@ -94,15 +176,8 @@ def stream_and_extract_hf_s1(
     print(f"Targeting {len(needed_s1)} missing Sentinel-1 pairs...")
     print("Note: Streaming directly over network — 0 GB archive files written to disk!")
 
-    responses = []
-    for pf in part_files:
-        url = hf_hub_url(repo_id, pf, repo_type="dataset")
-        print(f"Connecting to stream: {pf}...")
-        r = requests.get(url, stream=True, headers=headers, timeout=60)
-        r.raise_for_status()
-        responses.append(r)
-
-    comb = CombinedStream([r.raw for r in responses])
+    urls = [hf_hub_url(repo_id, pf, repo_type="dataset") for pf in part_files]
+    comb = LazyResilientHTTPCombinedStream(urls, headers=headers)
     extracted_s1: Dict[str, Dict[str, bytes]] = {}
     saved_count = 0
 
@@ -143,9 +218,11 @@ def stream_and_extract_hf_s1(
                                 saved_count += 1
                                 if saved_count % 500 == 0 or saved_count == len(needed_s1):
                                     print(f"Materialized {saved_count}/{len(needed_s1)} Sentinel-1 pairs...")
+                                if saved_count == len(needed_s1):
+                                    print(f"All {len(needed_s1)} requested Sentinel-1 pairs extracted! Early stream completion.")
+                                    break
     finally:
-        for r in responses:
-            r.close()
+        comb.close()
 
     print(f"Sentinel-1 streaming extraction complete: {saved_count} pairs assembled.")
     return saved_count
@@ -158,7 +235,6 @@ def stream_and_extract_hf_s2(
     hf_token: Optional[str] = None,
 ) -> int:
     """Stream S2 multi-part archive over HTTP directly into memory and extract needed patches."""
-    import requests
     import tarfile
     import tifffile
     from huggingface_hub import hf_hub_url
@@ -172,15 +248,8 @@ def stream_and_extract_hf_s2(
     print(f"Targeting {len(needed_s2)} missing Sentinel-2 pairs...")
     print("Note: Streaming directly over network — 0 GB archive files written to disk!")
 
-    responses = []
-    for pf in part_files:
-        url = hf_hub_url(repo_id, pf, repo_type="dataset")
-        print(f"Connecting to stream: {pf}...")
-        r = requests.get(url, stream=True, headers=headers, timeout=60)
-        r.raise_for_status()
-        responses.append(r)
-
-    comb = CombinedStream([r.raw for r in responses])
+    urls = [hf_hub_url(repo_id, pf, repo_type="dataset") for pf in part_files]
+    comb = LazyResilientHTTPCombinedStream(urls, headers=headers)
     extracted_s2: Dict[str, Dict[str, bytes]] = {}
     saved_count = 0
 
@@ -222,9 +291,11 @@ def stream_and_extract_hf_s2(
                                 saved_count += 1
                                 if saved_count % 500 == 0 or saved_count == len(needed_s2):
                                     print(f"Materialized {saved_count}/{len(needed_s2)} Sentinel-2 pairs...")
+                                if saved_count == len(needed_s2):
+                                    print(f"All {len(needed_s2)} requested Sentinel-2 pairs extracted! Early stream completion.")
+                                    break
     finally:
-        for r in responses:
-            r.close()
+        comb.close()
 
     print(f"Sentinel-2 streaming extraction complete: {saved_count} pairs assembled.")
     return saved_count
@@ -416,10 +487,19 @@ def materialize_bigearthnet_kaggle(
             if not s2_exists:
                 needed_s2[pinfo["patch_id"]] = pid
 
+        s1_present = len(unique_pairs) - len(needed_s1)
+        s2_present = len(unique_pairs) - len(needed_s2)
+        print(f"Pre-check: {s1_present}/{len(unique_pairs)} Sentinel-1 already present, {s2_present}/{len(unique_pairs)} Sentinel-2 already present.")
+
         if needed_s1:
             stream_and_extract_hf_s1(needed_s1, pairs_dir, hf_token=hf_token)
+        else:
+            print("All Sentinel-1 pairs are already present on disk! Skipping Step 1.")
+
         if needed_s2:
             stream_and_extract_hf_s2(needed_s2, pairs_dir, hf_token=hf_token)
+        else:
+            print("All Sentinel-2 pairs are already present on disk! Skipping Step 2.")
 
     materialized_manifest_records: List[Dict[str, Any]] = []
     checksum_lines: List[str] = []
@@ -514,9 +594,8 @@ def materialize_bigearthnet_kaggle(
         }
         materialized_manifest_records.append(manifest_rec)
 
-        if idx % 100 == 0 or idx == expected_pairs_count:
-            pct = (idx / expected_pairs_count) * 100
-            print(f"Audited {idx}/{expected_pairs_count} pairs ({pct:.1f}%) — S1 valid: {s1_valid}, S2 valid: {s2_valid}")
+        if idx % 1000 == 0 or idx == expected_pairs_count:
+            print(f"Audited {idx}/{expected_pairs_count} pairs... (S1 valid: {s1_valid}, S2 valid: {s2_valid})")
 
     # Write materialization manifest
     manifest_out = out_p / "materialization_manifest.jsonl"
@@ -605,9 +684,10 @@ def main():
     parser.add_argument("--manifest_path", type=str, default="data/curated_mixture/bigearthnet_stage1_manifest.jsonl")
     parser.add_argument("--output_dir", type=str, default="/kaggle/working/SatQueryAI_Qwen25VL/datasets/bigearthnet_stage1")
     parser.add_argument("--kaggle_input_dir", type=str, default="/kaggle/input")
-    parser.add_argument("--verify_only", action="store_true")
-    parser.add_argument("--auto_download", action="store_true", default=True)
-    parser.add_argument("--hf_token", type=str, default=None)
+    parser.add_argument("--verify_only", "--verify-only", action="store_true", dest="verify_only")
+    parser.add_argument("--auto_download", "--auto-download", action="store_true", dest="auto_download", default=True)
+    parser.add_argument("--no_auto_download", "--no-auto-download", action="store_false", dest="auto_download")
+    parser.add_argument("--hf_token", "--hf-token", type=str, default=None)
     args = parser.parse_args()
 
     res = materialize_bigearthnet_kaggle(
