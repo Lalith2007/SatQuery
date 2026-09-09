@@ -16,7 +16,7 @@ load_in_4bit: true
 bnb_4bit_quant_type: "nf4"
 bnb_4bit_use_double_quant: true
 compute_dtype: "bfloat16"
-llm_int8_skip_modules: ["visual"]
+llm_int8_skip_modules: ["model.visual", "visual"]
 
 # PEFT LoRA Adaptation
 lora_r: 64

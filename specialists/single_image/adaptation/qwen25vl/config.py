@@ -38,7 +38,7 @@ class QuantizationConfig:
     bnb_4bit_quant_type: str = "nf4"
     bnb_4bit_use_double_quant: bool = True
     compute_dtype: str = "bfloat16"  # "bfloat16" or "float16"
-    llm_int8_skip_modules: List[str] = field(default_factory=lambda: ["visual"])
+    llm_int8_skip_modules: List[str] = field(default_factory=lambda: ["model.visual", "visual"])
 
 
 @dataclass
