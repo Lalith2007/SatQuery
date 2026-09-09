@@ -171,6 +171,7 @@ def train_qwen25vl_qlora(
         max_length=None,  # Do not truncate multimodal sequences
         dataset_text_field=None,
         dataset_kwargs={"skip_prepare_dataset": True},
+        remove_unused_columns=False,  # CRITICAL: Preserve multimodal dataset columns (modality, sensor, image, messages, pair_id)
         fp16=(not hw.get("bf16_supported") and hw["cuda_available"]),
         bf16=(hw.get("bf16_supported", False) and hw["cuda_available"]),
         report_to="none",

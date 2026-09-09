@@ -42,9 +42,34 @@ class Qwen25VLDataCollator:
     def _resolve_image(self, example: Dict[str, Any]) -> Image.Image:
         """Resolve example image field to a 3-channel RGB PIL Image with strict real-data enforcement."""
         img_val = example.get("image")
-        modality = example.get("modality", "optical").lower()
         rec_id = example.get("id", "unknown")
         pair_id = example.get("pair_id")
+
+        # Determine authoritative modality with robust multi-field inference
+        raw_mod = example.get("modality")
+        sensor_str = str(example.get("sensor", "")).lower()
+        if raw_mod:
+            modality = str(raw_mod).strip().lower()
+        elif "sentinel-1" in sensor_str or "s1" in sensor_str or "sar" in sensor_str:
+            modality = "sar"
+        elif "sentinel-2" in sensor_str or "s2" in sensor_str or "optical" in sensor_str or "msi" in sensor_str:
+            modality = "optical"
+        elif isinstance(img_val, (str, Path)):
+            fname = Path(img_val).name.lower()
+            if any(k in fname for k in ["s1", "sar"]):
+                modality = "sar"
+            elif any(k in fname for k in ["s2", "optical", "msi"]):
+                modality = "optical"
+            else:
+                modality = "optical"
+        else:
+            modality = "optical"
+
+        # If sensor metadata explicitly designates SAR but modality was defaulted or mismatched, trust sensor
+        if ("sentinel-1" in sensor_str or "sar" in sensor_str) and modality != "sar":
+            modality = "sar"
+        elif ("sentinel-2" in sensor_str or "msi" in sensor_str) and modality != "optical":
+            modality = "optical"
 
         if isinstance(img_val, Image.Image):
             pil_img = img_val

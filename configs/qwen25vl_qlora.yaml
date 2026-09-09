@@ -50,6 +50,7 @@ save_strategy: "steps"
 save_steps: 50
 save_total_limit: 2
 max_length: null  # Multimodal sequences must not be truncated blindly
+remove_unused_columns: false  # Preserve multimodal dataset columns (modality, sensor, image, messages, pair_id)
 
 # Hardware & Seeds
 seed: 42
