@@ -59,6 +59,7 @@ def train_qwen25vl_qlora(
     val_file: str = "data/qwen_dataset/val.jsonl",
     output_dir: Optional[str] = None,
     allow_non_cuda: bool = False,
+    resume: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """Execute complete Qwen2.5-VL QLoRA training on CUDA."""
     print("=" * 60)
@@ -115,9 +116,13 @@ def train_qwen25vl_qlora(
 
     # 4. LoRA Setup
     lora_cfg = LoraConfigQwen(
-        r=cfg_dict.get("lora_r", 16),
-        lora_alpha=cfg_dict.get("lora_alpha", 32),
-        lora_dropout=cfg_dict.get("lora_dropout", 0.05),
+        r=int(cfg_dict.get("lora_r", 64)),
+        lora_alpha=int(cfg_dict.get("lora_alpha", 128)),
+        lora_dropout=float(cfg_dict.get("lora_dropout", 0.05)),
+        target_modules_regex=cfg_dict.get(
+            "target_modules_regex",
+            LoraConfigQwen.target_modules_regex,
+        ),
     )
     peft_model, lora_stats = QwenModelLoader.apply_lora_adaptation(model, lora_cfg)
 
@@ -135,10 +140,34 @@ def train_qwen25vl_qlora(
     # Check for existing checkpoint to resume
     checkpoint_dir = out_dir / "checkpoints"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
-    existing_checkpoints = sorted(list(checkpoint_dir.glob("checkpoint-*")), key=lambda p: int(p.name.split("-")[-1]) if p.name.split("-")[-1].isdigit() else 0)
+    existing_checkpoints = sorted(
+        list(checkpoint_dir.glob("checkpoint-*")),
+        key=lambda p: int(p.name.split("-")[-1]) if p.name.split("-")[-1].isdigit() else 0
+    )
     resume_checkpoint = str(existing_checkpoints[-1]) if existing_checkpoints else None
-    if resume_checkpoint:
-        print(f"Resuming training from checkpoint: {resume_checkpoint}")
+
+    # Handle resume logic and rank compatibility guard
+    if resume is False:
+        print("Explicit --no-resume / --fresh specified. Starting clean training run.")
+        resume_checkpoint = None
+    elif resume_checkpoint:
+        chk_cfg_path = Path(resume_checkpoint) / "adapter_config.json"
+        if chk_cfg_path.exists():
+            try:
+                with open(chk_cfg_path, "r", encoding="utf-8") as f:
+                    chk_cfg = json.load(f)
+                chk_r = chk_cfg.get("r")
+                if chk_r is not None and chk_r != lora_cfg.r:
+                    print(
+                        f"Found existing checkpoint '{resume_checkpoint}' with rank r={chk_r}, "
+                        f"but target configuration specifies rank r={lora_cfg.r}. "
+                        f"LoRA dimensions differ. Starting clean training run with upgraded r={lora_cfg.r}."
+                    )
+                    resume_checkpoint = None
+            except Exception as e:
+                logger.warning(f"Could not inspect checkpoint adapter config: {e}")
+        if resume_checkpoint:
+            print(f"Resuming training from checkpoint: {resume_checkpoint}")
 
     # Calculate warmup steps from warmup_ratio
     warmup_ratio = float(cfg_dict.get("warmup_ratio", 0.03))
@@ -148,6 +177,12 @@ def train_qwen25vl_qlora(
     warmup_steps = int(cfg_dict.get("warmup_steps", max(10, int(total_steps * warmup_ratio))))
     print(f"Calculated warmup_steps: {warmup_steps} (total steps: ~{total_steps})")
 
+    eval_strategy = str(cfg_dict.get("eval_strategy", "steps"))
+    eval_steps = int(cfg_dict.get("eval_steps", 250))
+    save_strategy = str(cfg_dict.get("save_strategy", "steps"))
+    save_steps = int(cfg_dict.get("save_steps", 250))
+    save_total_limit = int(cfg_dict.get("save_total_limit", 3))
+
     training_args = SFTConfig(
         output_dir=str(checkpoint_dir),
         per_device_train_batch_size=batch_size,
@@ -156,18 +191,18 @@ def train_qwen25vl_qlora(
         gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False},
         learning_rate=lr,
-        lr_scheduler_type="cosine",
+        lr_scheduler_type=str(cfg_dict.get("lr_scheduler_type", "cosine")),
         warmup_steps=warmup_steps,
-        optim=cfg_dict.get("optimizer", "paged_adamw_8bit"),
-        weight_decay=0.01,
-        max_grad_norm=1.0,
+        optim=str(cfg_dict.get("optimizer", "paged_adamw_8bit")),
+        weight_decay=float(cfg_dict.get("weight_decay", 0.01)),
+        max_grad_norm=float(cfg_dict.get("max_grad_norm", 1.0)),
         num_train_epochs=epochs,
-        logging_steps=10,
-        eval_strategy="steps",
-        eval_steps=50,
-        save_strategy="steps",
-        save_steps=50,
-        save_total_limit=3,
+        logging_steps=int(cfg_dict.get("logging_steps", 10)),
+        eval_strategy=eval_strategy,
+        eval_steps=eval_steps,
+        save_strategy=save_strategy,
+        save_steps=save_steps,
+        save_total_limit=save_total_limit,
         max_length=None,  # Do not truncate multimodal sequences
         dataset_text_field=None,
         dataset_kwargs={"skip_prepare_dataset": True},
@@ -175,7 +210,7 @@ def train_qwen25vl_qlora(
         fp16=(not hw.get("bf16_supported") and hw["cuda_available"]),
         bf16=(hw.get("bf16_supported", False) and hw["cuda_available"]),
         report_to="none",
-        seed=42,
+        seed=int(cfg_dict.get("seed", 42)),
     )
 
     trainer = SFTTrainer(
@@ -256,7 +291,11 @@ if __name__ == "__main__":
     parser.add_argument("--val_file", default="data/qwen_dataset/val.jsonl")
     parser.add_argument("--output_dir", default=None)
     parser.add_argument("--allow_non_cuda", action="store_true")
+    parser.add_argument("--resume", action="store_true", default=None, help="Force resume from existing checkpoint if valid")
+    parser.add_argument("--fresh", "--no_resume", dest="fresh", action="store_true", default=False, help="Start fresh run, ignoring existing checkpoints")
     args = parser.parse_args()
+
+    resume_flag = False if args.fresh else (True if args.resume else None)
 
     train_qwen25vl_qlora(
         config_path=args.config,
@@ -264,4 +303,5 @@ if __name__ == "__main__":
         val_file=args.val_file,
         output_dir=args.output_dir,
         allow_non_cuda=args.allow_non_cuda,
+        resume=resume_flag,
     )
