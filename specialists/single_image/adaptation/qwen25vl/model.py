@@ -26,6 +26,28 @@ from specialists.single_image.adaptation.qwen25vl.config import (
 logger = get_logger("qwen25vl_model")
 
 
+def sanitize_peft_torchao_compatibility() -> None:
+    """Ensure PEFT does not crash on incompatible pre-installed torchao versions (e.g. in Colab).
+
+    Google Colab pre-installs torchao (e.g. 0.10.0), whereas newer PEFT checks is_torchao_available()
+    and raises an ImportError if torchao < 0.16.0 instead of falling back to standard Linear layers.
+    This safely suppresses that error so PEFT uses standard and bitsandbytes layers without crashing.
+    """
+    try:
+        import peft.import_utils
+        if hasattr(peft.import_utils, "is_torchao_available"):
+            try:
+                peft.import_utils.is_torchao_available()
+            except ImportError:
+                peft.import_utils.is_torchao_available = lambda: False
+    except Exception:
+        pass
+
+
+# Apply immediately upon module import
+sanitize_peft_torchao_compatibility()
+
+
 class QwenModelLoader:
     """Orchestrates model instantiation, quantization, and PEFT adaptation."""
 
@@ -108,6 +130,7 @@ class QwenModelLoader:
         lora_cfg: LoraConfigQwen,
     ) -> Tuple[Any, Dict[str, Any]]:
         """Apply targeted PEFT QLoRA adaptation to language decoder + visual merger."""
+        sanitize_peft_torchao_compatibility()
         from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
         # Prepare for k-bit training if model is quantized

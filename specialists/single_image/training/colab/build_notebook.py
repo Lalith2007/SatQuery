@@ -179,6 +179,9 @@ notebook = {
             "metadata": {},
             "outputs": [],
             "source": [
+                "# Remove incompatible torchao if present in Colab to prevent PEFT ImportError\n",
+                "!pip uninstall -y torchao\n",
+                "\n",
                 "# Core dependencies for Qwen2.5-VL 4-Bit QLoRA Remote-Sensing Fine-Tuning\n",
                 "!pip install -q \\\n",
                 "    \"torch>=2.2.0\" \\\n",

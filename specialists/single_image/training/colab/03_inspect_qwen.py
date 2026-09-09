@@ -15,7 +15,13 @@ import torch
 
 from core.logging import get_logger
 from specialists.single_image.adaptation.qwen25vl.config import LoraConfigQwen, ModelConfig
-from specialists.single_image.adaptation.qwen25vl.model import QwenModelLoader
+from specialists.single_image.adaptation.qwen25vl.model import (
+    QwenModelLoader,
+    sanitize_peft_torchao_compatibility,
+)
+
+# Apply compatibility fix for torchao in Colab environments
+sanitize_peft_torchao_compatibility()
 
 logger = get_logger("colab_inspect_qwen")
 
