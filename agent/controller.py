@@ -165,12 +165,13 @@ class AgentController:
             )
 
             # 6. Specialist Execution
+            req_meta = getattr(request, "metadata", {}) or {}
             base_tool_request = ToolRequest(
                 request_id=req_id,
                 task=resolved_task,
                 query=request.query,
                 images=request.images,
-                metadata={"user_config": request.config},
+                metadata={**req_meta, "user_config": request.config},
                 config=request.config,
             )
 
@@ -185,7 +186,7 @@ class AgentController:
 
             for idx, res in enumerate(tool_results):
                 if idx < len(task_plan.steps):
-                    task_plan.steps[idx].status = "completed" if res.status == ToolStatus.SUCCESS else "failed"
+                    task_plan.steps[idx].status = "completed" if res.status in {ToolStatus.SUCCESS, ToolStatus.PARTIAL_SUCCESS} else "failed"
 
             # 7. Result Aggregation
             response = ResultAggregator.aggregate(

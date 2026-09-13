@@ -19,13 +19,18 @@ class TemporalChangeConfig:
     """
 
     def __init__(self) -> None:
-        # --- Model configuration ---
-        self.model_checkpoint_path: str = os.environ.get(
-            "SATQUERY_TC_MODEL_CHECKPOINT", ""
-        )
+        # --- Model configuration (Authoritative Production TinyCD) ---
         self.model_architecture: str = os.environ.get(
-            "SATQUERY_TC_MODEL_ARCH", "changeformer"
+            "SATQUERY_TC_MODEL_ARCH", "tinycd"
         )
+        self.model_checkpoint_path: str = os.environ.get(
+            "SATQUERY_TC_MODEL_CHECKPOINT",
+            "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+        )
+        self.expected_checkpoint_sha256: str = (
+            "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0"
+        )
+        self.expected_parameter_count: int = 3565034
         self.device: str = os.environ.get("SATQUERY_TC_DEVICE", "auto")
 
         # --- Thresholds (all configurable) ---

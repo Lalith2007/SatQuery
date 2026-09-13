@@ -66,7 +66,8 @@ def test_extract_and_validate_optical_sar_inputs_missing_sar() -> None:
         ],
     )
     val = extract_and_validate_optical_sar_inputs(request)
-    assert val.is_valid is True or val.is_valid is False  # Fallback heuristics might pick opt2 as SAR if filename matching fallback occurs, but if both optical, error reported.
+    assert val.is_valid is False
+    assert any("Synthetic Aperture Radar" in err or "SAR" in err for err in val.errors)
 
 
 def test_quantile_normalization() -> None:

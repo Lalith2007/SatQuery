@@ -1,0 +1,8 @@
+{
+  "official_source": "Sylvain Lobry, Diego Marcos, Devis Tuia / Zenodo",
+  "doi": "10.5281/zenodo.6344334",
+  "archive_file": "data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet",
+  "archive_sha256": "9db6b0304d56223414f3d0558063d853ae432a9426bddb35437533b48e597c8c",
+  "archive_size_bytes": 174052999,
+  "ingestion_status": "ACQUIRED_AND_VERIFIED"
+}

@@ -81,12 +81,14 @@ class OpticalSarPreprocessor:
                 meta["count"] = arr.shape[0]
                 return arr.astype(np.float32), meta
         except Exception as exc:
-            # Synthetic raster fallback for tests / missing files
-            logger.error(f"Failed to load image from '{path_str}': {exc}. Generating synthetic fallback tensor.")
-            arr = np.random.rand(3, 512, 512).astype(np.float32) * 255.0
-            meta["dtype"] = "synthetic_fallback"
-            meta["count"] = 3
-            return arr, meta
+            if getattr(self.config, "allow_synthetic_fallback", False):
+                logger.warning(f"Failed to load image from '{path_str}': {exc}. Generating synthetic fallback tensor.")
+                arr = np.random.rand(3, 512, 512).astype(np.float32) * 255.0
+                meta["dtype"] = "synthetic_fallback"
+                meta["count"] = 3
+                return arr, meta
+            logger.error(f"Failed to load image from '{path_str}': {exc}.")
+            raise IOError(f"Failed to load raster image from '{path_str}': corrupted or unreadable format ({exc})")
 
     def apply_quantile_normalization(
         self,

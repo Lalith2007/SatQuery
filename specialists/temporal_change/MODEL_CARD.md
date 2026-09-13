@@ -58,7 +58,22 @@ T1 [1, 3, 256, 256] ─┘
   - Trainable Parameters: **`3,565,034`**
   - Weight Tensors: **`145`**
 - **Strict Loading:** Verified with `strict=True` (0 missing, 0 unexpected keys).
+- **Status:** **HEALTHY, FROZEN & AUTHORITATIVE**
 
+### Checkpoint Provenance Gate & Zero-Fallback Policy
+
+The specialist enforces a mandatory **Checkpoint Provenance Gate** before any inference:
+- Architecture must strictly equal `tinycd`.
+- Checkpoint file existence and SHA-256 hash match (`b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0`) are validated at initialization.
+- PyTorch state dictionary is loaded strictly (`strict=True`: 0 missing keys, 0 unexpected keys).
+- Total parameter count is verified to equal `3,565,034`.
+- If any check fails, inference is blocked with `STATUS = CHECKPOINT_INVALID`.
+- Silent initialization of untrained fallback models (such as `SiameseFeatureDiff` or random ResNet-18) is completely excised and forbidden.
+
+> **Forensic Audit Clarification:**
+> 17.69% F1 was produced by an untrained randomly initialized SiameseFeatureDiff fallback caused by an architecture/checkpoint dispatch misconfiguration. It is not a TinyCD result.
+>
+> The authoritative TinyCD checkpoint loaded via the verified production pipeline achieves **78.83% - 79.54% F1** and **65.05% - 66.03% IoU** across the 128-scene official LEVIR-CD test set, and **83.90% F1** / **72.26% IoU** on `test_10.png`.
 ---
 
 ## 4. Input & Output Contracts

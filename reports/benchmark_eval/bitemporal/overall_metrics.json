@@ -1,0 +1,126 @@
+{
+  "benchmark": "LEVIR-CD",
+  "task": "Bi-Temporal Change Detection",
+  "model": "TinyCD",
+  "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+  "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+  "parameter_count": 3565034,
+  "threshold": 0.5,
+  "device": "mps",
+  "evaluation_timestamp": "2026-09-11 15:38:29 UTC",
+  "dataset": {
+    "name": "LEVIR-CD",
+    "split": "test",
+    "source": "Beihang University LEVIR Lab (Chen & Shi)",
+    "num_scenes": 128,
+    "image_size": "256x256",
+    "native_resolution": "1024x1024",
+    "total_pixels": 8388608,
+    "ground_truth_changed_pixels": 427414,
+    "ground_truth_unchanged_pixels": 7961194,
+    "predicted_changed_pixels": 387794,
+    "predicted_unchanged_pixels": 8000814,
+    "ground_truth_change_percentage": 5.0952,
+    "predicted_change_percentage": 4.6229
+  },
+  "pixel_pooled_metrics": {
+    "production_postprocessed": {
+      "precision": 0.833571,
+      "recall": 0.756302,
+      "f1": 0.793059,
+      "iou": 0.657082,
+      "overall_accuracy": 0.979889,
+      "specificity": 0.991893
+    },
+    "raw_probability": {
+      "precision": 0.827,
+      "recall": 0.766182,
+      "f1": 0.79543,
+      "iou": 0.660344,
+      "overall_accuracy": 0.97992,
+      "specificity": 0.991395
+    }
+  },
+  "per_scene_averaged_metrics": {
+    "mean_f1": 0.692709,
+    "median_f1": 0.7922,
+    "mean_iou": 0.582609,
+    "median_iou": 0.6559
+  },
+  "confusion_matrix": {
+    "production_postprocessed": {
+      "true_positive": 323254,
+      "false_positive": 64540,
+      "false_negative": 104160,
+      "true_negative": 7896654
+    },
+    "raw_probability": {
+      "true_positive": 327477,
+      "false_positive": 68505,
+      "false_negative": 99937,
+      "true_negative": 7892689
+    }
+  },
+  "runtime_performance": {
+    "total_eval_time_seconds": 10.37,
+    "mean_latency_ms": 30.73,
+    "median_latency_ms": 30.4,
+    "fps": 12.34
+  },
+  "outlier_analysis": {
+    "best_scene": "test_16",
+    "best_scene_f1": 0.9586,
+    "worst_scene": "test_82",
+    "worst_scene_f1": 0.2746,
+    "median_scene": "test_11",
+    "median_scene_f1": 0.7997,
+    "largest_discrepancy_scene": "test_21",
+    "largest_discrepancy_gt": 9849,
+    "largest_discrepancy_pred": 6830
+  },
+  "visual_examples": [
+    {
+      "category": "best_prediction",
+      "scene_id": "test_16",
+      "panel_path": "reports/benchmark_eval/bitemporal/visual_examples/best_prediction_test_16.png",
+      "f1": 0.9586,
+      "iou": 0.9206,
+      "gt_changed_pixels": 3723,
+      "pred_changed_pixels": 3602
+    },
+    {
+      "category": "median_prediction",
+      "scene_id": "test_11",
+      "panel_path": "reports/benchmark_eval/bitemporal/visual_examples/median_prediction_test_11.png",
+      "f1": 0.7997,
+      "iou": 0.6663,
+      "gt_changed_pixels": 704,
+      "pred_changed_pixels": 694
+    },
+    {
+      "category": "difficult_worst_case",
+      "scene_id": "test_82",
+      "panel_path": "reports/benchmark_eval/bitemporal/visual_examples/difficult_worst_case_test_82.png",
+      "f1": 0.2746,
+      "iou": 0.1592,
+      "gt_changed_pixels": 3344,
+      "pred_changed_pixels": 829
+    },
+    {
+      "category": "area_discrepancy_outlier",
+      "scene_id": "test_21",
+      "panel_path": "reports/benchmark_eval/bitemporal/visual_examples/area_discrepancy_outlier_test_21.png",
+      "f1": 0.6972,
+      "iou": 0.5351,
+      "gt_changed_pixels": 9849,
+      "pred_changed_pixels": 6830
+    }
+  ],
+  "anti_leakage_audit": {
+    "test_images_in_train": false,
+    "test_labels_used_during_inference": false,
+    "gt_driven_threshold_selection": false,
+    "production_threshold_fixed": true,
+    "status": "PASS"
+  }
+}

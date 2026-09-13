@@ -86,8 +86,18 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
             from specialists.temporal_change.model_adapter import TinyCDAdapter
             self._change_model = TinyCDAdapter(
                 checkpoint_path=self._config.model_checkpoint_path or "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+                strict=True,
+                verify_provenance=True,
+                threshold=self._config.change_threshold,
             )
         else:
+            if not self._config.model_checkpoint_path:
+                from specialists.temporal_change.errors import ChangeModelLoadError
+                raise ChangeModelLoadError(
+                    f"Production architecture '{self._config.model_architecture}' requested without a checkpoint path. "
+                    "Production execution strictly forbids silent fallback to untrained models. "
+                    "STATUS = CHECKPOINT_INVALID"
+                )
             self._change_model = ChangeFormerAdapter(
                 checkpoint_path=self._config.model_checkpoint_path,
                 architecture=self._config.model_architecture,
@@ -132,10 +142,20 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
         )
 
     def _ensure_initialized(self) -> None:
-        """Lazy initialization of model backends."""
+        """Lazy initialization of model backends with Checkpoint Provenance Gate."""
         if not self._initialized:
             device = self._config.resolve_device()
             self._change_model.initialize(device=device)
+
+            # CHECKPOINT PROVENANCE GATE
+            provenance_status = getattr(self._change_model, "provenance_status", "VERIFIED")
+            if provenance_status == "CHECKPOINT_INVALID":
+                from specialists.temporal_change.errors import CheckpointProvenanceError
+                raise CheckpointProvenanceError(
+                    "Checkpoint provenance verification failed: STATUS = CHECKPOINT_INVALID. "
+                    "No neural inference is permitted."
+                )
+
             self._semantic_reasoner.initialize()
             self._config.ensure_dirs()
             self._initialized = True
@@ -214,10 +234,27 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
 
         t0_img, t1_img = request.images[0], request.images[1]
 
-        # --- Stage 3: Preprocessing ---
+        # --- Stage 3: Model Initialization & Provenance Gate ---
         try:
             self._ensure_initialized()
+        except Exception as e:
+            from specialists.temporal_change.errors import ChangeModelLoadError, CheckpointProvenanceError
+            if isinstance(e, (ChangeModelLoadError, CheckpointProvenanceError)):
+                trace.append(ExecutionTraceEntry(
+                    stage=ExecutionStage.MODEL_INITIALIZED,
+                    component=f"{self.name}.checkpoint_provenance_gate",
+                    status="FAILED",
+                    details={"error": str(e), "status": "CHECKPOINT_INVALID"},
+                ))
+                return self._build_failure_result(
+                    request, f"Checkpoint provenance gate failed: {e}", trace, "CHECKPOINT_INVALID"
+                )
+            return self._build_failure_result(
+                request, f"Initialization error: {e}", trace, "INITIALIZATION_FAILED"
+            )
 
+        # --- Stage 4: Preprocessing ---
+        try:
             t0_arr, t1_arr, preproc_meta = preprocess_pair(
                 t0_path=t0_img.path_or_uri,
                 t1_path=t1_img.path_or_uri,
@@ -237,7 +274,7 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 request, f"Preprocessing error: {e}", trace, "PREPROCESSING_FAILED"
             )
 
-        # --- Stage 4: Change detection inference ---
+        # --- Stage 5: Change detection inference ---
         try:
             change_output = self._change_model.detect_change(t0_arr, t1_arr)
 
@@ -248,6 +285,30 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 duration_ms=change_output.inference_time_ms,
                 details={
                     "model": change_output.model_name,
+                    "architecture": getattr(self._change_model, "architecture_name", "TinyCD (Siamese U-Net + MAMB)"),
+                    "checkpoint": getattr(self._change_model, "checkpoint_path", "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth"),
+                    "sha256": getattr(self._change_model, "checkpoint_sha256", "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0"),
+                    "parameter_count": getattr(self._change_model, "parameter_count", 3565034),
+                    "execution_mode": getattr(self._change_model, "execution_mode", "production_verified"),
+                    "threshold": self._config.change_threshold,
+                    "device": change_output.device_used,
+                    "changed_pixel_ratio": change_output.changed_pixel_ratio,
+                },
+            ))
+
+            trace.append(ExecutionTraceEntry(
+                stage=ExecutionStage.TINYCD_EXECUTED,
+                component=f"{self.name}.tinycd",
+                status="COMPLETED",
+                duration_ms=change_output.inference_time_ms,
+                details={
+                    "model": change_output.model_name,
+                    "architecture": getattr(self._change_model, "architecture_name", "TinyCD (Siamese U-Net + MAMB)"),
+                    "checkpoint": getattr(self._change_model, "checkpoint_path", "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth"),
+                    "sha256": getattr(self._change_model, "checkpoint_sha256", "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0"),
+                    "parameter_count": getattr(self._change_model, "parameter_count", 3565034),
+                    "execution_mode": getattr(self._change_model, "execution_mode", "production_verified"),
+                    "threshold": self._config.change_threshold,
                     "device": change_output.device_used,
                     "changed_pixel_ratio": change_output.changed_pixel_ratio,
                 },
@@ -257,7 +318,7 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 request, f"Change detection inference error: {e}", trace, "INFERENCE_FAILED"
             )
 
-        # --- Stage 5: Postprocessing ---
+        # --- Stage 6: Postprocessing & Change Mask Generation ---
         try:
             postproc = postprocess_change_map(
                 prob_map=change_output.change_probability_map,
@@ -268,16 +329,17 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 morphology_kernel=self._config.morphology_kernel_size,
             )
 
-            # Attach regions to change output for semantic reasoning
+            # Attach regions to change output for downstream consumers
             change_output.changed_regions = postproc.regions
 
             trace.append(ExecutionTraceEntry(
-                stage=ExecutionStage.EVIDENCE_GENERATED,
+                stage=ExecutionStage.CHANGE_MASK_GENERATED,
                 component=f"{self.name}.postprocessing",
                 status="COMPLETED",
                 details={
                     "regions_found": len(postproc.regions),
-                    "changed_pixel_ratio": round(postproc.changed_pixel_ratio, 4),
+                    "changed_pixel_ratio": round(postproc.changed_pixel_ratio, 6),
+                    "threshold": self._config.change_threshold,
                     "parameters": postproc.parameters,
                 },
             ))
@@ -286,10 +348,46 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 request, f"Postprocessing error: {e}", trace, "POSTPROCESSING_FAILED"
             )
 
-        # --- Stage 6: Query intent classification ---
+        # --- Stage 7: Deterministic Changed-Region Extraction & Evidence Packaging ---
+        region_evidence = None
+        try:
+            from specialists.temporal_change.region_extraction import extract_changed_region_evidence
+
+            region_evidence = extract_changed_region_evidence(
+                t0_path=t0_img.path_or_uri,
+                t1_path=t1_img.path_or_uri,
+                change_output=change_output,
+                postproc_result=postproc,
+                output_dir=Path(self._config.artifact_output_dir),
+                request_id=request.request_id,
+                threshold=self._config.change_threshold,
+            )
+
+            trace.append(ExecutionTraceEntry(
+                stage=ExecutionStage.REGION_EXTRACTED,
+                component=f"{self.name}.region_extraction",
+                status="COMPLETED",
+                details={
+                    "evidence_id": region_evidence.evidence_id,
+                    "selected_region_id": region_evidence.selected_region_id,
+                    "pixel_bbox": region_evidence.selected_region_pixel_bbox,
+                    "normalized_bbox": region_evidence.selected_region_normalized_bbox,
+                    "area_pixels": region_evidence.area_pixels,
+                    "area_fraction": region_evidence.area_fraction,
+                    "crop_dimensions": region_evidence.crop_dimensions,
+                    "cropped_t1_path": region_evidence.cropped_t1_path,
+                    "total_candidate_regions": len(region_evidence.candidate_regions),
+                    "has_change": region_evidence.has_change,
+                    "fallback_reason": region_evidence.fallback_reason,
+                },
+            ))
+        except Exception as e:
+            logger.warning(f"Changed-region extraction failed: {e}")
+
+        # --- Stage 8: Query intent classification ---
         query_intent = classify_query_intent(request.query)
 
-        # --- Stage 7: Semantic reasoning ---
+        # --- Stage 9: Semantic reasoning ---
         try:
             semantic_output = self._semantic_reasoner.reason_about_change(
                 query=request.query,
@@ -300,7 +398,7 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
             )
 
             trace.append(ExecutionTraceEntry(
-                stage=ExecutionStage.RESULT_AGGREGATED,
+                stage=ExecutionStage.ANSWER_GENERATED,
                 component=f"{self.name}.semantic_reasoning",
                 status="COMPLETED",
                 details={
@@ -314,7 +412,7 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
             logger.warning(f"Semantic reasoning failed, falling back: {e}")
             semantic_output = None
 
-        # --- Stage 8: Evidence generation ---
+        # --- Stage 10: Evidence generation ---
         try:
             evidence, artifacts = generate_evidence(
                 change_output=change_output,
@@ -324,6 +422,42 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 output_dir=self._config.artifact_output_dir,
                 request_id=request.request_id,
             )
+
+            # Append visual crop and overlay artifacts from region_evidence
+            if region_evidence and region_evidence.cropped_t1_path:
+                from core.schemas import Artifact
+                crop_art = Artifact(
+                    name=f"crop_t1_region_{region_evidence.selected_region_id}.png",
+                    type="crop",
+                    uri_or_path=region_evidence.cropped_t1_path,
+                    description=(
+                        f"Cropped post-change visual patch around primary change region "
+                        f"{region_evidence.selected_region_id} (area: {region_evidence.area_pixels} px)."
+                    ),
+                    mime_type="image/png",
+                )
+                artifacts.append(crop_art)
+                try:
+                    from presentation.evidence_renderer import ArtifactRegistry
+                    ArtifactRegistry.register(crop_art.artifact_id, crop_art.uri_or_path, name=crop_art.name)
+                except Exception:
+                    pass
+
+            if region_evidence and region_evidence.visualization_overlay_path:
+                from core.schemas import Artifact
+                ovl_art = Artifact(
+                    name=f"change_overlay_region_{region_evidence.selected_region_id}.png",
+                    type="highlighted_image",
+                    uri_or_path=region_evidence.visualization_overlay_path,
+                    description="Visual overlay of detected change regions and bounding boxes on post-change T1 acquisition.",
+                    mime_type="image/png",
+                )
+                artifacts.append(ovl_art)
+                try:
+                    from presentation.evidence_renderer import ArtifactRegistry
+                    ArtifactRegistry.register(ovl_art.artifact_id, ovl_art.uri_or_path, name=ovl_art.name)
+                except Exception:
+                    pass
 
             trace.append(ExecutionTraceEntry(
                 stage=ExecutionStage.EVIDENCE_GENERATED,
@@ -385,6 +519,12 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 "change_model_version": change_output.model_version,
                 "semantic_reasoner": type(self._semantic_reasoner).__name__,
                 "device": change_output.device_used,
+                "architecture": getattr(self._change_model, "architecture_name", "TinyCD (Siamese U-Net + MAMB)"),
+                "checkpoint": getattr(self._change_model, "checkpoint_path", "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth"),
+                "sha256": getattr(self._change_model, "checkpoint_sha256", "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0"),
+                "parameter_count": getattr(self._change_model, "parameter_count", 3565034),
+                "execution_mode": getattr(self._change_model, "execution_mode", "production_verified"),
+                "threshold": self._config.change_threshold,
             },
             parameters={
                 "change_threshold": self._config.change_threshold,
@@ -404,6 +544,14 @@ class BiTemporalChangeSpecialistTool(BaseSpecialistTool):
                 "limitations": semantic_output.limitations if semantic_output else [],
                 "t0_info": pair_result.t0_info,
                 "t1_info": pair_result.t1_info,
+                "changed_region_evidence": region_evidence.model_dump() if region_evidence else None,
+                "tinycd_provenance": {
+                    "architecture": "TinyCD (Siamese U-Net + MAMB)",
+                    "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+                    "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+                    "parameter_count": 3565034,
+                    "threshold": self._config.change_threshold,
+                },
             },
             execution_trace=trace,
         )

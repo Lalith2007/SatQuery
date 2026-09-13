@@ -102,7 +102,7 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                 ImageModality.SAR,
             ],
             min_images=1,
-            max_images=1,
+            max_images=3,
             author_or_division="Division 2 (Sruthi)",
             metadata=model_info_dict,
         )
@@ -125,13 +125,31 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
         )
 
     def validate_request(self, request: ToolRequest) -> ValidationResult:
-        """Validate input constraints for single-image vision-language analysis."""
+        """Validate input constraints for vision-language analysis."""
         errors: List[str] = []
 
-        if len(request.images) != 1:
-            errors.append(f"SingleImageRSSpecialist requires exactly 1 image input, received {len(request.images)}.")
+        is_change_vqa = (
+            request.task == TaskType.CHANGE_VQA
+            or "changed_region_evidence" in request.context
+            or any(img.metadata.get("is_changed_region_crop") for img in request.images)
+        )
+        is_t1_fallback = (
+            request.metadata.get("vlm_contract") == "single_image_t1"
+            or request.config.get("vlm_contract") == "single_image_t1"
+        )
 
-        if request.task not in self.supported_tasks:
+        if is_change_vqa:
+            if is_t1_fallback:
+                if len(request.images) != 1:
+                    errors.append(f"Explicit T1-only Change-VQA contract requires exactly 1 image, received {len(request.images)}.")
+            else:
+                if len(request.images) != 3:
+                    errors.append(f"Change-VQA evidence package requires exactly 3 images [T0, T1, overlay], received {len(request.images)}.")
+        elif len(request.images) != 1:
+            task_name = request.task.value if hasattr(request.task, "value") else str(request.task)
+            errors.append(f"SingleImageRSSpecialist requires exactly 1 image input for '{task_name}', received {len(request.images)}.")
+
+        if request.task not in self.supported_tasks and request.task != TaskType.CHANGE_VQA:
             errors.append(
                 f"Task '{request.task.value}' is not supported by {self.name}. "
                 f"Supported: {[t.value for t in self.supported_tasks]}"
@@ -144,6 +162,17 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
 
     async def execute(self, request: ToolRequest) -> ToolResult:
         """Execute remote sensing inference and return standardized ToolResult."""
+        is_change_vqa = (
+            request.task == TaskType.CHANGE_VQA
+            or any(img.metadata.get("is_changed_region_crop", False) for img in request.images)
+            or "changed_region_evidence" in request.context
+        )
+
+        is_t1_fallback = (
+            request.metadata.get("vlm_contract") == "single_image_t1"
+            or request.config.get("vlm_contract") == "single_image_t1"
+        )
+
         val = self.validate_request(request)
         if not val.is_valid:
             logger.warning(f"Request validation failed in {self.name}: {val.errors}")
@@ -160,14 +189,150 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                 metadata={"validation_errors": val.errors},
             )
 
-        image_input = request.images[0]
+        if is_change_vqa:
+            if is_t1_fallback:
+                handoff_mode = "SINGLE_IMAGE_T1_FALLBACK"
+                image_input = request.images[0]
+            else:
+                handoff_mode = "MULTI_IMAGE_CHANGE_VQA"
+                image_input = request.images[1]  # T1 reference if needed
+        else:
+            handoff_mode = "SINGLE_IMAGE_STANDARD"
+            image_input = request.images[0]
+
         t0 = time.perf_counter()
         trace_entries: List[ExecutionTraceEntry] = []
+
+        # Part 8 Mandate: When no trained Qwen checkpoint exists, DO NOT run untrained weights,
+        # DO NOT use PaliGemma, and DO NOT fabricate semantic descriptions for Change-VQA.
+        if is_change_vqa and self.backend == "qwen25vl" and not self.qwen_engine.is_real_model_loaded:
+            logger.info(
+                f"Change-VQA crop received ({handoff_mode}) but fine-tuned Qwen checkpoint is pending. Returning CHANGE_VQA_MODEL_NOT_READY."
+            )
+            evidence_summary = [
+                {
+                    "image_id": img.image_id,
+                    "path": img.path_or_uri,
+                    "role": img.metadata.get("temporal_role", "UNKNOWN"),
+                    "dimensions": img.metadata.get("crop_dimensions"),
+                }
+                for img in request.images
+            ]
+            trace_entries.append(
+                ExecutionTraceEntry(
+                    stage=ExecutionStage.VLM_EXECUTED,
+                    component=f"{self.name}.qwen25vl",
+                    status="MODEL_NOT_READY",
+                    details={
+                        "backend": "qwen25vl",
+                        "model_name": "Qwen/Qwen2.5-VL-3B-Instruct",
+                        "checkpoint_identifier": None,
+                        "execution_mode": "checkpoint_pending",
+                        "readiness_status": "CHANGE_VQA_MODEL_NOT_READY",
+                        "handoff_mode": handoff_mode,
+                        "evidence_package": evidence_summary,
+                        "image_count": len(request.images),
+                        "roles_received": [img.metadata.get("temporal_role") for img in request.images],
+                        "evidence_artifact_ids": [img.image_id for img in request.images],
+                        "reason": "Fine-tuned Qwen2.5-VL checkpoint is pending training. Semantic interpretation unavailable.",
+                    },
+                )
+            )
+            answer = (
+                "[CHANGE_VQA_MODEL_NOT_READY] TinyCD detection = completed; "
+                "semantic VLM interpretation = unavailable. "
+                "The bi-temporal change specialist successfully detected change regions and generated "
+                "visual evidence crops (BEFORE, AFTER, WHERE CHANGE OCCURRED), but the fine-tuned Qwen2.5-VL model weights are currently pending training."
+            )
+            trace_entries.append(
+                ExecutionTraceEntry(
+                    stage=ExecutionStage.ANSWER_GENERATED,
+                    component=self.name,
+                    status="COMPLETED",
+                    details={
+                        "status": "CHANGE_VQA_MODEL_NOT_READY",
+                        "semantic_interpretation": "unavailable",
+                        "evidence_package_count": len(request.images),
+                        "handoff_mode": handoff_mode,
+                    },
+                )
+            )
+            return ToolResult(
+                request_id=request.request_id,
+                task=request.task,
+                status=ToolStatus.PARTIAL_SUCCESS,
+                answer=answer,
+                confidence=None,
+                evidence=[],
+                artifacts=[],
+                model_info={
+                    "name": "Qwen2.5-VL-3B-Instruct",
+                    "backend": "qwen25vl",
+                    "readiness_status": "CHANGE_VQA_MODEL_NOT_READY",
+                    "execution_mode": "checkpoint_pending",
+                    "checkpoint_identifier": None,
+                    "is_mock": False,
+                    "is_fallback": False,
+                },
+                parameters={
+                    "query": request.query,
+                    "evidence_images": [img.path_or_uri for img in request.images],
+                    "evidence_artifact_ids": [img.image_id for img in request.images],
+                },
+                metadata={
+                    "change_vqa_status": "CHANGE_VQA_MODEL_NOT_READY",
+                    "tinycd_detection": "completed",
+                    "semantic_vlm_interpretation": "unavailable",
+                    "backend": "qwen25vl",
+                    "readiness_status": "CHANGE_VQA_MODEL_NOT_READY",
+                    "handoff_mode": handoff_mode,
+                    "evidence_package": evidence_summary,
+                    "evidence_artifact_ids": [img.image_id for img in request.images],
+                    "vlm_provenance": {
+                        "backend": "qwen25vl",
+                        "model_name": "Qwen/Qwen2.5-VL-3B-Instruct",
+                        "checkpoint_identifier": None,
+                        "execution_mode": "checkpoint_pending",
+                        "readiness_status": "CHANGE_VQA_MODEL_NOT_READY",
+                    },
+                },
+                execution_trace=trace_entries,
+            )
 
         try:
             if self.backend == "qwen25vl":
                 # --- QWEN2.5-VL PRIMARY INFERENCE PATH ---
-                if request.task == TaskType.SINGLE_IMAGE_GROUNDING:
+                if is_change_vqa:
+                    change_meta = (
+                        request.context.get("changed_region_evidence")
+                        or request.metadata.get("changed_region_evidence")
+                    )
+                    if is_t1_fallback:
+                        answer, confidence, metrics = self.qwen_engine.run_vqa(
+                            image=request.images[0].path_or_uri,
+                            query=request.query,
+                        )
+                    else:
+                        answer, confidence, metrics = self.qwen_engine.run_change_vqa(
+                            images=[img.path_or_uri for img in request.images],
+                            query=request.query,
+                            metadata=change_meta,
+                            roles=[img.metadata.get("temporal_role") for img in request.images],
+                        )
+                    evidence = []
+                    trace_entries.append(
+                        ExecutionTraceEntry(
+                            stage=ExecutionStage.VLM_EXECUTED,
+                            component=f"{self.name}.qwen25vl",
+                            status="COMPLETED",
+                            details={
+                                "handoff_mode": handoff_mode,
+                                "image_count": len(request.images),
+                                "roles": [img.metadata.get("temporal_role") for img in request.images],
+                            },
+                        )
+                    )
+                elif request.task == TaskType.SINGLE_IMAGE_GROUNDING:
                     answer, evidence, confidence, metrics = self.qwen_engine.run_grounding(
                         image=image_input.path_or_uri,
                         query=request.query,
@@ -256,6 +421,35 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                         "preprocessing_ms": preprocessing_ms,
                         "peak_memory_mb": peak_memory,
                     },
+                )
+            )
+
+            trace_entries.append(
+                ExecutionTraceEntry(
+                    stage=ExecutionStage.VLM_EXECUTED,
+                    component=self.name,
+                    status="COMPLETED",
+                    duration_ms=total_dur_ms,
+                    details={
+                        "task": request.task.value,
+                        "backend": self.backend,
+                        "model_name": active_model_name,
+                        "device": device_used,
+                        "inference_ms": inference_ms,
+                        "preprocessing_ms": preprocessing_ms,
+                        "peak_memory_mb": peak_memory,
+                        "checkpoint_identifier": getattr(self.qwen_engine, "adapter_path", None) if self.backend == "qwen25vl" else None,
+                        "execution_mode": "production_verified" if getattr(self.qwen_engine, "is_real_model_loaded", False) else "deterministic_fallback",
+                        "readiness_status": "READY" if getattr(self.qwen_engine, "is_real_model_loaded", False) else "FALLBACK",
+                    },
+                )
+            )
+            trace_entries.append(
+                ExecutionTraceEntry(
+                    stage=ExecutionStage.ANSWER_GENERATED,
+                    component=self.name,
+                    status="COMPLETED",
+                    details={"task": request.task.value},
                 )
             )
 

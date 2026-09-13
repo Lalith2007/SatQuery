@@ -1,0 +1,278 @@
+{
+  "query_routing": [
+    {
+      "id": "BT-01",
+      "query": "What changed between the two images?",
+      "resolved_task": "change_vqa",
+      "confidence": 0.95,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-02",
+      "query": "Compare the earlier and later satellite images and identify areas of change.",
+      "resolved_task": "change_analysis",
+      "confidence": 0.95,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-03",
+      "query": "Describe the major changes visible between image A and image B.",
+      "resolved_task": "change_analysis",
+      "confidence": 0.85,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-04",
+      "query": "Identify newly constructed buildings or built-up areas between the two dates.",
+      "resolved_task": "change_analysis",
+      "confidence": 0.85,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-05",
+      "query": "Has urban expansion occurred between these two observations?",
+      "resolved_task": "change_vqa",
+      "confidence": 0.95,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-06",
+      "query": "Where are the changed regions, and what do those changes appear to represent?",
+      "resolved_task": "change_vqa",
+      "confidence": 0.96,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-07",
+      "query": "Perform change VQA on the two temporal images.",
+      "resolved_task": "change_analysis",
+      "confidence": 0.95,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-08",
+      "query": "Compare the two dates and provide an explanation of the detected changes.",
+      "resolved_task": "change_analysis",
+      "confidence": 0.85,
+      "selected_tool": "bitemporal_change_specialist",
+      "status": "PASS"
+    }
+  ],
+  "checkpoint_provenance": {
+    "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "actual_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "expected_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "sha256_match": true,
+    "parameter_count": 3565034,
+    "expected_parameter_count": 3565034,
+    "param_count_match": true,
+    "weight_tensor_count": 145,
+    "provenance_status": "VERIFIED",
+    "execution_mode": "production_verified",
+    "status": "PASS"
+  },
+  "forensic_sample_test_10": {
+    "sample": "test_10.png",
+    "tp": 5642,
+    "fp": 1519,
+    "fn": 749,
+    "tn": 57626,
+    "precision": 0.7878787878787878,
+    "recall": 0.882803943044907,
+    "f1": 0.8326446280991736,
+    "iou": 0.7132743362831858,
+    "overall_accuracy": 0.96539306640625,
+    "predicted_change_pct": 10.92681884765625,
+    "ground_truth_change_pct": 9.75189208984375,
+    "reference_baseline_f1": 0.8392,
+    "reference_baseline_iou": 0.723,
+    "status": "PASS"
+  },
+  "levir_cd_128_scenes_evaluation": {
+    "scenes_evaluated": 128,
+    "total_pixels_evaluated": 8388608,
+    "input_dimensions": "256x256 (resampled from 1024x1024 parent rasters)",
+    "ground_truth_dimensions": "256x256 (resampled from 1024x1024 parent masks)",
+    "zero_change_scenes": 10,
+    "changed_scenes": 118,
+    "tp": 323254,
+    "fp": 64540,
+    "fn": 104160,
+    "tn": 7896654,
+    "overall_accuracy": 0.9798893928527832,
+    "precision": 0.8335714322552695,
+    "recall": 0.7563018525364167,
+    "f1": 0.7930589493724302,
+    "iou": 0.6570817596767178,
+    "specificity": 0.9918931758226216,
+    "median_scene_f1": 0.7922189889140945,
+    "median_scene_iou": 0.6559294226008865,
+    "mean_scene_f1": 0.6927054810440089,
+    "mean_scene_iou": 0.5826102657482206,
+    "best_scene": {
+      "scene": "test_90.png",
+      "f1": 1.0,
+      "iou": 1.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "gt_change_pixels": 0,
+      "pred_change_pixels": 0
+    },
+    "worst_scene": {
+      "scene": "test_128.png",
+      "f1": 0.0,
+      "iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "gt_change_pixels": 33,
+      "pred_change_pixels": 0
+    },
+    "elapsed_seconds": 11.1,
+    "throughput_fps": 11.53,
+    "status": "PASS"
+  },
+  "visual_output_validation": [
+    {
+      "category": "high_change",
+      "scene": "test_16.png",
+      "dimensions": "256x256",
+      "is_binary": true,
+      "change_pct": 5.4962158203125,
+      "mask_path": "artifacts_storage/d34baa4e-2b02-4909-9763-5c627ddcf2b1_change_mask.png",
+      "heatmap_path": "artifacts_storage/d34baa4e-2b02-4909-9763-5c627ddcf2b1_change_heatmap.png",
+      "status": "PASS"
+    },
+    {
+      "category": "median_change",
+      "scene": "test_12.png",
+      "dimensions": "256x256",
+      "is_binary": true,
+      "change_pct": 10.14862060546875,
+      "mask_path": "artifacts_storage/1fb3af14-49e9-4402-a6b7-4145e99d13ec_change_mask.png",
+      "heatmap_path": "artifacts_storage/1fb3af14-49e9-4402-a6b7-4145e99d13ec_change_heatmap.png",
+      "status": "PASS"
+    },
+    {
+      "category": "low_change",
+      "scene": "test_79.png",
+      "dimensions": "256x256",
+      "is_binary": true,
+      "change_pct": 0.69732666015625,
+      "mask_path": "artifacts_storage/731d5621-c54b-4a69-88b9-5878878ae719_change_mask.png",
+      "heatmap_path": "artifacts_storage/731d5621-c54b-4a69-88b9-5878878ae719_change_heatmap.png",
+      "status": "PASS"
+    },
+    {
+      "category": "zero_change",
+      "scene": "test_30.png",
+      "dimensions": "256x256",
+      "is_binary": true,
+      "change_pct": 5.194091796875,
+      "mask_path": "artifacts_storage/4f1ad834-0564-4b63-9759-acd6350a3116_change_mask.png",
+      "heatmap_path": "artifacts_storage/4f1ad834-0564-4b63-9759-acd6350a3116_change_heatmap.png",
+      "status": "PASS"
+    }
+  ],
+  "bitemporal_edge_cases": [
+    {
+      "id": "BT-EDGE-01",
+      "name": "Reverse temporal order",
+      "result_status": "success",
+      "handled_cleanly": true,
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-02",
+      "name": "Identical images",
+      "change_pct": 0.0,
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-03",
+      "name": "One image missing",
+      "result_status": "failed",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-04",
+      "name": "Three images supplied",
+      "result_status": "failed",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-05",
+      "name": "Mismatched dimensions",
+      "result_status": "success",
+      "status": "FAIL"
+    },
+    {
+      "id": "BT-EDGE-06",
+      "name": "Mismatched CRS",
+      "result_status": "failed",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-07",
+      "name": "Non-overlapping spatial extents",
+      "result_status": "failed",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-08",
+      "name": "Duplicate timestamps",
+      "result_status": "failed",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-09",
+      "name": "Cloudy optical image",
+      "result_status": "success",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-10",
+      "name": "Blank / constant image",
+      "result_status": "success",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-11",
+      "name": "Corrupted image file",
+      "result_status": "failed",
+      "status": "PASS"
+    },
+    {
+      "id": "BT-EDGE-12",
+      "name": "Wrong modality",
+      "is_valid": true,
+      "status": "FAIL"
+    }
+  ],
+  "fail_closed_tests": [
+    {
+      "case": "missing_checkpoint",
+      "failed_closed": true,
+      "error": "Trained TinyCD checkpoint not found at 'nonexistent.pth'. Production execution must fail closed; untrained fallback models are strictly forbidden. STATUS = CHECKPOINT_INVALID",
+      "status": "PASS"
+    },
+    {
+      "case": "corrupted_sha256",
+      "failed_closed": true,
+      "error": "TinyCD checkpoint SHA-256 mismatch! Found '5a2fb6cbb7ec2550eefadab6f63db8e2a9cb278d521d06933b2b214d25fd4a61', expected authoritative production hash 'b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0'. STATUS = CHECKPOINT_INVALID",
+      "status": "PASS"
+    },
+    {
+      "case": "empty_changeformer",
+      "failed_closed": true,
+      "error": "ChangeFormer checkpoint path '' is empty or file not found. Production execution strictly forbids silent fallback to untrained models. STATUS = CHECKPOINT_INVALID",
+      "status": "PASS"
+    }
+  ]
+}

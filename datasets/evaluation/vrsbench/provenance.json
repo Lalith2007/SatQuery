@@ -1,0 +1,8 @@
+{
+  "official_source": "LIESMARS, Wuhan University (Ling et al., 2024)",
+  "source_files": [
+    "data/benchmark_samples/vrsbench/vrsbench_sample_vqa.json",
+    "data/benchmark_samples/vrsbench/vrsbench_sample_referring.json"
+  ],
+  "ingestion_status": "ACQUIRED_AND_VERIFIED"
+}

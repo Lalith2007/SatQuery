@@ -1,0 +1,172 @@
+{
+  "audit_metadata": {
+    "system_name": "SatQuery AI",
+    "problem_statement": "Smart India Hackathon - ISRO/SAC Problem Statement",
+    "audit_type": "Official Public Benchmark Evaluation Audit",
+    "auditor_role": "Senior Remote-Sensing AI Integration Engineer, Benchmark Engineer, and Production QA Validator",
+    "audit_timestamp": "2026-09-11T14:51:00+05:30",
+    "audit_status": "FINAL_CERTIFIED_BENCHMARK_SCOREBOARD",
+    "evaluation_standard": "Strict Non-Fabrication Rule & Sixfold Empirical Validation Mandate"
+  },
+  "dataset_acquisition_policy": {
+    "empirical_criteria": [
+      "Real benchmark images loaded from official source",
+      "Real benchmark annotations/questions loaded from held-out split",
+      "Real production/fine-tuned checkpoint instantiated",
+      "Real forward inference executed across evaluation split",
+      "Real model predictions generated and recorded",
+      "Official benchmark metric calculation executed against held-out ground truth"
+    ],
+    "quarantine_rules": {
+      "bigearthnet_stage1_quarantine": "The 8,000 materialized Sentinel-1/Sentinel-2 pairs in bigearthnet_stage1_manifest.jsonl are STRICTLY TRAINING ONLY. Zero benchmark evaluation scores may be derived from this set.",
+      "subset_selection": "Where large datasets require sampling, subsets must be deterministic, stratified, seed-controlled, and accompanied by subset_manifest.jsonl and subset_summary.json."
+    }
+  },
+  "benchmarks": {
+    "levir_cd": {
+      "benchmark_name": "LEVIR-CD",
+      "task": "Bi-Temporal Building Change Detection",
+      "modality": "High-Resolution Optical (0.5m GSD)",
+      "component": "bitemporal_change_specialist",
+      "model_architecture": "TinyCD (Siamese U-Net + MAMB)",
+      "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+      "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "parameter_count": 3565034,
+      "split": "Official held-out test split (128 scenes, 8,388,608 evaluated pixels)",
+      "status": "OFFICIAL FULL EVALUATION COMPLETE",
+      "production_freeze": "FROZEN",
+      "metrics": {
+        "f1_score": 0.7931,
+        "iou": 0.6571,
+        "overall_accuracy": 0.9799,
+        "precision": 0.8336,
+        "recall": 0.7563,
+        "specificity": 0.9919,
+        "true_positives": 323254,
+        "false_positives": 64540,
+        "false_negatives": 104160,
+        "true_negatives": 7896654
+      }
+    },
+    "whu_opt_sar": {
+      "benchmark_name": "WHU-OPT-SAR",
+      "task": "Cross-Modal Optical-SAR Land-Cover Segmentation",
+      "modality": "Optical (0.45m) + CSK/GF-3 SAR (5m)",
+      "component": "optical_sar_cross_modal_specialist",
+      "model_architecture": "CMAF (Cross-Modal Attention Fusion)",
+      "checkpoint_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+      "checkpoint_sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "parameter_count": 19755144,
+      "split": "Official held-out test split (15 scenes, 4,950 non-overlapping tiles of 256x256)",
+      "status": "OFFICIAL FULL EVALUATION COMPLETE",
+      "production_freeze": "FROZEN",
+      "metrics": {
+        "overall_accuracy": 0.7171,
+        "miou": 0.3508,
+        "macro_f1": 0.4662,
+        "weighted_f1": 0.7418,
+        "weighted_iou": 0.6038
+      },
+      "reconciliation_note": "Restored authoritative frozen checkpoint run on all 15 held-out test scenes (4,950 tiles, 308,687,656 labeled pixels). Purged ungrounded 84.44% draft entry."
+    },
+    "rsvqa_lr": {
+      "benchmark_name": "RSVQA-LR",
+      "task": "Remote Sensing Visual Question Answering",
+      "modality": "Sentinel-2 Low-Resolution Optical (10m GSD)",
+      "evaluator_class": "RSVQAEvaluator",
+      "evaluator_file": "evaluation/benchmarks/rsvqa.py",
+      "data_on_disk": "data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet (174 MB, 2,000 records)",
+      "status": "DATA READY / MODEL NOT READY",
+      "model_checkpoint_status": "Fine-tuning of Qwen2.5-VL pending in Colab",
+      "metrics": null,
+      "notes": "Harness metric formulas (accuracy, MAE, RMSE) verified on synthetic items. Real forward pass not executed."
+    },
+    "vrsbench_grounding": {
+      "benchmark_name": "VRSBench Grounding",
+      "task": "Text-Guided Bounding Box Localization",
+      "modality": "High-Resolution Optical Aerial Imagery",
+      "evaluator_class": "VRSBenchEvaluator",
+      "evaluator_file": "evaluation/benchmarks/vrsbench.py",
+      "data_on_disk": "data/benchmark_samples/vrsbench/vrsbench_sample_referring.json",
+      "status": "DATA READY / MODEL NOT READY",
+      "model_checkpoint_status": "Fine-tuning of Qwen2.5-VL pending in Colab",
+      "metrics": null,
+      "notes": "IoU, mIoU, and P@50 evaluation harness verified. Model inference pending."
+    },
+    "vrsbench_vqa": {
+      "benchmark_name": "VRSBench VQA",
+      "task": "Remote Sensing Visual Question Answering",
+      "modality": "High-Resolution Optical Aerial Imagery",
+      "evaluator_class": "VRSBenchEvaluator",
+      "evaluator_file": "evaluation/benchmarks/vrsbench.py",
+      "data_on_disk": "data/benchmark_samples/vrsbench/vrsbench_sample_vqa.json",
+      "status": "DATA READY / MODEL NOT READY",
+      "model_checkpoint_status": "Fine-tuning of Qwen2.5-VL pending in Colab",
+      "metrics": null,
+      "notes": "Exact match and Token F1 harness verified. Model inference pending."
+    },
+    "vrsbench_captioning": {
+      "benchmark_name": "VRSBench Captioning",
+      "task": "Remote Sensing Scene Description",
+      "modality": "High-Resolution Optical Aerial Imagery",
+      "evaluator_class": "VRSBenchEvaluator",
+      "evaluator_file": "evaluation/benchmarks/vrsbench.py",
+      "data_on_disk": "data/benchmark_samples/vrsbench/images/",
+      "status": "DATA READY / MODEL NOT READY",
+      "model_checkpoint_status": "Fine-tuning of Qwen2.5-VL pending in Colab",
+      "metrics": null,
+      "notes": "Token overlap and BLEU harness verified. Model inference pending."
+    },
+    "cdvqa": {
+      "benchmark_name": "CDVQA",
+      "task": "Change Detection Visual Question Answering",
+      "modality": "Bi-Temporal High-Resolution Optical",
+      "evaluator_class": "CDVQAEvaluator",
+      "evaluator_file": "evaluation/benchmarks/cdvqa.py",
+      "status": "END-TO-END FUNCTIONAL — VLM CHECKPOINT PENDING",
+      "model_checkpoint_status": "Composed workflow functional (TinyCD detection + ROI crop handoff); VLM weights pending in Colab",
+      "metrics": null,
+      "notes": "TinyCD spatial change detection and deterministic ROI crop visual handoff to VLM verified. VLM returns honest CHANGE_VQA_MODEL_NOT_READY."
+    },
+    "bigearthnet_benchmark": {
+      "benchmark_name": "BigEarthNet.txt Benchmark Split",
+      "task": "Multi-Modal Land-Cover Classification & Zero-Shot VQA",
+      "modality": "Sentinel-1 SAR + Sentinel-2 MSI",
+      "component": "SingleImageRSSpecialistTool",
+      "status": "DATA READY / MODEL NOT READY",
+      "model_checkpoint_status": "Fine-tuning of Qwen2.5-VL on Stage 1 (8,000 pairs) pending in Colab",
+      "metrics": null,
+      "notes": "Stage 1 (8,000 pairs) quarantined exclusively for training. Benchmark evaluation awaits checkpoint."
+    },
+    "isro_sac_target": {
+      "benchmark_name": "ISRO/SAC Target Data",
+      "task": "Multi-Sensor Optical-SAR Joint Intelligence",
+      "modality": "Cartosat-2S (0.65m) + RISAT SAR (1-3m)",
+      "evaluator_class": "ISROSACGenericEvaluator",
+      "evaluator_file": "evaluation/benchmarks/isro_sac.py",
+      "data_on_disk": "0 bytes (Classified spaceborne archives unavailable)",
+      "status": "NOT AVAILABLE / AWAITING OFFICIAL DATA",
+      "model_checkpoint_status": "N/A",
+      "metrics": null,
+      "notes": "Generic evaluation harness implemented for private competition jury execution."
+    }
+  },
+  "scoreboard_summary": [
+    {"benchmark": "LEVIR-CD", "task": "Bi-Temporal Change Detection", "status": "OFFICIAL FULL EVALUATION COMPLETE", "certified_score": "F1: 79.31%, IoU: 65.71%, OA: 97.99%"},
+    {"benchmark": "WHU-OPT-SAR", "task": "Cross-Modal Optical-SAR", "status": "OFFICIAL FULL EVALUATION COMPLETE", "certified_score": "OA: 71.71%, mIoU: 35.08%, Macro-F1: 46.62%, Weighted-F1: 74.18%"},
+    {"benchmark": "RSVQA-LR", "task": "Remote Sensing VQA", "status": "DATA READY / MODEL NOT READY", "certified_score": "None (Model fine-tuning pending)"},
+    {"benchmark": "VRSBench Grounding", "task": "Visual Grounding", "status": "DATA READY / MODEL NOT READY", "certified_score": "None (Model fine-tuning pending)"},
+    {"benchmark": "VRSBench VQA", "task": "Remote Sensing VQA", "status": "DATA READY / MODEL NOT READY", "certified_score": "None (Model fine-tuning pending)"},
+    {"benchmark": "VRSBench Captioning", "task": "Scene Captioning", "status": "DATA READY / MODEL NOT READY", "certified_score": "None (Model fine-tuning pending)"},
+    {"benchmark": "CDVQA", "task": "Change Detection VQA", "status": "END-TO-END FUNCTIONAL — VLM CHECKPOINT PENDING", "certified_score": "Composed workflow functional (TinyCD detection + ROI crop handoff); VLM weights pending"},
+    {"benchmark": "BigEarthNet.txt", "task": "Multi-Modal Classification", "status": "DATA READY / MODEL NOT READY", "certified_score": "None (Model fine-tuning pending)"},
+    {"benchmark": "ISRO/SAC Target", "task": "Cartosat + RISAT Multi-Sensor", "status": "NOT AVAILABLE / AWAITING OFFICIAL DATA", "certified_score": "None (Proprietary data unavailable)"}
+  ],
+  "integrity_certification": {
+    "division_3_frozen": true,
+    "division_4_frozen": true,
+    "no_checkpoints_modified": true,
+    "zero_fabricated_metrics": true,
+    "quarantine_verified": true
+  }
+}

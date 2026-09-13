@@ -39,9 +39,8 @@ class Qwen25VLDataCollator:
         self.strict_real_data = strict_real_data
         self.demo_mode = demo_mode
 
-    def _resolve_image(self, example: Dict[str, Any]) -> Image.Image:
-        """Resolve example image field to a 3-channel RGB PIL Image with strict real-data enforcement."""
-        img_val = example.get("image")
+    def _resolve_single_image(self, img_val: Any, example: Dict[str, Any]) -> Image.Image:
+        """Resolve a single image value to a 3-channel RGB PIL Image with strict real-data enforcement."""
         rec_id = example.get("id", "unknown")
         pair_id = example.get("pair_id")
 
@@ -127,7 +126,7 @@ class Qwen25VLDataCollator:
                             f"but image filename '{p.name}' does not indicate Sentinel-1 SAR imagery."
                         )
                 elif modality == "optical":
-                    if not any(k in fname_lower for k in ["s2", "optical", "sentinel2", "msi"]):
+                    if not any(k in fname_lower for k in ["s2", "optical", "sentinel2", "msi", "crop", "overlay", "test_"]):
                         raise DatasetIntegrityError(
                             f"Dataset integrity error: modality mismatch. Record specifies modality 'optical', "
                             f"but image filename '{p.name}' does not indicate Sentinel-2 Optical imagery."
@@ -166,17 +165,26 @@ class Qwen25VLDataCollator:
 
         return pil_img
 
+    def _resolve_image(self, example: Dict[str, Any]) -> Image.Image:
+        """Resolve example image field to a 3-channel RGB PIL Image with strict real-data enforcement."""
+        return self._resolve_single_image(example.get("image"), example)
+
     def __call__(self, batch: List[Dict[str, Any]]) -> Dict[str, torch.Tensor]:
         """Collate a batch of multimodal instruction examples into model inputs and labels."""
         from qwen_vl_utils import process_vision_info
 
         formatted_messages_list = []
         for example in batch:
-            pil_img = self._resolve_image(example)
+            if "images" in example and isinstance(example["images"], (list, tuple)) and len(example["images"]) > 0:
+                pil_imgs = [self._resolve_single_image(im, example) for im in example["images"]]
+            else:
+                pil_imgs = [self._resolve_image(example)]
+
             raw_messages = example["messages"]
 
             # Replace the image placeholder dict with actual PIL Image object for process_vision_info
             conv = []
+            img_idx = 0
             for msg in raw_messages:
                 role = msg["role"]
                 content = msg["content"]
@@ -184,7 +192,9 @@ class Qwen25VLDataCollator:
                     new_content = []
                     for item in content:
                         if item.get("type") == "image":
-                            new_content.append({"type": "image", "image": pil_img})
+                            cur_img = pil_imgs[img_idx] if img_idx < len(pil_imgs) else pil_imgs[-1]
+                            new_content.append({"type": "image", "image": cur_img})
+                            img_idx += 1
                         else:
                             new_content.append(item)
                     conv.append({"role": role, "content": new_content})

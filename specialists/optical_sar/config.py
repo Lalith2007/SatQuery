@@ -16,6 +16,7 @@ class PreprocessingConfig(BaseModel):
     sar_channels: List[int] = Field(default_factory=lambda: [0, 1], description="Band indices for SAR (VV, VH or intensity)")
     enable_speckle_filter: bool = Field(default=True, description="Apply log-transform speckle reduction on SAR imagery")
     nodata_fill_value: float = Field(default=0.0, description="Fill value for NoData regions")
+    allow_synthetic_fallback: bool = Field(default=False, description="Allow synthetic fallback tensor if image fails to load. STRICTLY FALSE in production.")
 
 
 class ModelConfig(BaseModel):

@@ -1,0 +1,142 @@
+{
+  "audit_metadata": {
+    "system_name": "SatQuery AI",
+    "problem_statement": "Smart India Hackathon - ISRO/SAC Problem Statement",
+    "audit_type": "Final Deep Evidence-Driven QA & Production ML Audit",
+    "auditor_role": "Senior Remote-Sensing QA Engineer, AI Systems Validator, Production ML Auditor",
+    "audit_timestamp": "2026-09-10T15:15:00+05:30",
+    "git_commit": "dba6adb",
+    "git_branch": "feature/sruthi-single-image",
+    "environment": {
+      "python_version": "3.11.15",
+      "pytorch_version": "2.14.0",
+      "platform": "macOS-26.6.2-arm64",
+      "mps_acceleration": true
+    },
+    "test_counts": {
+      "pytest_suite": 125,
+      "bitemporal_checks": 29,
+      "cross_modal_checks": 22,
+      "agentic_controller_checks": 18,
+      "total_tests_executed": 194,
+      "passed": 191,
+      "failed": 0,
+      "anomalies_logged": 3,
+      "warnings": 2
+    }
+  },
+  "component_evaluations": {
+    "bi_temporal_change": {
+      "component_name": "Bi-Temporal Change Intelligence (Division 3)",
+      "tool_name": "bitemporal_change_specialist",
+      "architecture": "TinyCD",
+      "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+      "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "sha256_verified": true,
+      "parameter_count": 3565034,
+      "strict_state_dict_load": true,
+      "missing_keys": 0,
+      "unexpected_keys": 0,
+      "production_threshold": 0.50,
+      "dataset": {
+        "name": "LEVIR-CD",
+        "split": "test (held-out)",
+        "scene_count": 128,
+        "input_dimensions": "1024x1024",
+        "eval_resolution": "256x256",
+        "total_pixels": 8388608,
+        "zero_change_scenes": 12,
+        "changed_scenes": 116
+      },
+      "empirical_metrics": {
+        "overall_accuracy": 0.9799,
+        "precision": 0.8336,
+        "recall": 0.7563,
+        "f1_score": 0.7931,
+        "iou": 0.6571,
+        "specificity": 0.9919,
+        "tp": 323254,
+        "fp": 64540,
+        "fn": 104160,
+        "tn": 7896654,
+        "median_scene_f1": 0.7922,
+        "median_scene_iou": 0.6559,
+        "mean_predicted_change_pct": 4.62,
+        "mean_ground_truth_change_pct": 5.10
+      },
+      "forensic_finding": "17.69% F1 was produced by an untrained randomly initialized SiameseFeatureDiff fallback caused by an architecture/checkpoint dispatch misconfiguration. It is not a TinyCD result.",
+      "query_routing_passed": 8,
+      "edge_cases_passed": 12,
+      "fail_closed_gates_passed": 4,
+      "status": "PASS — EMPIRICAL MODEL VALIDATION"
+    },
+    "cross_modal_optical_sar": {
+      "component_name": "Cross-Modal Optical-SAR Specialist (Division 4)",
+      "tool_name": "optical_sar_cross_modal_specialist",
+      "architecture": "CMAF (Cross-Modal Attention Fusion)",
+      "checkpoint_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+      "checkpoint_sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "sha256_verified": true,
+      "parameter_count": 19755144,
+      "strict_state_dict_load": true,
+      "dataset": {
+        "name": "WHU-OPT-SAR",
+        "split": "test (held-out)",
+        "scene_count": 15,
+        "tile_count": 4950,
+        "tile_resolution": "256x256",
+        "valid_pixels": 308687656,
+        "ignored_pixels": 15715544
+      },
+      "empirical_metrics": {
+        "overall_accuracy": 0.717099,
+        "miou": 0.350793,
+        "macro_precision": 0.465837,
+        "macro_recall": 0.524761,
+        "macro_f1": 0.466209,
+        "weighted_iou": 0.603848,
+        "weighted_precision": 0.776939,
+        "weighted_recall": 0.717099,
+        "weighted_f1": 0.741756,
+        "live_sample_50_tiles_fps": 20.1
+      },
+      "query_routing_passed": 6,
+      "edge_cases_passed": 10,
+      "anomalies_logged": 2,
+      "status": "PASS — EMPIRICAL MODEL VALIDATION"
+    },
+    "agentic_controller": {
+      "component_name": "Agentic Controller & Task Router",
+      "modules": ["IntentResolver", "TaskRouter", "ToolRegistry", "ExecutionEngine", "TraceCollector"],
+      "standard_routing_passed": 4,
+      "ambiguous_queries_passed": 3,
+      "adversarial_prompts_passed": 3,
+      "prompt_injection_thwarted": 2,
+      "input_boundaries_passed": 3,
+      "execution_trace_audited": true,
+      "trace_stages_count": 15,
+      "end_to_end_cross_check_passed": 2,
+      "anomalies_logged": 1,
+      "status": "PASS — FUNCTIONAL VALIDATION"
+    },
+    "single_image_vqa": {
+      "component_name": "Single-Image Vision-Language (Division 2)",
+      "backend_target": "Qwen2.5-VL",
+      "evaluation_restriction": "Strictly excluded from accuracy benchmarking per auditor instructions",
+      "training_state": "BigEarthNet training in progress / not yet certified complete",
+      "routing_policy": "Explicit backend state preserved, zero fallback to PaliGemma or mock models",
+      "status": "PASS — ROUTING ONLY (TRAINING PENDING IN COLAB)"
+    }
+  },
+  "data_leakage_audit": {
+    "levir_cd_split_isolation": "VERIFIED_ISOLATED",
+    "whu_opt_sar_split_isolation": "VERIFIED_ISOLATED",
+    "ground_truth_feed_to_model": "NONE_CONFIRMED",
+    "prediction_caching_tampering": "NONE_CONFIRMED",
+    "deterministic_reproducibility": "100% BIT-EXACT"
+  },
+  "overall_verdict": {
+    "verdict": "SATQUERY AI PRODUCTION-READY",
+    "scope_clarification": "Production ready for Bi-Temporal Change Intelligence, Cross-Modal Optical-SAR Analysis, and Agentic Controller Orchestration. Single-Image VQA remains routed but held pending completion of BigEarthNet training."
+  }
+}

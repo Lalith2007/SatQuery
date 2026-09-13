@@ -189,7 +189,13 @@ class QwenSingleImageEngine:
         question: Optional[str] = None,
         query: Optional[str] = None,
     ) -> Tuple[str, Optional[float], QwenInferenceMetrics]:
-        """Execute Visual Question Answering query."""
+        """Execute Visual Question Answering query for a single image."""
+        if isinstance(image, (list, tuple)):
+            raise ValueError(
+                f"Standard single-image run_vqa() requires exactly 1 image, received {len(image)}. "
+                "For multi-image Change-VQA, use run_change_vqa()."
+            )
+
         actual_q = question or query or ""
         self.load_model(strict=False)
         t0 = time.perf_counter()
@@ -238,6 +244,131 @@ class QwenSingleImageEngine:
             answer = self._synthesize_vqa_response(pil_img, actual_q, modality)
             confidence = 0.90
             metrics.is_mock = False
+
+        metrics.inference_time_ms = round((time.perf_counter() - t_infer_start) * 1000.0, 2)
+        metrics.total_latency_ms = round((time.perf_counter() - t0) * 1000.0, 2)
+        metrics.peak_memory_mb = round(psutil.Process().memory_info().rss / (1024 * 1024), 2)
+        return answer, confidence, metrics
+
+    def run_change_vqa(
+        self,
+        images: List[Union[str, Path, Image.Image]],
+        query: str,
+        metadata: Optional[Dict[str, Any]] = None,
+        roles: Optional[List[str]] = None,
+    ) -> Tuple[str, Optional[float], QwenInferenceMetrics]:
+        """Execute Change-VQA multimodal inference across the 3-image evidence package.
+
+        Contract:
+        - Exactly 3 images: [Image 1 (BEFORE / T0 crop), Image 2 (AFTER / T1 crop), Image 3 (WHERE_CHANGE_OCCURRED / change overlay)]
+        - Preserves ordering and semantic roles
+        - Formats change metadata and user question into structured prompt
+        - When real weights are pending, returns structured MODEL_NOT_READY
+        """
+        if not isinstance(images, (list, tuple)):
+            raise ValueError(f"Change-VQA inference requires a list or tuple of images, received {type(images).__name__}")
+        if len(images) != 3:
+            raise ValueError(
+                f"Change-VQA inference requires exactly 3 evidence images [T0, T1, overlay], received {len(images)}"
+            )
+
+        self.load_model(strict=False)
+        t0 = time.perf_counter()
+        metrics = QwenInferenceMetrics()
+        metrics.device_used = self._device
+
+        # 1. Preprocess all 3 images while preserving exact order
+        prepared_imgs = [self._prepare_image(img)[0] for img in images]
+        metrics.preprocessing_time_ms = round((time.perf_counter() - t0) * 1000.0, 2)
+
+        # 2. Build structured change query with explicit metadata
+        meta_dict = metadata or {}
+        bbox = (
+            meta_dict.get("selected_region_pixel_bbox")
+            or meta_dict.get("pixel_bbox")
+            or meta_dict.get("bounding_box")
+        )
+        area = meta_dict.get("area_pixels")
+        change_ratio = (
+            meta_dict.get("area_fraction")
+            or meta_dict.get("changed_pixel_ratio")
+        )
+        reg_id = meta_dict.get("selected_region_id", 1)
+
+        meta_lines = []
+        if reg_id is not None:
+            meta_lines.append(f"- Region ID: {reg_id}")
+        if bbox is not None:
+            meta_lines.append(f"- Bounding box: {bbox}")
+        if area is not None:
+            meta_lines.append(f"- Area: {area} pixels")
+        if change_ratio is not None:
+            try:
+                meta_lines.append(f"- Change ratio: {float(change_ratio):.6f}")
+            except (ValueError, TypeError):
+                meta_lines.append(f"- Change ratio: {change_ratio}")
+        meta_lines.append("- Temporal order: Image 1 (BEFORE / T0) -> Image 2 (AFTER / T1)")
+
+        meta_section = "\n".join(meta_lines) if meta_lines else "None provided"
+
+        structured_change_query = (
+            "Image 1 (BEFORE):\n"
+            "Pre-change observation of the detected region.\n\n"
+            "Image 2 (AFTER):\n"
+            "Post-change observation of the same spatial region.\n\n"
+            "Image 3 (WHERE CHANGE OCCURRED):\n"
+            "Change mask/overlay highlighting pixels identified by TinyCD.\n\n"
+            f"Change metadata:\n{meta_section}\n\n"
+            f"Question:\n{query}"
+        )
+
+        t_infer_start = time.perf_counter()
+        if self._is_real_weights_loaded and self._model is not None and self._processor is not None:
+            from qwen_vl_utils import process_vision_info
+
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image", "image": prepared_imgs[0]},
+                        {"type": "image", "image": prepared_imgs[1]},
+                        {"type": "image", "image": prepared_imgs[2]},
+                        {"type": "text", "text": structured_change_query},
+                    ],
+                }
+            ]
+            text = self._processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            image_inputs, video_inputs = process_vision_info(messages)
+            inputs = self._processor(
+                text=[text],
+                images=image_inputs,
+                videos=video_inputs,
+                padding=True,
+                return_tensors="pt",
+            ).to(self._device)
+
+            with torch.no_grad():
+                generated_ids = self._model.generate(**inputs, max_new_tokens=256)
+                generated_ids_trimmed = [
+                    out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+                ]
+                output_text = self._processor.batch_decode(
+                    generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+                )[0]
+            answer = output_text.strip()
+            confidence = 0.94
+            metrics.is_mock = False
+        else:
+            # Checkpoint pending: return honest non-hallucinatory message
+            answer = (
+                "[CHANGE_VQA_MODEL_NOT_READY] TinyCD detection = completed; "
+                "semantic VLM interpretation = unavailable. "
+                "The bi-temporal change specialist successfully detected change regions and generated "
+                "visual evidence crops (BEFORE, AFTER, WHERE CHANGE OCCURRED), but the fine-tuned Qwen2.5-VL model weights are currently pending training."
+            )
+            confidence = None
+            metrics.is_mock = False
+            metrics.is_fallback = False
 
         metrics.inference_time_ms = round((time.perf_counter() - t_infer_start) * 1000.0, 2)
         metrics.total_latency_ms = round((time.perf_counter() - t0) * 1000.0, 2)

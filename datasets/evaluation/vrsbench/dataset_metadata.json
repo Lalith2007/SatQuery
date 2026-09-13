@@ -1,0 +1,15 @@
+{
+  "benchmark": "VRSBench",
+  "version": "1.1.0",
+  "total_records": 18,
+  "tasks": [
+    "vqa",
+    "grounding"
+  ],
+  "sensor": "High-Resolution Aerial / Satellite Optical (0.5m - 2m GSD)",
+  "source": "Wuhan University / LIESMARS (Ling et al., 2024)",
+  "records_by_task": {
+    "vqa": 5,
+    "grounding": 13
+  }
+}

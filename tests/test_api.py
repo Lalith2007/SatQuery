@@ -77,7 +77,7 @@ def test_api_query_bitemporal_change(
     response = api_client.post("/api/v1/query", json=payload)
     assert response.status_code == 200
     data = response.json()
-    assert data["status"] == "success"
+    assert data["status"] in {"success", "partial_success"}
     assert data["resolved_task"] in {"change_analysis", "change_vqa"}
     assert len(data["evidence"]) > 0
     assert len(data["artifacts"]) > 0

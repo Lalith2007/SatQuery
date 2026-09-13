@@ -4,11 +4,11 @@
   "device": "mps",
   "total_parameters": 3565034,
   "trainable_parameters": 3565034,
-  "forward_loss": 1.199375,
-  "gradient_norm": 0.946811,
+  "forward_loss": 1.213532,
+  "gradient_norm": 1.133977,
   "non_zero_gradient_tensors": 94,
   "monitored_parameter": "classifier.0.weight",
-  "parameter_delta_after_step": 0.00565685,
+  "parameter_delta_after_step": 0.00565686,
   "checkpoint_path": "specialists/temporal_change/weights/smoke_test_checkpoint.pth",
-  "checkpoint_sha256": "1e0aa6b8a1248f66f80bf8246f95fd74a1c2ed5917ac189792e6707a9fb6cc48"
+  "checkpoint_sha256": "5561b8b503ce297922ade2c3840a9284d5933bb1b360dae598d9bbc386974ce0"
 }

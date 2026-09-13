@@ -53,6 +53,24 @@ T0 + T1 Rasters
 - **Active Checkpoint:** [`specialists/temporal_change/weights/ChangeDetector-TinyCD.pth`](file:///Users/lalith/Desktop/SatQuery/specialists/temporal_change/weights/ChangeDetector-TinyCD.pth)
 - **Cryptographic SHA-256:** `b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0`
 - **Strict Load (`strict=True`):** **PASSED** (0 missing keys, 0 unexpected keys)
+- **Production Threshold:** `0.50`
+- **Status:** **HEALTHY & FROZEN** (Zero retraining or replacement required)
+
+### Checkpoint Provenance Gate & Zero-Fallback Policy
+
+Production execution enforces a strict fail-closed **Checkpoint Provenance Gate** at startup:
+1. Validates that the active model architecture is `tinycd`.
+2. Validates that the checkpoint file exists on disk.
+3. Validates that the cryptographic SHA-256 matches `b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0`.
+4. Enforces strict PyTorch weights loading (`strict=True`: 0 missing keys, 0 unexpected keys).
+5. Confirms the exact parameter count matches `3,565,034`.
+
+If any check fails, execution immediately halts with `STATUS = CHECKPOINT_INVALID`. **Random or untrained fallback is strictly forbidden.** Silently initializing `SiameseFeatureDiff`, random ResNet-18, or stub ChangeFormer models is completely excised in production.
+
+> **Forensic Audit Clarification:**
+> 17.69% F1 was produced by an untrained randomly initialized SiameseFeatureDiff fallback caused by an architecture/checkpoint dispatch misconfiguration. It is not a TinyCD result.
+>
+> The verified TinyCD model achieves **79.31% – 79.54% F1** and **65.71% – 66.03% IoU** across the 128-scene official LEVIR-CD test set, and **83.26% – 83.90% F1** on forensic sample `test_10.png`.
 
 ---
 
@@ -115,4 +133,4 @@ Run the comprehensive Division 3 test suite:
 ./.venv/bin/pytest tests/test_temporal_change_specialist.py -v
 ```
 
-All 44 test gates pass: Unit validation, contract compliance, mock compatibility, genuine neural inference, tool registry integration, and agent execution.
+All **51 test gates** pass across `tests/test_temporal_change_specialist.py` (45 tests) and `tests/test_tinycd_production_verification.py` (6 tests): unit validation, contract compliance, mock compatibility, genuine neural inference, tool registry integration, agent execution, and checkpoint provenance gate enforcement.

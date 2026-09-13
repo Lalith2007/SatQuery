@@ -139,6 +139,56 @@ class LazyResilientHTTPCombinedStream(io.RawIOBase):
             except Exception:
                 pass
 
+class CombinedStream(io.RawIOBase):
+    """Universal stream concatenator supporting both in-memory/file streams and HTTP URLs."""
+    def __init__(self, streams_or_urls: List[Any], headers: Optional[Dict[str, str]] = None):
+        self.items = list(streams_or_urls)
+        self.headers = headers or {}
+        if self.items and isinstance(self.items[0], str):
+            self._delegate = LazyResilientHTTPCombinedStream(self.items, self.headers)
+            self._is_delegate = True
+        else:
+            self._is_delegate = False
+            self.idx = 0
+
+    def readable(self) -> bool:
+        return True
+
+    def seekable(self) -> bool:
+        return False
+
+    def readinto(self, b) -> int:
+        chunk = self.read(len(b))
+        n = len(chunk)
+        b[:n] = chunk
+        return n
+
+    def read(self, size: int = -1) -> bytes:
+        if self._is_delegate:
+            return self._delegate.read(size)
+        if size is None or size < 0:
+            size = 65536
+        result = b""
+        while self.idx < len(self.items) and len(result) < size:
+            stream = self.items[self.idx]
+            needed = size - len(result)
+            chunk = stream.read(needed)
+            if not chunk:
+                self.idx += 1
+                continue
+            result += chunk
+        return result
+
+    def close(self):
+        if self._is_delegate:
+            self._delegate.close()
+        else:
+            for s in self.items:
+                try:
+                    s.close()
+                except Exception:
+                    pass
+
 
 def get_hf_headers(token: Optional[str] = None) -> Dict[str, str]:
     """Assemble headers for Hugging Face streaming requests."""

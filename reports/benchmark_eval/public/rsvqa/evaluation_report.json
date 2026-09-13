@@ -1,0 +1,21 @@
+{
+  "benchmark": "RSVQA-LR",
+  "task": "Remote Sensing Visual Question Answering",
+  "dataset_provenance": "Sylvain Lobry, Diego Marcos, Devis Tuia / Zenodo (DOI: 10.5281/zenodo.6344334)",
+  "sensor": "Sentinel-2 (10m GSD Optical MSI)",
+  "total_quarantined_samples": 2000,
+  "split": "validation",
+  "unique_images": 100,
+  "unique_questions": 869,
+  "evaluator": "RSVQAEvaluator",
+  "model_target": "Qwen2.5-VL-3B-Instruct (Vision-Language Adapter)",
+  "model_status": "NOT_READY (PENDING QWEN TRAINING MERGE)",
+  "harness_status": "VERIFIED \u2014 ARITHMETIC OPERATIONAL",
+  "official_benchmark_score": "NOT AVAILABLE",
+  "score_note": "Non-Fabrication Policy: Qwen2.5-VL-3B-Instruct training is running on remote Colab instance. Scores will be computed upon checkpoint merge.",
+  "smoke_test_result": {
+    "tested_samples": 2,
+    "overall_accuracy": 0.5,
+    "harness_verified": true
+  }
+}

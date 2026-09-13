@@ -1,0 +1,21 @@
+{
+  "benchmark": "CDVQA",
+  "task": "Change Detection Visual Question Answering",
+  "dataset_provenance": "Beihang University LEVIR Lab (Chen & Shi) / Yuan et al. (CDVQA)",
+  "sensor": "Google Earth VHR Optical (0.5m GSD)",
+  "total_quarantined_samples": 128,
+  "split": "official_levir_cd_test (128 scenes)",
+  "evaluator": "CDVQAEvaluator",
+  "model_target": "TinyCD (Frozen) + Qwen2.5-VL-3B-Instruct (Vision-Language Adapter)",
+  "workflow_architecture": "Composed Pipeline: TinyCD (Stage 1) -> Predicted Bounding Box -> 3-Image Handoff [BEFORE, AFTER, WHERE_CHANGE_OCCURRED] -> Qwen2.5-VL-3B-Instruct (Stage 2)",
+  "anti_leakage_guarantee": "Strict zero leakage: ground-truth change masks in label/ are strictly quarantined; TinyCD outputs independent predicted mask for region extraction",
+  "model_status": "PIPELINE VERIFIED \u2014 QWEN SEMANTIC EVALUATION PENDING",
+  "harness_status": "VERIFIED \u2014 WORKFLOW & ARITHMETIC OPERATIONAL",
+  "official_benchmark_score": "NOT AVAILABLE",
+  "score_note": "Non-Fabrication Policy: Qwen2.5-VL-3B-Instruct training is running on remote Colab instance. Textual VQA scores will be computed upon checkpoint merge.",
+  "smoke_test_result": {
+    "bleu4_test": 1.0,
+    "rouge_l_test": 1.0,
+    "harness_verified": true
+  }
+}
