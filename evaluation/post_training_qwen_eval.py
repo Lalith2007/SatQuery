@@ -42,24 +42,35 @@ def verify_checkpoint_or_adapter(
     checkpoint_dir: Optional[str] = None,
     adapter_path: Optional[str] = None,
 ) -> Tuple[bool, str, Optional[str], Optional[str]]:
-    """Check if either a merged checkpoint or a valid LoRA adapter exists."""
-    # 1. Check merged checkpoint directory
+    """Check if either a merged checkpoint or a valid LoRA adapter exists (including 1-level subdirectories)."""
+    candidates: List[Path] = []
     if checkpoint_dir:
-        ckpt_p = Path(checkpoint_dir)
-        if ckpt_p.exists():
-            config_file = ckpt_p / "config.json"
-            weight_files = list(ckpt_p.glob("*.safetensors")) + list(ckpt_p.glob("*.bin"))
-            if config_file.exists() and len(weight_files) > 0:
-                return True, f"Valid merged checkpoint: {len(weight_files)} weight files in {ckpt_p}", str(ckpt_p), None
-
-    # 2. Check LoRA adapter directory
+        p = Path(checkpoint_dir)
+        if p.exists():
+            candidates.append(p)
+            candidates.extend([sub for sub in p.glob("*") if sub.is_dir()])
     if adapter_path:
-        ad_p = Path(adapter_path)
-        if ad_p.exists():
-            adapter_config = ad_p / "adapter_config.json"
-            adapter_weights = list(ad_p.glob("adapter_model.safetensors")) + list(ad_p.glob("adapter_model.bin"))
-            if adapter_config.exists() and len(adapter_weights) > 0:
-                return True, f"Valid LoRA adapter: {adapter_weights[0].name} in {ad_p}", None, str(ad_p)
+        p = Path(adapter_path)
+        if p.exists():
+            candidates.append(p)
+            candidates.extend([sub for sub in p.glob("*") if sub.is_dir()])
+
+    # 1. Check for LoRA adapter
+    for cand in candidates:
+        adapter_config = cand / "adapter_config.json"
+        adapter_weights = (
+            list(cand.glob("adapter_model.safetensors"))
+            + list(cand.glob("adapter_model.bin"))
+        )
+        if adapter_config.exists() and len(adapter_weights) > 0:
+            return True, f"Valid LoRA adapter: {adapter_weights[0].name} in {cand}", None, str(cand)
+
+    # 2. Check for merged full checkpoint
+    for cand in candidates:
+        config_file = cand / "config.json"
+        weight_files = list(cand.glob("*.safetensors")) + list(cand.glob("*.bin"))
+        if config_file.exists() and len(weight_files) > 0:
+            return True, f"Valid merged checkpoint: {len(weight_files)} weight files in {cand}", str(cand), None
 
     return False, "Neither a valid merged checkpoint nor an adapter directory was discovered.", None, None
 
@@ -241,9 +252,9 @@ def evaluate_cdvqa(
         t0_p = Path(rec.get("t0_path", ""))
         t1_p = Path(rec.get("t1_path", ""))
         if not t0_p.exists():
-            t0_p = Path("demo_assets/demo_temporal_t0.png")
+            t0_p = Path("demo_assets/demo_change_t0.png")
         if not t1_p.exists():
-            t1_p = Path("demo_assets/demo_temporal_t1.png")
+            t1_p = Path("demo_assets/demo_change_t1.png")
 
         query = rec.get("query", "Describe what structural and land-cover changes occurred.")
         try:
