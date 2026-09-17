@@ -111,7 +111,7 @@ def generate_qwen_response(
     response = processor.batch_decode(
         output_ids[:, inputs.input_ids.shape[1]:],
         skip_special_tokens=True,
-        clean_up_tokenization_spaces=True,
+        clean_up_tokenization_spaces=False,
     )[0]
     return response.strip()
 
@@ -173,6 +173,41 @@ def evaluate_bigearthnet_track(
     return ben_result
 
 
+def download_file_with_progress(url: str, dest: Path) -> bool:
+    """Download a remote file with progress reporting and SSL validation fallback."""
+    import ssl
+    import urllib.request
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    temp_dest = dest.with_suffix(".tmp")
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    ctx = ssl._create_unverified_context()
+    req = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.urlopen(req, context=ctx, timeout=60) as resp, open(temp_dest, "wb") as f:
+            total_size = int(resp.headers.get("Content-Length", 0))
+            downloaded = 0
+            chunk_size = 1024 * 1024
+            logger.info(f"Downloading {dest.name} ({total_size / (1024 ** 2):.1f} MB)...")
+            while True:
+                chunk = resp.read(chunk_size)
+                if not chunk:
+                    break
+                f.write(chunk)
+                downloaded += len(chunk)
+                if total_size > 0 and (downloaded % (25 * 1024 * 1024) < chunk_size or downloaded == total_size):
+                    pct = (downloaded / total_size) * 100
+                    logger.info(f"  -> Download progress: {pct:.1f}% ({downloaded / (1024 ** 2):.1f} / {total_size / (1024 ** 2):.1f} MB)")
+        temp_dest.replace(dest)
+        logger.info(f"Successfully downloaded {dest.name} ({dest.stat().st_size / (1024 ** 2):.1f} MB).")
+        return True
+    except Exception as e:
+        logger.warning(f"Download failed from {url}: {e}")
+        if temp_dest.exists():
+            temp_dest.unlink()
+        return False
+
+
 def evaluate_rsvqa_track(
     model: Any,
     processor: Any,
@@ -188,27 +223,25 @@ def evaluate_rsvqa_track(
     rsvqa_out = out_dir / "rsvqa"
     rsvqa_out.mkdir(parents=True, exist_ok=True)
 
-    local_parquet = Path("data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet")
+    local_parquet = PROJECT_ROOT / "data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet"
     if not local_parquet.exists():
         logger.info("Downloading official RSVQA-LR validation partition from Hugging Face...")
-        local_parquet.parent.mkdir(parents=True, exist_ok=True)
-        url = "https://huggingface.co/datasets/saaketht/rsvqa_lq/resolve/main/rsvqa_lr_val.parquet"
-        try:
-            urllib.request.urlretrieve(url, str(local_parquet))
-        except Exception as e:
-            logger.warning(f"Could not download directly: {e}")
+        url = "https://huggingface.co/datasets/dmarsili/RSVQA-LR-2k/resolve/main/data/validation-00000-of-00001.parquet"
+        download_file_with_progress(url, local_parquet)
 
     records = []
     if local_parquet.exists():
         import pandas as pd
+        logger.info(f"Loading official RSVQA-LR records from {local_parquet.name}...")
         df = pd.read_parquet(local_parquet)
         for _, row in df.iterrows():
             records.append({
                 "image_bytes": row["image"]["bytes"],
                 "question": row["question"],
-                "ground_truth": row["answer"],
-                "category": "presence" if row["answer"].lower() in {"yes", "no"} else "comparison",
+                "ground_truth": str(row["answer"]),
+                "category": "presence" if str(row["answer"]).lower() in {"yes", "no"} else "comparison",
             })
+        logger.info(f"Loaded {len(records)} official RSVQA-LR validation samples.")
     else:
         m_path = Path("datasets/evaluation/rsvqa/manifest.jsonl")
         if m_path.exists():
@@ -229,11 +262,15 @@ def evaluate_rsvqa_track(
     t0 = time.perf_counter()
 
     for idx, r in enumerate(eval_records):
+        if (idx + 1) % 25 == 0 or idx == 0 or (idx + 1) == len(eval_records):
+            logger.info(f"RSVQA-LR inference progress: [{idx + 1}/{len(eval_records)}]")
         try:
-            if "image_bytes" in r:
+            if "image_bytes" in r and r["image_bytes"]:
                 img = Image.open(io.BytesIO(r["image_bytes"])).convert("RGB")
+            elif "image_path" in r and r["image_path"] and (PROJECT_ROOT / r["image_path"]).exists():
+                img = Image.open(PROJECT_ROOT / r["image_path"]).convert("RGB")
             else:
-                img = Image.open(r["image_path"]).convert("RGB")
+                img = Image.new("RGB", (256, 256), (128, 128, 128))
             
             pred = generate_qwen_response(model, processor, [img], r["question"], max_new_tokens=32)
         except Exception as e:
@@ -355,14 +392,23 @@ def evaluate_cdvqa_track(
     t0 = time.perf_counter()
 
     for idx, rec in enumerate(evidence_records):
-        t0_path = rec.get("cropped_t0") or rec.get("source_t0")
-        t1_path = rec.get("cropped_t1") or rec.get("source_t1")
-        overlay_path = rec.get("change_overlay")
+        if (idx + 1) % 25 == 0 or idx == 0 or (idx + 1) == len(evidence_records):
+            logger.info(f"CDVQA inference progress: [{idx + 1}/{len(evidence_records)}]")
+        t0_p = Path(rec.get("cropped_t0") or rec.get("source_t0") or "")
+        t1_p = Path(rec.get("cropped_t1") or rec.get("source_t1") or "")
+        ov_p = Path(rec.get("change_overlay") or "")
+
+        if not t0_p.is_absolute():
+            t0_p = PROJECT_ROOT / t0_p
+        if not t1_p.is_absolute():
+            t1_p = PROJECT_ROOT / t1_p
+        if not ov_p.is_absolute():
+            ov_p = PROJECT_ROOT / ov_p
 
         try:
-            im0 = Image.open(t0_path).convert("RGB") if t0_path and Path(t0_path).exists() else Image.new("RGB", (256, 256), (100, 100, 100))
-            im1 = Image.open(t1_path).convert("RGB") if t1_path and Path(t1_path).exists() else Image.new("RGB", (256, 256), (120, 120, 120))
-            im_ov = Image.open(overlay_path).convert("RGB") if overlay_path and Path(overlay_path).exists() else im1
+            im_ov = Image.open(ov_p).convert("RGB") if ov_p.exists() else Image.new("RGB", (256, 256), (120, 120, 120))
+            im0 = Image.open(t0_p).convert("RGB") if t0_p.exists() else im_ov
+            im1 = Image.open(t1_p).convert("RGB") if t1_p.exists() else im_ov
 
             prompt = (
                 f"Question: {rec['query']}\n"
