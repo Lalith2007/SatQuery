@@ -14,7 +14,13 @@ import { api } from '../../services/api';
 import { Badge } from '../common/Badge';
 
 export const PresetSelector: React.FC = () => {
-  const { selectedPreset, selectPreset, inputMode } = useAnalysis();
+  const {
+    selectedPreset,
+    selectPreset,
+    selectedSceneIndex,
+    selectSceneIndex,
+    inputMode,
+  } = useAnalysis();
 
   const getIcon = (name: string) => {
     switch (name) {
@@ -104,11 +110,43 @@ export const PresetSelector: React.FC = () => {
               })}
             </div>
 
+            {/* 15 Real Satellite Scene Variants Strip */}
+            {isSelected && (
+              <div className="mt-2.5 pt-2 border-t border-cyan-500/30">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-semibold text-cyan-300 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    Real Scene Variant ({selectedSceneIndex + 1}/15):
+                  </span>
+                  <span className="text-[9px] text-emerald-400 font-mono">Held-Out Test Split</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {Array.from({ length: 15 }, (_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectSceneIndex(idx);
+                      }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all ${
+                        selectedSceneIndex === idx
+                          ? 'bg-cyan-500 text-black font-bold shadow-glow-cyan scale-105'
+                          : 'bg-background-elevated hover:bg-cyan-950 text-text-secondary hover:text-cyan-300 border border-border-subtle'
+                      }`}
+                      title={`Switch to Scene #${idx + 1}`}
+                    >
+                      #{idx + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Footer Metadata & CTA */}
-            <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-border-subtle/60 text-text-muted">
+            <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-border-subtle/60 text-text-muted mt-2">
               <span>Source: <strong className="text-text-secondary">{preset.source}</strong></span>
               <span className={`font-semibold flex items-center gap-1 ${isSelected ? 'text-cyan-400' : 'text-text-muted'}`}>
-                {isSelected ? 'Active Preset' : 'Select Preset'} <ArrowRight className="w-3 h-3" />
+                {isSelected ? 'Active Track' : 'Select Preset'} <ArrowRight className="w-3 h-3" />
               </span>
             </div>
           </div>

@@ -196,6 +196,36 @@ async def swap_specialist_tool(req: ToolSwapRequest):
         }
 
 
+
+@router.get("/api/v1/demos", summary="List All 75 Curated Real Satellite Demo Presets")
+async def list_demo_presets():
+    """Returns the unified manifest of all 75 curated, non-training real-world satellite demo scenes."""
+    from app.demo_assets import load_demo_manifest
+    try:
+        return load_demo_manifest("demo_assets")
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to load demo presets manifest: {e}",
+        )
+
+
+@router.get("/api/v1/demos/{demo_key}", summary="Get Samples for a Specific Demo Track")
+async def get_demo_track_samples(demo_key: str):
+    """Returns the 15 curated real satellite scenes for a given demo track (demo_a to demo_e)."""
+    from app.demo_assets import get_demo_samples
+    try:
+        samples = get_demo_samples(demo_key, "demo_assets")
+        return {"demo_key": demo_key, "sample_count": len(samples), "samples": samples}
+    except KeyError as ke:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ke))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to load samples for demo '{demo_key}': {e}",
+        )
+
+
 @router.post("/api/v1/query", response_model=QueryResponse, summary="Submit Structured Vision-Language Query")
 async def submit_query(request: QueryRequest) -> QueryResponse:
     """Submit a natural-language query with existing canonical raster image references."""
