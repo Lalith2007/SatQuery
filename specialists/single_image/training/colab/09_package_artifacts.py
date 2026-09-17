@@ -41,21 +41,20 @@ def compute_file_sha256(path: Path) -> str:
 
 
 def create_tar_archive(source_dir: Path, archive_path: Path) -> Path:
-    """Create a compressed archive (.tar.zst or .tar.gz) of the full merged checkpoint."""
-    print(f"Creating compressed archive of {source_dir.name} -> {archive_path}...")
+    """Create an archive (.tar.zst or uncompressed .tar) of the full merged checkpoint."""
+    print(f"Creating archive of {source_dir.name} -> {archive_path}...")
     archive_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Check for zstd
     has_zstd = shutil.which("zstd") is not None
     if has_zstd and str(archive_path).endswith(".tar.zst"):
-        cmd = f"tar -cf - -C {source_dir.parent} {source_dir.name} | zstd -T0 -3 -o {archive_path}"
+        cmd = f"tar -cf - -C {source_dir.parent} {source_dir.name} | zstd -T0 -1 -o {archive_path}"
         subprocess.run(cmd, shell=True, check=True)
     else:
-        # Fallback to standard gzip archive
-        gz_archive = archive_path.with_suffix(".gz") if not str(archive_path).endswith(".gz") else archive_path
-        cmd = f"tar -czf {gz_archive} -C {source_dir.parent} {source_dir.name}"
+        # Fast uncompressed tar (safetensors weights are already uncompressible float16 tensors)
+        tar_archive = archive_path.with_suffix(".tar") if not str(archive_path).endswith(".tar") else archive_path
+        cmd = f"tar -cf {tar_archive} -C {source_dir.parent} {source_dir.name}"
         subprocess.run(cmd, shell=True, check=True)
-        archive_path = gz_archive
+        archive_path = tar_archive
 
     print(f"Archive created: {archive_path} ({archive_path.stat().st_size / (1024**2):.1f} MB)")
     return archive_path
@@ -241,6 +240,7 @@ def package_and_export(
     output_bundle_dir: str = "artifacts/qwen25vl_stage1",
     google_drive_dir: Optional[str] = None,
     archive_name: str = "qwen25vl_stage1_full_checkpoint.tar.zst",
+    skip_archive: bool = False,
 ) -> Dict[str, Any]:
     """Package complete artifacts, generate checksums, archive, and export to Google Drive."""
     print("=" * 65)
@@ -275,10 +275,14 @@ def package_and_export(
 
     # 3. Create Full Checkpoint Archive
     archive_file = bundle_p / archive_name
-    if merged_p.exists():
+    if merged_p.exists() and not skip_archive:
         archive_file = create_tar_archive(merged_p, archive_file)
         manifest["archive_path"] = str(archive_file.resolve())
         manifest["archive_sha256"] = compute_file_sha256(archive_file)
+    else:
+        print("Archive compression skipped (standalone merged directory preserved in Google Drive).")
+        manifest["archive_path"] = None
+        manifest["archive_sha256"] = None
 
     # 4. Google Drive Persistence Copy
     gdrive_exported = False
@@ -288,9 +292,12 @@ def package_and_export(
         print(f"\nExporting complete artifact package to Google Drive: {g_dir}...")
         g_dir.mkdir(parents=True, exist_ok=True)
 
-        # Copy bundle
+        # Copy bundle files
         target_bundle = g_dir / "artifacts_qwen25vl_stage1"
         shutil.copytree(bundle_p, target_bundle, dirs_exist_ok=True)
+        # Also copy manifest and card to root of run_dir for direct discovery
+        shutil.copy2(bundle_p / "checkpoint_manifest.json", g_dir / "checkpoint_manifest.json")
+        shutil.copy2(bundle_p / "CHECKPOINT_CARD.md", g_dir / "CHECKPOINT_CARD.md")
 
         # Copy archive
         if archive_file.exists():
@@ -330,6 +337,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_bundle_dir", default=None, help="Alias for --output_bundle")
     parser.add_argument("--google_drive_dir", default=None)
     parser.add_argument("--run_dir", default=None, help="Alias for --google_drive_dir")
+    parser.add_argument("--skip_archive", action="store_true", help="Skip compressing 6GB merged model into tar")
     args = parser.parse_args()
 
     gdrive_dir = args.run_dir or args.google_drive_dir
@@ -346,4 +354,5 @@ if __name__ == "__main__":
         eval_dir=eval_dir,
         output_bundle_dir=bundle_dir,
         google_drive_dir=gdrive_dir,
+        skip_archive=args.skip_archive,
     )
