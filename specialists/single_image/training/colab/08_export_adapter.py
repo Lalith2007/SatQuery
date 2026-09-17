@@ -35,12 +35,54 @@ def compute_sha256(path: Path) -> str:
     return sha.hexdigest()
 
 
+def resolve_adapter_directory(adapter_dir: Union[str, Path]) -> Path:
+    """Intelligently resolve adapter directory if pointing to checkpoints folder or parent."""
+    p = Path(adapter_dir)
+    if not p.exists():
+        return p
+
+    # 1. Direct hit: adapter_config.json exists
+    if (p / "adapter_config.json").exists():
+        return p
+
+    # 2. Check sibling or child 'adapter' directory
+    if (p / "adapter" / "adapter_config.json").exists():
+        print(f"Auto-resolved adapter directory to subfolder: {p / 'adapter'}")
+        return p / "adapter"
+    if (p.parent / "adapter" / "adapter_config.json").exists():
+        print(f"Auto-resolved adapter directory to: {p.parent / 'adapter'}")
+        return p.parent / "adapter"
+
+    # 3. Check for checkpoint-* directories (e.g. in checkpoints/)
+    checkpoints = [d for d in p.glob("checkpoint-*") if d.is_dir() and (d / "adapter_config.json").exists()]
+    if checkpoints:
+        def extract_step(d: Path) -> int:
+            parts = d.name.split("-")
+            return int(parts[-1]) if parts[-1].isdigit() else 0
+        latest = max(checkpoints, key=extract_step)
+        print(f"Auto-resolved adapter from latest checkpoint: {latest}")
+        return latest
+
+    # 4. Check for checkpoints in sibling
+    if (p.parent / "checkpoints").exists():
+        checkpoints = [d for d in (p.parent / "checkpoints").glob("checkpoint-*") if d.is_dir() and (d / "adapter_config.json").exists()]
+        if checkpoints:
+            def extract_step(d: Path) -> int:
+                parts = d.name.split("-")
+                return int(parts[-1]) if parts[-1].isdigit() else 0
+            latest = max(checkpoints, key=extract_step)
+            print(f"Auto-resolved adapter from latest checkpoint in checkpoints folder: {latest}")
+            return latest
+
+    return p
+
+
 def verify_adapter(
     adapter_dir: str = "specialists/single_image/weights/qwen25vl_lora",
     manifest_path: str = "specialists/single_image/weights/qwen25vl_lora/adapter_verification.json",
 ) -> Dict[str, Any]:
     """Verify adapter weights file, compute checksum, and generate manifest."""
-    dir_p = Path(adapter_dir)
+    dir_p = resolve_adapter_directory(adapter_dir)
     safetensors_p = dir_p / "adapter_model.safetensors"
     config_p = dir_p / "adapter_config.json"
 
@@ -85,6 +127,13 @@ def verify_adapter(
     out_p.parent.mkdir(parents=True, exist_ok=True)
     with open(out_p, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2)
+
+    if dir_p.exists() and dir_p.resolve() != out_p.parent.resolve():
+        try:
+            with open(dir_p / "adapter_verification.json", "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=2)
+        except Exception:
+            pass
 
     print(f"Adapter verification manifest written to: {out_p.resolve()}")
     print("=" * 65)
@@ -312,20 +361,22 @@ if __name__ == "__main__":
     if validate_only:
         validate_independent_merged_checkpoint(merged_dir=merged_dir)
     else:
-        # Verify adapter
-        verify_adapter(args.adapter_dir)
-        if args.output_dir and Path(args.adapter_dir).resolve() != Path(args.output_dir).resolve():
-            out_p = Path(args.output_dir)
-            out_p.mkdir(parents=True, exist_ok=True)
-            for f in Path(args.adapter_dir).glob("*"):
+        # Verify adapter with automatic path resolution
+        resolved_dir = resolve_adapter_directory(args.adapter_dir)
+        verify_adapter(str(resolved_dir))
+        target_out = Path(args.output_dir) if args.output_dir else resolved_dir
+
+        if args.output_dir and resolved_dir.resolve() != target_out.resolve():
+            target_out.mkdir(parents=True, exist_ok=True)
+            for f in resolved_dir.glob("*"):
                 if f.is_file():
-                    shutil.copy2(f, out_p / f.name)
-            print(f"Adapter exported to: {out_p.resolve()}")
+                    shutil.copy2(f, target_out / f.name)
+            print(f"Adapter exported to: {target_out.resolve()}")
 
         if args.merge_full or not args.skip_merge and not args.output_dir:
             merge_full_checkpoint(
                 base_model_id=base_model,
-                adapter_dir=args.output_dir or args.adapter_dir,
+                adapter_dir=str(target_out.resolve()),
                 merged_output_dir=merged_dir,
             )
             validate_independent_merged_checkpoint(merged_dir=merged_dir)
