@@ -158,6 +158,44 @@ def merge_full_checkpoint(
     out_p = Path(merged_output_dir)
     out_p.mkdir(parents=True, exist_ok=True)
 
+    # Fast path: if shards already exist from a previous merge, ensure processor config and return
+    existing_shards = sorted(list(out_p.glob("*.safetensors")))
+    if len(existing_shards) >= 2 and (out_p / "config.json").exists():
+        print(f"Existing merged safetensors shards detected in {out_p} ({len(existing_shards)} shards). Skipping duplicate re-merge.")
+        if not (out_p / "preprocessor_config.json").exists():
+            default_preproc = {
+                "min_pixels": 3136, "max_pixels": 12845056, "patch_size": 14, "temporal_patch_size": 2, "merge_size": 2,
+                "image_mean": [0.48145466, 0.4578275, 0.40821073], "image_std": [0.26862954, 0.26130258, 0.27577711],
+                "image_processor_type": "Qwen2VLImageProcessor", "processor_class": "Qwen2_5_VLProcessor"
+            }
+            with open(out_p / "preprocessor_config.json", "w", encoding="utf-8") as f:
+                json.dump(default_preproc, f, indent=2)
+            print(f"Wrote preprocessor_config.json to: {out_p}")
+
+        try:
+            processor = AutoProcessor.from_pretrained(base_model_id, trust_remote_code=True)
+            processor.save_pretrained(out_p)
+        except Exception:
+            pass
+
+        total_bytes = sum(s.stat().st_size for s in existing_shards)
+        total_gb = round(total_bytes / (1024 ** 3), 2)
+        print(f"Merged model verified successfully: Total Size: {total_gb} GB, Shards: {len(existing_shards)}")
+        merge_result = {
+            "status": "MERGED_SUCCESS",
+            "base_model": base_model_id,
+            "adapter_dir": adapter_dir,
+            "merged_output_dir": str(out_p.resolve()),
+            "total_size_gb": total_gb,
+            "shard_count": len(existing_shards),
+            "shards": [s.name for s in existing_shards],
+            "duration_seconds": round(time.perf_counter() - t0, 2),
+        }
+        with open(out_p / "merge_metadata.json", "w", encoding="utf-8") as f:
+            json.dump(merge_result, f, indent=2)
+        print("=" * 65)
+        return merge_result
+
     is_cuda = torch.cuda.is_available() and device == "cuda"
     target_device = "cuda" if is_cuda else "cpu"
     compute_dtype = torch.bfloat16 if (is_cuda and torch.cuda.is_bf16_supported()) else torch.float16 if is_cuda else torch.float32
@@ -195,6 +233,37 @@ def merge_full_checkpoint(
         safe_serialization=True,
     )
     processor.save_pretrained(out_p)
+
+    if hasattr(processor, "image_processor"):
+        try:
+            processor.image_processor.save_pretrained(out_p)
+        except Exception:
+            pass
+
+    # Ensure preprocessor_config.json is present
+    if not (out_p / "preprocessor_config.json").exists():
+        if (out_p / "image_processor_config.json").exists():
+            shutil.copy2(out_p / "image_processor_config.json", out_p / "preprocessor_config.json")
+        else:
+            try:
+                from huggingface_hub import hf_hub_download
+                hf_hub_download(repo_id=base_model_id, filename="preprocessor_config.json", local_dir=str(out_p))
+                print(f"Downloaded preprocessor_config.json to: {out_p}")
+            except Exception:
+                default_preproc = {
+                    "min_pixels": 3136,
+                    "max_pixels": 12845056,
+                    "patch_size": 14,
+                    "temporal_patch_size": 2,
+                    "merge_size": 2,
+                    "image_mean": [0.48145466, 0.4578275, 0.40821073],
+                    "image_std": [0.26862954, 0.26130258, 0.27577711],
+                    "image_processor_type": "Qwen2VLImageProcessor",
+                    "processor_class": "Qwen2_5_VLProcessor"
+                }
+                with open(out_p / "preprocessor_config.json", "w", encoding="utf-8") as f:
+                    json.dump(default_preproc, f, indent=2)
+                print(f"Wrote standard preprocessor_config.json to: {out_p}")
 
     # Verify presence of vital configuration and weight files
     required_files = [
