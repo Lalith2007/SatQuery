@@ -97,11 +97,11 @@ def evaluate_test_split(
 
         if task == "grounding":
             clean_ans, evidence, conf, met = engine.run_grounding(img_path, user_prompt)
-            gt_bbox = s.get("bbox")  # [x1, y1, x2, y2] pixel coordinates
-            pred_bbox = evidence[0].data.get("canonical_bbox") if evidence else None
+            gt_bbox = s.get("bbox")  # [ymin, xmin, ymax, xmax] normalized 0.0 to 1.0
+            pred_bbox = evidence[0].data.get("bbox") if evidence else None
 
             if gt_bbox and pred_bbox:
-                iou = QwenGroundingParser.calculate_iou(pred_bbox, gt_bbox, format_name="pixel_xyxy")
+                iou = QwenGroundingParser.calculate_iou(pred_bbox, gt_bbox, format_name="normalized_0_1_ymin_xmin")
             else:
                 iou = 0.0
 
@@ -141,10 +141,17 @@ def evaluate_test_split(
         else:  # vqa or cross_modal
             ans, conf, met = engine.run_vqa(img_path, user_prompt)
             vqa_total += 1
-            # Keyword semantic matching
-            gt_keywords = [w.lower() for w in gt_answer.split() if len(w) > 4]
-            if any(k in ans.lower() for k in gt_keywords):
-                vqa_correct += 1
+            gt_clean = gt_answer.strip().lower()
+            ans_clean = ans.strip().lower()
+            ans_tokens = [w.strip(" .,!?:;'") for w in ans_clean.split()]
+
+            if gt_clean in {"yes", "no"}:
+                if (ans_tokens and ans_tokens[0] == gt_clean) or (gt_clean in ans_tokens):
+                    vqa_correct += 1
+            else:
+                gt_words = [w.strip(" .,!?:;'") for w in gt_clean.split() if len(w) > 2]
+                if any(w in ans_clean for w in gt_words):
+                    vqa_correct += 1
 
             if len(qualitative_examples) < 10:
                 qualitative_examples.append({
