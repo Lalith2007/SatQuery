@@ -18,6 +18,7 @@ from typing import Any, Dict, List
 import numpy as np
 
 from core.logging import get_logger
+from tqdm.auto import tqdm
 from specialists.single_image.adaptation.qwen25vl.bbox_codec import BoxCodec
 from specialists.single_image.adaptation.qwen25vl.grounding import QwenGroundingParser
 from specialists.single_image.adaptation.qwen25vl.inference import QwenSingleImageEngine
@@ -75,7 +76,8 @@ def evaluate_test_split(
 
     qualitative_examples: List[Dict[str, Any]] = []
 
-    for i, s in enumerate(test_samples, 1):
+    pbar = tqdm(enumerate(test_samples, 1), total=len(test_samples), desc="Evaluating Held-Out Benchmark", unit="sample")
+    for i, s in pbar:
         task = s["task"]
         modality = s["modality"]
         img_path = s["image"]
@@ -155,6 +157,15 @@ def evaluate_test_split(
                     "gt": gt_answer,
                 })
 
+        # Real-time running feedback on progress bar
+        cur_miou = float(np.mean(grounding_ious)) if grounding_ious else 0.0
+        cur_vqa = (vqa_correct / max(1, vqa_total)) * 100.0
+        pbar.set_postfix({
+            "task": task[:4],
+            "mIoU": f"{cur_miou:.3f}",
+            "VQA": f"{cur_vqa:.1f}%",
+        })
+
     # Metric computations
     g_arr = np.array(grounding_ious) if grounding_ious else np.array([0.0])
     mean_iou = float(np.mean(g_arr))
@@ -199,7 +210,7 @@ def evaluate_test_split(
 
     # Generate companion results.md
     md_path = out_p.parent / "results.md"
-    md_content = f"""# Qwen2.5-VL Stage 1 Held-Out Evaluation Report
+    md_content = rf"""# Qwen2.5-VL Stage 1 Held-Out Evaluation Report
 
 **Base Model**: `{model_id}`  
 **Adapter Path**: `{adapter_path}`  
