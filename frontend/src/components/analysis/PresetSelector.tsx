@@ -43,6 +43,9 @@ export const PresetSelector: React.FC = () => {
     <div className="space-y-2.5">
       {PRESET_SCENARIOS.map((preset) => {
         const isSelected = inputMode === 'preset' && selectedPreset?.id === preset.id;
+        // CRITICAL FIX: Use selectedPreset.images when this card is active so changing variants updates the images!
+        const activeImages = isSelected && selectedPreset ? selectedPreset.images : preset.images;
+
         return (
           <div
             key={preset.id}
@@ -75,35 +78,46 @@ export const PresetSelector: React.FC = () => {
 
             {/* Visual Real Satellite Thumbnail Preview Strip */}
             <div className="grid grid-cols-2 gap-2 my-2">
-              {preset.images.map((img, i) => {
+              {activeImages.map((img, i) => {
                 const isTiff = img.name.endsWith('.tif') || img.name.endsWith('.tiff');
-                const imgUrl = api.getArtifactUrl(img.name);
+                // For TIFF files (e.g. SAR GeoTIFF), display the generated preview PNG so radar amplitude is visually visible
+                const displayFileName = isTiff ? img.name.replace(/\.tiff?$/, '_preview.png') : img.name;
+                const imgUrl = api.getArtifactUrl(displayFileName);
 
                 return (
                   <div
-                    key={i}
+                    key={`${img.name}-${isSelected ? selectedSceneIndex : 'static'}-${i}`}
                     className={`relative rounded-lg overflow-hidden border border-border-subtle bg-background ${
-                      preset.images.length === 1 ? 'col-span-2 h-20' : 'h-16'
+                      activeImages.length === 1 ? 'col-span-2 h-20' : 'h-16'
                     }`}
                   >
-                    {!isTiff ? (
-                      <img
-                        src={imgUrl}
-                        alt={img.role}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
+                    <img
+                      key={`${img.name}-${isSelected ? selectedSceneIndex : 'static'}`}
+                      src={imgUrl}
+                      alt={img.role}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        if (isTiff) {
+                          (e.target as HTMLElement).style.display = 'none';
+                          const fallback = (e.target as HTMLElement).parentElement?.querySelector('.tiff-fallback');
+                          if (fallback) (fallback as HTMLElement).classList.remove('hidden');
+                        } else {
                           (e.target as HTMLElement).style.opacity = '0.5';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-tr from-slate-900 via-slate-800 to-cyan-950/40 flex items-center justify-center p-2 text-center">
+                        }
+                      }}
+                    />
+                    {isTiff && (
+                      <div className="tiff-fallback hidden w-full h-full bg-gradient-to-tr from-slate-900 via-slate-800 to-cyan-950/40 flex items-center justify-center p-2 text-center">
                         <span className="text-[10px] font-mono text-cyan-300">
                           SAR Radar GeoTIFF
                         </span>
                       </div>
                     )}
-                    <div className="absolute bottom-1 left-1.5 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-xs text-[9px] font-mono text-text-secondary border border-white/10">
-                      {img.role}
+                    <div className="absolute bottom-1 left-1.5 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-xs text-[9px] font-mono text-text-secondary border border-white/10 flex items-center gap-1">
+                      <span>{img.role}</span>
+                      {isSelected && (
+                        <span className="text-cyan-400 font-bold ml-1">#{selectedSceneIndex + 1}</span>
+                      )}
                     </div>
                   </div>
                 );
