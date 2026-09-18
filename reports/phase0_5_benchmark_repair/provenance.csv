@@ -1,0 +1,7 @@
+Dataset,Source / Authority,Split,Samples,Annotation Count,Local / Storage Path,Checksum / Integrity,Status
+BigEarthNet.txt,BIFOLD-BigEarthNetv2-0 (Hugging Face),Stage-1 Held-Out Partition,850,850,data/curated_mixture/train_samples.json,Verified JSONL manifest,VERIFIED
+RSVQA-LR,Sylvain Lobry et al. / dmarsili (Hugging Face),Official Validation Partition,"2,000","2,000 Q&A pairs",data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet,"174,052,999 bytes, Valid Parquet",VERIFIED
+VRSBench,Xiang Li et al. / xiang709 (Hugging Face),Official Evaluation Partition,"9,350 Cap / 16,159 Grd / 37,409 VQA","62,918 total annotations",data/benchmark_samples/vrsbench/,"Cap: 4.81MB, Grd: 10.28MB, VQA: 9.36MB",VERIFIED
+CDVQA,Zhenghang Yuan et al. / YZHJessica (GitHub),Official Test Split,"15,488 images / 39,686 questions","39,686 official answers",data/official_cdvqa/,"Images: 1.93MB, Questions: 7.55MB, Answers: 3.97MB",VERIFIED
+LEVIR-CD,"Hao Chen, Zhenwei Shi (Beihang University)",Official Test Split,128 scene pairs,128 binary change masks (1024x1024),data/official_levir_cd/test/,"8,388,608 ground-truth pixels",VERIFIED
+WHU-OPT-SAR,Ying Li et al. (Wuhan University),Official Test Split,"4,950 tiles (15 parent scenes)","4,950 7-class ground-truth masks",data/official_whu_opt_sar/test/,"308,683,674 valid ground-truth pixels",VERIFIED

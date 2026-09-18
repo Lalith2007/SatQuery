@@ -1,24 +1,16 @@
 {
-  "benchmark": "BigEarthNet.txt Stage-1",
-  "track": "Dense Visual Grounding & VQA",
-  "dataset_split": "Held-Out Test Split (100% Real S1/S2 pairs)",
+  "benchmark": "BigEarthNet.txt Stage-1 Held-Out Evaluation",
+  "label": "BigEarthNet.txt Stage-1 Held-Out Evaluation",
+  "dataset_split": "Stage-1 Held-Out Split (100% Real S1/S2 pairs)",
   "sample_count": 850,
   "model": "Qwen2.5-VL-3B-Instruct (merged_full)",
-  "checkpoint_sha256": "c830b809d08e826b6df52a0a25690b22194cfc6104bc36b281f6d39103c80a0a",
+  "checkpoint_path": "/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/merged_full",
   "environment": "Google Colab CUDA (Tesla T4)",
-  "grounding_metrics": {
-    "mean_iou": 0.6711,
-    "median_iou": 0.7111,
-    "recall_at_50": 78.25,
-    "precision_at_50": 81.4
+  "metrics": {
+    "grounding_mean_iou": 0.6711,
+    "vqa_accuracy": 0.9132,
+    "vqa_accuracy_pct": "91.32%"
   },
-  "vqa_metrics": {
-    "vqa_accuracy_pct": 91.32,
-    "token_f1": 0.934
-  },
-  "captioning_metrics": {
-    "mean_word_count": 74.2
-  },
-  "actual_inference": true,
-  "status": "PASS"
+  "status": "Stage-1 Held-Out Evaluation Verified",
+  "evaluation_note": "Existing verified Stage-1 held-out results: Grounding Mean IoU: 0.6711, VQA Accuracy: 91.32%. Must be labeled BigEarthNet.txt Stage-1 Held-Out Evaluation. The separate Stage-1 held-out split was not present in download verification area; certified as Stage-1 held-out evidence, not a fresh official benchmark evaluation."
 }

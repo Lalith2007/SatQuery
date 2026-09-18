@@ -1,0 +1,82 @@
+{
+  "audit_phase": "PHASE 0.5 \u2014 EVALUATION HARNESS REPAIR + OFFICIAL BENCHMARK REVALIDATION",
+  "timestamp_utc": "2026-09-18T05:49:29.225876+00:00",
+  "governing_principles": [
+    "Zero Retraining / Zero Fine-Tuning",
+    "Official Benchmark Protocol Primacy",
+    "Strict Prediction Serialization Contract",
+    "Zero Ground-Truth Leakage",
+    "Zero Synthetic Benchmark Data",
+    "Complete Independent Reproducibility"
+  ],
+  "authoritative_baselines": {
+    "tinycd_levir_cd": {
+      "status": "VERIFIED",
+      "f1": 0.7931,
+      "iou": 0.6571,
+      "overall_accuracy": 0.9799,
+      "precision": 0.8336,
+      "recall": 0.7563,
+      "specificity": 0.9919,
+      "checkpoint_sha": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0"
+    },
+    "cmaf_whu_opt_sar": {
+      "status": "VERIFIED",
+      "overall_accuracy": 0.7171,
+      "mean_iou": 0.3508,
+      "weighted_f1": 0.7418,
+      "macro_f1": 0.4662,
+      "checkpoint_sha": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b"
+    },
+    "qwen_bigearthnet_stage1": {
+      "status": "VERIFIED",
+      "grounding_mean_iou": 0.6711,
+      "vqa_accuracy": 0.9132,
+      "samples": 850
+    }
+  },
+  "repaired_evaluators": {
+    "rsvqa_lr": {
+      "status": "REQUIRES REVALIDATION",
+      "historical_result": "39.15% (REJECTED \u2014 unpersisted predictions & substring match)",
+      "repairs": "Stream serialization to rsvqa_predictions.jsonl + closed-vocab exact match"
+    },
+    "vrsbench_grounding": {
+      "status": "REQUIRES REVALIDATION",
+      "historical_result": "0.0484 IoU (INVALID \u2014 axis swap bug & scale mismatch)",
+      "repairs": "CoordinateConverter with 30 unit tests + Acc@0.5/0.7 official metrics"
+    },
+    "vrsbench_vqa": {
+      "status": "REQUIRES REVALIDATION",
+      "historical_result": "32.4% (REJECTED \u2014 unpersisted predictions)",
+      "repairs": "Stream serialization + official 12-category normalization rules"
+    },
+    "vrsbench_captioning": {
+      "status": "REQUIRES REVALIDATION",
+      "historical_result": "NOT AVAILABLE (omitted from prior logs)",
+      "repairs": "Stream serialization + automatic BLEU-1..4 and ROUGE-L evaluator"
+    },
+    "cdvqa": {
+      "status": "REQUIRES REVALIDATION",
+      "historical_result": "BLEU-4=0.285, ROUGE-L=0.482 (INVALID \u2014 synthetic template violation)",
+      "repairs": "Acquired official 39,686 test QA pairs from YZHJessica/CDVQA + official accuracy"
+    }
+  },
+  "final_status": {
+    "rsvqa_evaluator": "FIXED",
+    "rsvqa_official_re_evaluation": "PENDING CUDA RERUN",
+    "vrsbench_coordinate_pipeline": "FIXED",
+    "vrsbench_grounding": "PENDING CUDA RERUN",
+    "vrsbench_captioning": "PENDING CUDA RERUN",
+    "vrsbench_vqa": "PENDING CUDA RERUN",
+    "cdvqa_official_data": "ACQUIRED",
+    "cdvqa_official_evaluation": "PENDING CUDA RERUN",
+    "prediction_serialization": "PASS",
+    "tinycd": "REGRESSION PASS",
+    "cmaf": "REGRESSION PASS",
+    "ground_truth_leakage": "PASS",
+    "synthetic_reference_data": "REMOVED",
+    "independent_metric_recomputation": "PASS",
+    "phase_0_5": "READY FOR STAGE 2 INFERENCE BASELINE"
+  }
+}

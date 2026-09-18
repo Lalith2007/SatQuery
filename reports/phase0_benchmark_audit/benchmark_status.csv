@@ -1,0 +1,9 @@
+Benchmark,Model,Split,Samples,Actual Inference,Metric Verified,Classification,Audit Summary
+BigEarthNet.txt Stage-1,Qwen2.5-VL-3B (`merged_full`),Stage-1 Held-Out Split,850,Yes (Colab CUDA),Yes (Stage-1 baseline),VERIFIED,"Held-out split verified against qwen_dataset/test.jsonl; Grounding mIoU 0.6711, VQA 91.32%."
+RSVQA-LR,Qwen2.5-VL-3B (`merged_full`),Official Validation Partition,2000,Yes (Colab CUDA),No (Predictions not saved),REQUIRES REVALIDATION,CUDA inference ran on real rasters; 39.15% reported via substring match; individual predictions not saved.
+VRSBench Captioning,Qwen2.5-VL-3B (`merged_full`),Evaluation Subset,500,Yes (Colab CUDA),No (Omitted from log),NOT AVAILABLE,Inference ran on 500 images; final automated CIDEr/BLEU-4 metric omitted from log; predictions not saved.
+VRSBench Grounding,Qwen2.5-VL-3B (`merged_full`),Evaluation Subset,500,Yes (Colab CUDA),No (Methodological error),INVALID,0.0484 IoU caused by coordinate inversion (x/y swapped in runner); official metric is Acc@0.5/0.7.
+VRSBench VQA,Qwen2.5-VL-3B (`merged_full`),Evaluation Subset,500,Yes (Colab CUDA),No (Predictions not saved),REQUIRES REVALIDATION,Inference ran on 500 questions; 32.4% reported via substring match; official exact match metric unexecuted.
+CDVQA,TinyCD + Qwen2.5-VL-3B Pipeline,LEVIR-CD Derived Test Pairs,128,Yes (Local MPS + Colab CUDA),No (Synthetic GT used),INVALID,Evaluated on 128 LEVIR-CD pairs against a hardcoded synthetic string ('New residential buildings...'); not official CDVQA.
+LEVIR-CD,TinyCD (Frozen),Official Test Split,128,Yes (Local MPS),Yes (Independently recomputed),VERIFIED,"100% reproducible: F1 79.31%, IoU 65.71%, OA 97.99%, Precision 83.36%, Recall 75.63%."
+WHU-OPT-SAR,CMAF (Frozen),Official Test Split,4950,Yes (Local MPS),Yes (Independently recomputed),VERIFIED,"100% reproducible across 308.68M valid pixels: OA 71.71%, mIoU 35.08%, Macro F1 46.62%, Weighted F1 74.18%."

@@ -1,0 +1,8 @@
+Benchmark,Official Metric Prescribed,Metric Used by Runner,Official Procedure Verified?,Prediction Artifact Serialized?,Input / Coordinate Mapping,Audit Verdict
+LEVIR-CD,"Precision, Recall, F1, IoU, OA","Precision, Recall, F1, IoU, OA",YES,YES (Binary masks & per-scene metrics),"Aligned optical T0/T1 pairs, threshold 0.50",CORRECT
+WHU-OPT-SAR,"OA, mIoU, Macro F1, Weighted F1","OA, mIoU, Macro F1, Weighted F1",YES,YES (Confusion matrix & per-class CSV),"Dual-channel Optical+SAR, 255 ignored",CORRECT
+RSVQA-LR,Top-1 Accuracy on 744 answer vocabulary,Substring matching ('gt in p or p in gt'),NO (Substituted substring heuristic),NO (Only summary JSON written),Raw question text without answer length constraints,METHODOLOGICAL DEFICIENCY
+VRSBench Grounding,"Acc@0.5, Acc@0.7 (Unique / Non-Unique)",Mean Box IoU (0.0484),NO (Acc@0.5/0.7 omitted),NO (Only summary JSON written),INVERTED: Runner swapped x and y coordinates,CRITICAL FLAW (INVALID)
+VRSBench VQA,Exact Match on official answer ontology,Substring matching ('gt in p or p in gt'),NO (Substituted substring heuristic),NO (Only summary JSON written),Short phrase prompt without vocabulary constraints,METHODOLOGICAL DEFICIENCY
+VRSBench Captioning,"BLEU-1, BLEU-4, ROUGE-L, CIDEr, METEOR",Uncalculated in log,NO (Omitted in execution),NO (Predictions discarded),Prompt: 'Describe the image in detail',INCOMPLETE (NOT AVAILABLE)
+CDVQA,"BLEU-1, BLEU-2, BLEU-3, BLEU-4, ROUGE-L",Custom 4-gram BLEU & LCS ROUGE-L,NO (Custom arithmetic),NO (Only manifest written),Ground truth was a synthetic hardcoded sentence,CRITICAL FLAW (INVALID)

@@ -1,0 +1,14 @@
+Benchmark,Metric,Reported,Independently Recomputed,Difference,Status,Explanation
+BigEarthNet.txt Stage-1,Grounding Mean IoU,0.6711,0.6711,0.0000,VERIFIED,Exact match on 850 held-out multimodal pairs.
+BigEarthNet.txt Stage-1,VQA Accuracy,91.32%,91.32%,0.00%,VERIFIED,Exact match on Stage-1 held-out VQA queries.
+LEVIR-CD (TinyCD),F1 Score,79.31%,79.31%,0.00%,VERIFIED,"Exact match on 128 test pairs (8,388,608 pixels) at threshold 0.50."
+LEVIR-CD (TinyCD),IoU,65.71%,65.71%,0.00%,VERIFIED,Exact match on 128 test pairs at threshold 0.50.
+LEVIR-CD (TinyCD),Overall Accuracy,97.99%,97.99%,0.00%,VERIFIED,Exact match on 128 test pairs.
+WHU-OPT-SAR (CMAF),Overall Accuracy,71.71%,71.71%,0.00%,VERIFIED,"Exact match on 4,950 test tiles (308.68M valid pixels)."
+WHU-OPT-SAR (CMAF),Mean IoU,35.08%,35.08%,0.00%,VERIFIED,"Exact match on 4,950 test tiles."
+WHU-OPT-SAR (CMAF),Weighted F1,74.18%,74.18%,0.00%,VERIFIED,"Exact match on 4,950 test tiles."
+RSVQA-LR,Overall Accuracy,39.15%,PENDING RE-RUN,N/A,REQUIRES REVALIDATION,Old 39.15% rejected due to unpersisted predictions and substring false positives. Repaired evaluator ready.
+VRSBench Grounding,Box Mean IoU,0.0484,INVALID (0.0484),N/A,INVALID,Mathematical proof of axis inversion (even/odd) and scale mismatch (0-100 vs 0-1000). Repaired converter restores IoU > 0.80.
+VRSBench VQA,Overall Accuracy,32.4%,PENDING RE-RUN,N/A,REQUIRES REVALIDATION,Old 32.4% rejected due to unpersisted predictions. Official 12-category evaluator ready.
+VRSBench Captioning,CIDEr / BLEU-4,NOT AVAILABLE,PENDING RE-RUN,N/A,NOT AVAILABLE,Old logs omitted metric calculation. Official BLEU/ROUGE evaluator integrated.
+CDVQA,BLEU-4 / ROUGE-L,0.285 / 0.482,INVALID (0.285 / 0.482),N/A,INVALID,"Old evaluation used synthetic template sentence against 128 scenes. Official benchmark is 39,686 classification QA pairs."

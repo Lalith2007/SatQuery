@@ -48,12 +48,6 @@
       ],
       "coordinate_system": "PASS \u2014 Standardized [0, 1000] Qwen box tokens converted to benchmark conventions without GT cheating",
       "answer_quarantine": "PASS \u2014 Question and image only provided to VLM"
-    },
-    "isro_sac": {
-      "benchmark": "ISRO/SAC Target Data",
-      "data_status": "AWAITING OFFICIAL EVALUATION DATA",
-      "synthetic_data_used": "ZERO \u2014 Strictly avoided fabrication or mock scores",
-      "status": "PASS \u2014 Air-gapped interface prepared for jury evaluation"
     }
   }
 }

@@ -80,18 +80,6 @@
       "visual_handoff": "3-Image Evidence Package [BEFORE, AFTER, WHERE_CHANGE_OCCURRED]",
       "local_path": "reports/final_sih_evaluation/qwen/cdvqa/cdvqa_evidence_manifest.jsonl",
       "status": "TINYCD_EVIDENCE_PACKAGED"
-    },
-    "isro_sac": {
-      "dataset_name": "ISRO/SAC Target Multi-Sensor Spaceborne Benchmark",
-      "source": "Space Applications Centre (ISRO), Ahmedabad, India",
-      "sensors": [
-        "Cartosat-2S (0.65m Optical)",
-        "RISAT-1/1A (1-3m SAR)"
-      ],
-      "status": "AWAITING OFFICIAL EVALUATION DATA",
-      "ingestion_interface": "evaluation/benchmarks/isro_sac.py (ISROSACGenericEvaluator)",
-      "score": "NOT AVAILABLE",
-      "substitution_policy": "Strictly ZERO synthetic or proxy substitution"
     }
   }
 }

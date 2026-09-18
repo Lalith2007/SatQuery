@@ -205,75 +205,75 @@ def run_whu_opt_sar_evaluation(
         with torch.no_grad():
             for b_idx, batch in enumerate(loader):
                 t0 = time.perf_counter()
-            opt = batch["optical"].to(device)
-            sar = batch["sar"].to(device)
-            targets = batch["label"].to(device)  # shape: (B, H, W)
-            tile_ids = batch["sample_id"]
-
-            B = opt.shape[0]
-            intent = torch.ones((B, 8), device=device)
-
-            # Dual-encoder forward pass
-            opt_f = spec.optical_encoder(opt)["stride_8"]
-            sar_f = spec.sar_encoder(sar)["stride_8"]
-            fused = spec.fusion_neck(opt_f, sar_f)
-            logits, _ = spec.task_head(fused, intent)
-
-            if logits.shape[2:] != targets.shape[1:]:
-                logits = F.interpolate(
-                    logits, size=targets.shape[1:], mode="bilinear", align_corners=False
-                )
-
-            preds = logits.argmax(dim=1)  # shape: (B, H, W)
-            lat_ms = (time.perf_counter() - t0) * 1000.0
-            batch_latencies.append(lat_ms)
-
-            preds_np = preds.cpu().numpy()
-            targets_np = targets.cpu().numpy()
-
-            for i in range(B):
-                t_id = tile_ids[i]
-                sc_id = t_id.split("_y")[0]
-
-                p_tile = preds_np[i]
-                t_tile = targets_np[i]
-
-                valid_mask = (t_tile != 255)
-                valid_cnt = int(valid_mask.sum())
-                ignored_cnt = int((~valid_mask).sum())
-
-                total_valid_pixels += valid_cnt
-                total_ignored_pixels += ignored_cnt
-
-                t_val = t_tile[valid_mask]
-                p_val = p_tile[valid_mask]
-
-                tile_cm = np.bincount(8 * t_val + p_val, minlength=64).reshape(8, 8)
-                cm += tile_cm
-                if sc_id in scene_cms:
-                    scene_cms[sc_id] += tile_cm
-
-                # Compute tile accuracy & IoU for representative selection
-                tile_corr = int(np.diag(tile_cm).sum())
-                tile_acc = float(tile_corr / valid_cnt) if valid_cnt > 0 else 0.0
-                
-                # Active classes in tile
-                active_classes = np.unique(t_val)
-                tile_eval_records.append({
-                    "tile_id": t_id,
-                    "scene_id": sc_id,
-                    "batch_idx": b_idx,
-                    "tile_in_batch": i,
-                    "valid_pixels": valid_cnt,
-                    "accuracy": tile_acc,
-                    "active_classes_count": len(active_classes),
-                    "active_classes": active_classes.tolist(),
-                })
-
-            if (b_idx + 1) % 25 == 0 or (b_idx + 1) == len(loader):
-                elapsed = time.perf_counter() - t_start
-                logger.info(f"  Processed {b_idx + 1}/{len(loader)} batches ({total_valid_pixels:,} valid pixels) | Elapsed: {elapsed:.1f}s")
-
+                opt = batch["optical"].to(device)
+                sar = batch["sar"].to(device)
+                targets = batch["label"].to(device)  # shape: (B, H, W)
+                tile_ids = batch["sample_id"]
+    
+                B = opt.shape[0]
+                intent = torch.ones((B, 8), device=device)
+    
+                # Dual-encoder forward pass
+                opt_f = spec.optical_encoder(opt)["stride_8"]
+                sar_f = spec.sar_encoder(sar)["stride_8"]
+                fused = spec.fusion_neck(opt_f, sar_f)
+                logits, _ = spec.task_head(fused, intent)
+    
+                if logits.shape[2:] != targets.shape[1:]:
+                    logits = F.interpolate(
+                        logits, size=targets.shape[1:], mode="bilinear", align_corners=False
+                    )
+    
+                preds = logits.argmax(dim=1)  # shape: (B, H, W)
+                lat_ms = (time.perf_counter() - t0) * 1000.0
+                batch_latencies.append(lat_ms)
+    
+                preds_np = preds.cpu().numpy()
+                targets_np = targets.cpu().numpy()
+    
+                for i in range(B):
+                    t_id = tile_ids[i]
+                    sc_id = t_id.split("_y")[0]
+    
+                    p_tile = preds_np[i]
+                    t_tile = targets_np[i]
+    
+                    valid_mask = (t_tile != 255)
+                    valid_cnt = int(valid_mask.sum())
+                    ignored_cnt = int((~valid_mask).sum())
+    
+                    total_valid_pixels += valid_cnt
+                    total_ignored_pixels += ignored_cnt
+    
+                    t_val = t_tile[valid_mask]
+                    p_val = p_tile[valid_mask]
+    
+                    tile_cm = np.bincount(8 * t_val + p_val, minlength=64).reshape(8, 8)
+                    cm += tile_cm
+                    if sc_id in scene_cms:
+                        scene_cms[sc_id] += tile_cm
+    
+                    # Compute tile accuracy & IoU for representative selection
+                    tile_corr = int(np.diag(tile_cm).sum())
+                    tile_acc = float(tile_corr / valid_cnt) if valid_cnt > 0 else 0.0
+                    
+                    # Active classes in tile
+                    active_classes = np.unique(t_val)
+                    tile_eval_records.append({
+                        "tile_id": t_id,
+                        "scene_id": sc_id,
+                        "batch_idx": b_idx,
+                        "tile_in_batch": i,
+                        "valid_pixels": valid_cnt,
+                        "accuracy": tile_acc,
+                        "active_classes_count": len(active_classes),
+                        "active_classes": active_classes.tolist(),
+                    })
+    
+                if (b_idx + 1) % 25 == 0 or (b_idx + 1) == len(loader):
+                    elapsed = time.perf_counter() - t_start
+                    logger.info(f"  Processed {b_idx + 1}/{len(loader)} batches ({total_valid_pixels:,} valid pixels) | Elapsed: {elapsed:.1f}s")
+    
         total_eval_time = time.perf_counter() - t_start
         throughput_fps = float(total_tiles / total_eval_time)
         mean_batch_lat = float(np.mean(batch_latencies))

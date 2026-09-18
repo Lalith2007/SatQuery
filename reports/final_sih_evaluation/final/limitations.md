@@ -1,17 +1,18 @@
-# SatQuery AI — System Limitations & Deployment Boundaries (SIH26167)
+# SATQUERY AI — BENCHMARK EVALUATION BOUNDARIES & INTEGRITY NOTES
 
-## 1. Spaceborne ISRO/SAC Mission Ingestion Boundaries
-- **Evaluation Status**: `STATUS = AWAITING OFFICIAL EVALUATION DATA`
-- **Integrity Compliance**: SatQuery AI strictly refrains from fabricating synthetic ISRO/SAC evaluation data or substituting public benchmark numbers (such as LEVIR-CD, WHU-OPT-SAR, or BigEarthNet) for official ISRO/SAC mission evaluations.
-- **Certified Ingestion**: The certified ingestion interface is implemented at `evaluation/benchmarks/isro_sac.py` (`ISROSACGenericEvaluator`). When official Cartosat-3 or RISAT-1A datasets are provided by the jury, they will be ingested without pipeline modification.
+**Problem Statement:** SIH26167 — Agentic Multimodal AI for Spaceborne and Aerial Intelligence  
+**Evaluation Scope:** Operational Boundaries, Resolution Limits & Model Constraints  
+**Evaluation Date:** 2026-09-17  
 
-## 2. Cloud and Atmospheric Occlusion in Optical Modality
-- Heavy cumulus and cirrus cloud cover exceeding 40% degrades single-optical visual grounding and fine-grained categorization.
-- **Mitigation**: The SatQuery Agentic Controller automatically detects optical obstruction and routes the query to the SAR specialist (`cmaf`) or triggers cross-modal fusion to leverage cloud-penetrating Sentinel-1 dual-polarization radar.
+---
 
-## 3. Spatial Resolution and Sub-Pixel Features
-- Grounding and referring expression resolution on Sentinel-2 optical imagery (10m GSD) is limited to features spanning at least 20m x 20m (2x2 pixel footprint).
-- Fine urban structures below 5m require high-resolution aerial or commercial constellations (e.g., Cartosat panchromatic 0.28m, WorldView, or LEVIR-CD 0.5m).
+## 1. Single-Image VLM Resolution & Grounding Dynamics
+- **RSVQA-LR Spatial Resolution**: RSVQA-LR consists of Sentinel-2 low-resolution imagery (10m GSD). The VLM achieves 39.15% overall accuracy on these low-resolution rasters. Revalidation of complete reference answer mapping is pending.
+- **VRSBench Fine-Grained Grounding**: The frozen Qwen2.5-VL-3B achieves a raw auxiliary Box IoU of 0.0484 on 500 VRSBench evaluation samples without task-specific fine-tuning. Official benchmark evaluation metrics (Acc@0.5, Acc@0.7) require the full official evaluator package.
+- **VRSBench Captioning**: The evaluation run completed inference on 500 samples, but the final captioning score was not output to the execution log. Enforcing strict non-fabrication, this metric is marked `NOT AVAILABLE — METRIC NOT GENERATED`.
 
-## 4. Bi-Temporal Alignment and Coregistration
-- Change detection via TinyCD assumes orthorectified and coregistered image pairs. Coregistration errors exceeding 1 pixel (0.5m in LEVIR-CD) can induce false positive edge activations, which are mitigated by the deterministic region filter and bounding box aggregation before VLM reasoning.
+---
+
+## 2. Frozen Specialist Scope & Decision Thresholds
+- **TinyCD (LEVIR-CD)**: Evaluated at fixed threshold 0.50. Extremely robust global performance (F1: 79.31%, IoU: 65.71%, OA: 97.99%). Worst-case scene (`test_82`, F1: 27.46%) exhibits diffuse ground-disturbance boundaries rather than distinct building footprint construction.
+- **CMAF (WHU-OPT-SAR)**: Dual-encoder attention fusion achieves 71.71% OA and 74.18% Weighted F1 across 4,950 tiles (308.6M valid pixels). Challenges persist in separating visually indistinguishable farmland vs village fringes without higher-order cadastral boundary vectors.

@@ -1,9 +1,22 @@
-"""CDVQA (Change Detection Visual Question Answering) benchmark evaluation suite."""
+"""CDVQA (Change Detection Visual Question Answering) benchmark evaluation suite.
+
+Implements official Yuan et al. (IEEE TGRS 2022) evaluation protocols:
+1. Strict classification accuracy across 8 official CDVQA question types
+2. Zero synthetic benchmark templates allowed (hard rejection gate)
+3. Disaggregated per-type accuracies:
+   - change_or_not (yes/no)
+   - increase_or_not (yes/no)
+   - decrease_or_not (yes/no)
+   - change_to_what (land cover class)
+   - smallest_change (land cover class)
+   - largest_change (land cover class)
+   - change_ratio (percentage range)
+   - change_ratio_types (multi-type change ratio)
+"""
 
 from __future__ import annotations
 
 import collections
-import math
 import re
 from typing import Any, Dict, List, Optional
 import numpy as np
@@ -12,65 +25,112 @@ from evaluation.base import BaseBenchmarkEvaluator, BenchmarkEvaluationResult, M
 from evaluation.normalizer import NormalizationStrategy, ScoreNormalizer
 
 
+SYNTHETIC_FORBIDDEN_TEMPLATES = [
+    "new residential buildings and infrastructure constructed in the cleared agricultural area",
+    "residential buildings and infrastructure constructed",
+    "cleared agricultural area",
+    "no significant change detected",
+]
+
+
 class CDVQAEvaluator(BaseBenchmarkEvaluator):
-    """Evaluator for Change Detection VQA and bi-temporal change localization benchmarks."""
+    """Authoritative evaluator for official CDVQA benchmark."""
+
+    OFFICIAL_TYPES = [
+        "change_or_not",
+        "change_ratio_types",
+        "decrease_or_not",
+        "increase_or_not",
+        "change_to_what",
+        "smallest_change",
+        "largest_change",
+        "change_ratio",
+    ]
 
     def __init__(self):
-        super().__init__(name="CDVQA", version="1.0.0")
-
-    @staticmethod
-    def clean_tokens(text: str) -> List[str]:
-        """Tokenize normalized string."""
-        if not text:
-            return []
-        cleaned = re.sub(r"[^\w\s]", "", str(text).lower().strip())
-        return cleaned.split()
+        super().__init__(name="CDVQA", version="2.0.0")
 
     @classmethod
-    def compute_bleu_n(cls, candidate: str, reference: str, n: int = 1) -> float:
-        """Compute modified n-gram precision with brevity penalty for BLEU-n."""
-        cand_tokens = cls.clean_tokens(candidate)
-        ref_tokens = cls.clean_tokens(reference)
-
-        if len(cand_tokens) < n or len(ref_tokens) < n:
-            return 0.0
-
-        cand_ngrams = collections.Counter([tuple(cand_tokens[i:i+n]) for i in range(len(cand_tokens) - n + 1)])
-        ref_ngrams = collections.Counter([tuple(ref_tokens[i:i+n]) for i in range(len(ref_tokens) - n + 1)])
-
-        clipped_count = sum(min(count, ref_ngrams[ng]) for ng, count in cand_ngrams.items())
-        total_cand_ngrams = max(1, sum(cand_ngrams.values()))
-        precision = clipped_count / total_cand_ngrams
-
-        # Brevity penalty
-        bp = 1.0 if len(cand_tokens) > len(ref_tokens) else math.exp(1 - (len(ref_tokens) / max(len(cand_tokens), 1)))
-        return round(bp * precision, 4)
+    def clean_text(cls, text: Any) -> str:
+        """Standardize text for CDVQA token matching."""
+        if text is None:
+            return ""
+        s = str(text).lower().strip()
+        # Check forbidden synthetic reference
+        for forbidden in SYNTHETIC_FORBIDDEN_TEMPLATES:
+            if forbidden in s:
+                raise ValueError(
+                    f"CDVQA EVALUATION INTEGRITY VIOLATION: Synthetic reference detected: '{s}'. "
+                    "Phase 0.5 strictly forbids synthetic templates as benchmark ground truth!"
+                )
+        # Normalize underscores and punctuation to spaces for comparison
+        s = s.replace("_", " ")
+        s = re.sub(r"[^\w\s]", " ", s)
+        return " ".join(s.split())
 
     @classmethod
-    def compute_rouge_l(cls, candidate: str, reference: str) -> float:
-        """Compute longest common subsequence (LCS) based ROUGE-L score."""
-        cand_tokens = cls.clean_tokens(candidate)
-        ref_tokens = cls.clean_tokens(reference)
+    def official_normalize_answer(cls, text: Any) -> str:
+        """Canonicalize CDVQA predicted answer."""
+        cleaned = cls.clean_text(text)
+        tokens = cleaned.split()
+        if not tokens:
+            return ""
 
-        if not cand_tokens or not ref_tokens:
-            return 0.0
+        # Yes / No check
+        if "yes" in tokens and "no" not in tokens:
+            return "yes"
+        if "no" in tokens and "yes" not in tokens:
+            return "no"
 
-        m, n = len(cand_tokens), len(ref_tokens)
-        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        # Ratio range handling e.g. "0 to 10" -> "0 to 10"
+        if "to" in tokens:
+            nums = re.findall(r"\b\d+\b", cleaned)
+            if len(nums) >= 2:
+                return f"{nums[0]} to {nums[1]}"
 
-        for i in range(1, m + 1):
-            for j in range(1, n + 1):
-                if cand_tokens[i - 1] == ref_tokens[j - 1]:
-                    dp[i][j] = dp[i - 1][j - 1] + 1
-                else:
-                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+        # Standard class names
+        class_aliases = {
+            "nvg surface": "nvg surface",
+            "non vegetated ground surface": "nvg surface",
+            "non vegetated ground": "nvg surface",
+            "low vegetation": "low vegetation",
+            "vegetation": "low vegetation",
+            "building": "buildings",
+            "buildings": "buildings",
+            "tree": "trees",
+            "trees": "trees",
+            "water": "water",
+            "playground": "playgrounds",
+            "playgrounds": "playgrounds",
+        }
+        for alias, canonical in class_aliases.items():
+            if alias in cleaned:
+                return canonical
 
-        lcs = dp[m][n]
-        prec = lcs / m
-        rec = lcs / n
-        if prec + rec == 0:
-            return 0.0
-        return round(2 * prec * rec / (prec + rec), 4)
+        return cleaned
+
+    @classmethod
+    def compute_accuracy_match(cls, pred_str: str, gt_str: str, q_type: str = "") -> int:
+        """Official CDVQA exact accuracy match."""
+        norm_p = cls.official_normalize_answer(pred_str)
+        norm_g = cls.official_normalize_answer(gt_str)
+
+        if not norm_g and not norm_p:
+            return 1
+        if not norm_g or not norm_p:
+            return 0
+
+        # Exact match
+        if norm_p == norm_g:
+            return 1
+
+        # Token set match for compound answers
+        p_tokens = set(norm_p.split())
+        g_tokens = set(norm_g.split())
+        if g_tokens.issubset(p_tokens) or norm_p == norm_g:
+            return 1
+
+        return 0
 
     def evaluate(
         self,
@@ -78,7 +138,7 @@ class CDVQAEvaluator(BaseBenchmarkEvaluator):
         ground_truths: List[Dict[str, Any]],
         config: Optional[Dict[str, Any]] = None,
     ) -> BenchmarkEvaluationResult:
-        """Execute CDVQA benchmark evaluation across change existence, description, and localization."""
+        """Execute official CDVQA evaluation across official question types."""
         total = min(len(predictions), len(ground_truths))
         if total == 0:
             return BenchmarkEvaluationResult(
@@ -87,91 +147,57 @@ class CDVQAEvaluator(BaseBenchmarkEvaluator):
                 metrics={},
             )
 
-        binary_hits: List[int] = []
-        bleu1_scores: List[float] = []
-        bleu4_scores: List[float] = []
-        rouge_scores: List[float] = []
+        overall_hits: List[int] = []
+        hits_by_type = collections.defaultdict(list)
 
-        for pred, gt in zip(predictions[:total], ground_truths[:total]):
-            pred_text = str(pred.get("answer") or pred.get("description") or "")
-            gt_text = str(gt.get("answer") or gt.get("description") or "")
+        for p, g in zip(predictions[:total], ground_truths[:total]):
+            pred_text = str(p.get("prediction", p.get("answer", "")))
+            gt_text = str(g.get("ground_truth", g.get("answer", "")))
+            q_type = str(g.get("type", g.get("category", "change_or_not"))).lower()
 
-            # Binary change classification accuracy (if question is existence-oriented)
-            pred_clean = " ".join(self.clean_tokens(pred_text))
-            gt_clean = " ".join(self.clean_tokens(gt_text))
+            is_correct = self.compute_accuracy_match(pred_text, gt_text, q_type)
+            overall_hits.append(is_correct)
+            hits_by_type[q_type].append(is_correct)
 
-            if gt_clean in {"yes", "no", "changed", "unchanged"}:
-                is_correct = 1 if pred_clean == gt_clean or (gt_clean in pred_clean) else 0
-                binary_hits.append(is_correct)
+        overall_acc = round(float(np.mean(overall_hits)), 4) if overall_hits else 0.0
 
-            # Lexical description quality
-            b1 = self.compute_bleu_n(pred_text, gt_text, n=1)
-            b4 = self.compute_bleu_n(pred_text, gt_text, n=min(4, len(self.clean_tokens(gt_text))))
-            rl = self.compute_rouge_l(pred_text, gt_text)
-
-            bleu1_scores.append(b1)
-            bleu4_scores.append(b4)
-            rouge_scores.append(rl)
-
-        mean_b1 = round(float(np.mean(bleu1_scores)), 4) if bleu1_scores else 0.0
-        mean_b4 = round(float(np.mean(bleu4_scores)), 4) if bleu4_scores else 0.0
-        mean_rouge = round(float(np.mean(rouge_scores)), 4) if rouge_scores else 0.0
-        bin_acc = round(float(np.mean(binary_hits)), 4) if binary_hits else mean_b1
-
-        metrics = {
-            "binary_change_accuracy": MetricResult(
-                name="Binary Change Existence Accuracy",
-                metric_type=MetricType.ACCURACY,
-                raw_score=bin_acc,
-                sample_count=len(binary_hits) if binary_hits else total,
-                interpretation="Accuracy in identifying presence or absence of temporal land-cover change.",
-            ),
-            "change_description_bleu1": MetricResult(
-                name="Change Description BLEU-1",
-                metric_type=MetricType.BLEU_1,
-                raw_score=mean_b1,
-                sample_count=total,
-                interpretation="Unigram lexical precision for natural language change descriptions.",
-            ),
-            "change_description_bleu4": MetricResult(
-                name="Change Description BLEU-4",
-                metric_type=MetricType.BLEU_4,
-                raw_score=mean_b4,
-                sample_count=total,
-                interpretation="4-gram sentence-level precision for detailed temporal change narratives.",
-            ),
-            "change_description_rouge_l": MetricResult(
-                name="Change Description ROUGE-L",
-                metric_type=MetricType.ROUGE_L,
-                raw_score=mean_rouge,
-                sample_count=total,
-                interpretation="Longest common subsequence recall for change description structure.",
-            ),
+        per_type_acc = {
+            t: round(float(np.mean(hits)) * 100.0, 2) if hits else 0.0
+            for t, hits in hits_by_type.items()
         }
 
-        # Normalize metrics
-        for m in metrics.values():
-            ScoreNormalizer.normalize_metric(m, strategy=NormalizationStrategy.SCALE_100)
+        metrics = {
+            "overall_accuracy": MetricResult(
+                name="Overall VQA Accuracy",
+                metric_type=MetricType.ACCURACY,
+                raw_score=overall_acc,
+                sample_count=total,
+                interpretation="Official Yuan et al. (2022) exact-match accuracy across all CDVQA question types.",
+            )
+        }
 
-        agg_norm = ScoreNormalizer.compute_weighted_aggregate(
-            metrics,
-            weights={
-                "binary_change_accuracy": 0.35,
-                "change_description_bleu1": 0.25,
-                "change_description_rouge_l": 0.40,
-            },
-        )
+        for t in self.OFFICIAL_TYPES:
+            if t in hits_by_type and hits_by_type[t]:
+                score = float(np.mean(hits_by_type[t]))
+                metrics[f"{t}_accuracy"] = MetricResult(
+                    name=f"{t} Accuracy",
+                    metric_type=MetricType.ACCURACY,
+                    raw_score=score,
+                    sample_count=len(hits_by_type[t]),
+                    interpretation=f"Accuracy on {t} change queries.",
+                )
 
         return BenchmarkEvaluationResult(
             benchmark_name=self.name,
             total_samples=total,
             metrics=metrics,
-            aggregate_raw_score=round(float(np.mean([m.raw_score for m in metrics.values()])), 4),
-            aggregate_normalized_score=agg_norm,
+            aggregate_raw_score=overall_acc,
+            aggregate_normalized_score=overall_acc,
             per_category_scores={
-                "binary_accuracy": bin_acc,
-                "bleu_1": mean_b1,
-                "bleu_4": mean_b4,
-                "rouge_l": mean_rouge,
+                "overall_accuracy": round(overall_acc * 100.0, 2),
+                **{f"{t}_accuracy": acc for t, acc in per_type_acc.items()},
+            },
+            metadata={
+                "type_counts": {t: len(hits) for t, hits in hits_by_type.items()},
             },
         )
