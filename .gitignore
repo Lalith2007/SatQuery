@@ -94,3 +94,8 @@ data/curated_mixture/*
 whu_chunk_*
 *.docx
 .DS_Store
+
+# Standalone Qwen weights & deployment models (DO NOT COMMIT TO GIT)
+merged_full/
+*.safetensors
+!specialists/single_image/weights/satquery_paligemma_lora/adapter_model.safetensors
