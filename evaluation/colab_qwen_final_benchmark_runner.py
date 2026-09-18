@@ -616,3 +616,97 @@ def generate_master_manifest(out_dir: Path) -> Dict[str, Any]:
     manifest_file.write_text(json.dumps(manifest, indent=2))
     logger.info(f"Master prediction manifest written to: {manifest_file}")
     return manifest
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Authoritative Qwen2.5-VL Benchmark Runner")
+    parser.add_argument(
+        "--checkpoint-dir",
+        type=str,
+        default="/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/merged_full",
+        help="Path to merged full precision Qwen2.5-VL model",
+    )
+    parser.add_argument(
+        "--drive-run-dir",
+        type=str,
+        default="/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run",
+        help="Google Drive run directory",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="reports/phase0_5_colab_run",
+        help="Output directory for benchmark reports and predictions",
+    )
+    parser.add_argument(
+        "--rsvqa-samples",
+        type=int,
+        default=2000,
+        help="Number of RSVQA-LR validation samples to evaluate (default: 2000)",
+    )
+    parser.add_argument(
+        "--vrsbench-samples",
+        type=int,
+        default=500,
+        help="Number of VRSBench samples per task to evaluate (default: 500)",
+    )
+    parser.add_argument(
+        "--cdvqa-samples",
+        type=int,
+        default=128,
+        help="Number of CDVQA samples to evaluate (default: 128)",
+    )
+    parser.add_argument(
+        "--ben-samples",
+        type=int,
+        default=850,
+        help="Number of BigEarthNet.txt samples to evaluate (default: 850)",
+    )
+    parser.add_argument(
+        "--skip-vrsbench-images",
+        action="store_true",
+        help="Skip downloading large VRSBench image archive",
+    )
+    args = parser.parse_args()
+
+    ckpt_p = Path(args.checkpoint_dir)
+    drive_p = Path(args.drive_run_dir)
+    out_p = Path(args.output_dir)
+    if not out_p.is_absolute():
+        out_p = PROJECT_ROOT / out_p
+    out_p.mkdir(parents=True, exist_ok=True)
+
+    logger.info("=" * 75)
+    logger.info("SATQUERY AI — PHASE 0.5 BENCHMARK EVALUATION START")
+    logger.info(f"Checkpoint: {ckpt_p}")
+    logger.info(f"Output Directory: {out_p}")
+    logger.info(f"RSVQA Samples: {args.rsvqa_samples}")
+    logger.info(f"VRSBench Samples/task: {args.vrsbench_samples}")
+    logger.info(f"CDVQA Samples: {args.cdvqa_samples}")
+    logger.info("=" * 75)
+
+    model, processor = verify_merged_checkpoint(ckpt_p)
+
+    # Track 1: BigEarthNet.txt
+    evaluate_bigearthnet_track(model, processor, drive_p, out_p / "qwen", max_samples=args.ben_samples)
+
+    # Track 2: RSVQA-LR
+    evaluate_rsvqa_track(model, processor, out_p / "qwen", max_eval_samples=args.rsvqa_samples)
+
+    # Track 3: VRSBench
+    evaluate_vrsbench_track(model, processor, out_p / "qwen", max_eval_samples=args.vrsbench_samples, download_imagery=not args.skip_vrsbench_images)
+
+    # Track 4: CDVQA
+    evaluate_cdvqa_track(model, processor, out_p / "qwen", max_eval_samples=args.cdvqa_samples)
+
+    # Master Prediction Manifest
+    manifest = generate_master_manifest(out_p / "qwen")
+
+    logger.info("=" * 75)
+    logger.info("PHASE 0.5 BENCHMARK EVALUATION FINISHED SUCCESSFULLY")
+    logger.info(f"All predictions streamed to: {out_p / "qwen/predictions"}")
+    logger.info("=" * 75)
+
+
+if __name__ == "__main__":
+    main()
