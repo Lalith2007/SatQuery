@@ -351,8 +351,15 @@ def evaluate_vrsbench_track(
     data_dir.mkdir(parents=True, exist_ok=True)
     img_dir = data_dir / "Images_val"
 
-    # --- Task A: Captioning ---
     cap_json = data_dir / "VRSBench_EVAL_Cap.json"
+    grd_json = data_dir / "VRSBench_EVAL_referring.json"
+    vqa_json = data_dir / "VRSBench_EVAL_vqa.json"
+
+    if not (cap_json.exists() and grd_json.exists() and vqa_json.exists()):
+        logger.info("Downloading official VRSBench evaluation partitions...")
+        download_vrsbench(include_images=download_imagery)
+
+    # --- Task A: Captioning ---
     cap_records = json.loads(cap_json.read_text(encoding="utf-8")) if cap_json.exists() else []
     cap_eval = cap_records[:max_eval_samples]
     cap_pred_file = vrs_preds_dir / "vrsbench_caption_predictions.jsonl"
