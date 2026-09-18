@@ -72,6 +72,44 @@ def append_prediction_record(file_path: Path, record: Dict[str, Any]) -> None:
         f.flush()
 
 
+def load_existing_predictions(pred_file: Path) -> Dict[str, Dict[str, Any]]:
+    """Load valid existing predictions from a jsonl file for resuming execution."""
+    existing = {}
+    if pred_file.exists():
+        with open(pred_file, "r", encoding="utf-8") as f:
+            for line in f:
+                line_s = line.strip()
+                if line_s:
+                    try:
+                        rec = json.loads(line_s)
+                        if "sample_id" in rec:
+                            existing[rec["sample_id"]] = rec
+                    except Exception:
+                        pass
+    return existing
+
+
+def log_progress(
+    track_name: str,
+    idx: int,
+    total: int,
+    t0: float,
+    log_interval: int = 50,
+) -> None:
+    """Log periodic execution progress with timing and ETA."""
+    if (idx + 1) % log_interval == 0 or (idx + 1) == total:
+        elapsed = time.perf_counter() - t0
+        rate = (idx + 1) / max(0.001, elapsed)
+        remaining = (total - (idx + 1)) / max(0.001, rate)
+        pct = (idx + 1) / total * 100
+        logger.info(
+            f"  [{track_name}] {idx + 1}/{total} ({pct:5.1f}%) | "
+            f"Elapsed: {elapsed / 60:4.1f}m | ETA: {remaining / 60:4.1f}m | "
+            f"Speed: {rate:4.2f} samples/s"
+        )
+        sys.stdout.flush()
+
+
 def generate_manifest_for_file(pred_file: Path, benchmark_name: str) -> Dict[str, Any]:
     """Generate integrity manifest for a jsonl prediction file."""
     if not pred_file.exists():
@@ -230,8 +268,9 @@ def evaluate_rsvqa_track(
     evaluator = RSVQAEvaluator()
     pred_file = out_dir / "predictions/rsvqa_predictions.jsonl"
     pred_file.parent.mkdir(parents=True, exist_ok=True)
-    if pred_file.exists():
-        pred_file.unlink()
+    existing_preds = load_existing_predictions(pred_file)
+    if existing_preds:
+        logger.info(f"Resuming RSVQA-LR: found {len(existing_preds)} existing serialized predictions.")
 
     local_parquet = PROJECT_ROOT / "data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet"
     if not local_parquet.exists():
@@ -263,6 +302,15 @@ def evaluate_rsvqa_track(
     t0 = time.perf_counter()
 
     for idx, r in enumerate(eval_records):
+        sid = r["sample_id"]
+        if sid in existing_preds:
+            rec = existing_preds[sid]
+            norm_p = rec.get("normalized_prediction", evaluator.official_normalize_answer(rec.get("raw_prediction", "")))
+            predictions.append({"prediction": norm_p, "answer": norm_p})
+            ground_truths.append({"ground_truth": r["ground_truth"], "category": r["category"], "question": r["question"]})
+            log_progress("RSVQA-LR (Resumed)", idx, len(eval_records), t0, log_interval=100)
+            continue
+
         try:
             if "image_bytes" in r and r["image_bytes"]:
                 img = Image.open(io.BytesIO(r["image_bytes"])).convert("RGB")
@@ -290,6 +338,7 @@ def evaluate_rsvqa_track(
         append_prediction_record(pred_file, record)
         predictions.append({"prediction": norm_p, "answer": norm_p})
         ground_truths.append({"ground_truth": r["ground_truth"], "category": r["category"], "question": r["question"]})
+        log_progress("RSVQA-LR", idx, len(eval_records), t0, log_interval=50)
 
     duration = round(time.perf_counter() - t0, 2)
     eval_res = evaluator.evaluate(predictions, ground_truths)
@@ -363,16 +412,25 @@ def evaluate_vrsbench_track(
     cap_records = json.loads(cap_json.read_text(encoding="utf-8")) if cap_json.exists() else []
     cap_eval = cap_records[:max_eval_samples]
     cap_pred_file = vrs_preds_dir / "vrsbench_caption_predictions.jsonl"
-    if cap_pred_file.exists():
-        cap_pred_file.unlink()
+    existing_cap = load_existing_predictions(cap_pred_file)
+    if existing_cap:
+        logger.info(f"Resuming VRSBench Captioning: found {len(existing_cap)} existing predictions.")
 
     cap_preds, cap_gts = [], []
     t0_cap = time.perf_counter()
     for idx, r in enumerate(cap_eval):
+        sid = f"vrs_cap_{idx:05d}"
+        if sid in existing_cap:
+            rec = existing_cap[sid]
+            cap_preds.append({"prediction": rec.get("raw_prediction", "")})
+            cap_gts.append({"ground_truth": r.get("ground_truth", r.get("caption", ""))})
+            log_progress("VRSBench-Cap (Resumed)", idx, len(cap_eval), t0_cap, log_interval=50)
+            continue
+
         im = resolve_vrs_image(r, img_dir, data_dir)
         pred = generate_qwen_response(model, processor, [im], r.get("question", "Describe the image in detail"), max_new_tokens=64)
         rec = {
-            "sample_id": f"vrs_cap_{idx:05d}",
+            "sample_id": sid,
             "image_id": r.get("image_id", ""),
             "question_id": r.get("question_id", idx),
             "prompt": r.get("question", "Describe the image in detail"),
@@ -387,6 +445,7 @@ def evaluate_vrsbench_track(
         append_prediction_record(cap_pred_file, rec)
         cap_preds.append({"prediction": pred})
         cap_gts.append({"ground_truth": r.get("ground_truth", r.get("caption", ""))})
+        log_progress("VRSBench-Cap", idx, len(cap_eval), t0_cap, log_interval=50)
 
     cap_metrics = evaluator.evaluate_captioning(cap_preds, cap_gts)
 
@@ -395,14 +454,23 @@ def evaluate_vrsbench_track(
     grd_records = json.loads(grd_json.read_text(encoding="utf-8")) if grd_json.exists() else []
     grd_eval = grd_records[:max_eval_samples]
     grd_pred_file = vrs_preds_dir / "vrsbench_grounding_predictions.jsonl"
-    if grd_pred_file.exists():
-        grd_pred_file.unlink()
+    existing_grd = load_existing_predictions(grd_pred_file)
+    if existing_grd:
+        logger.info(f"Resuming VRSBench Grounding: found {len(existing_grd)} existing predictions.")
 
     grd_preds, grd_gts = [], []
     t0_grd = time.perf_counter()
     for idx, r in enumerate(grd_eval):
+        sid = f"vrs_grd_{idx:05d}"
+        if sid in existing_grd:
+            rec = existing_grd[sid]
+            grd_preds.append({"predicted_box": rec.get("normalized_prediction", [0, 0, 0, 0])})
+            grd_gts.append(r)
+            log_progress("VRSBench-Grd (Resumed)", idx, len(grd_eval), t0_grd, log_interval=50)
+            continue
+
         im = resolve_vrs_image(r, img_dir, data_dir)
-        prompt = f"Locate {r[question]}. Output the bounding box in [ymin, xmin, ymax, xmax] normalized to 1000."
+        prompt = f"Locate {r.get('question', '')}. Output the bounding box in [ymin, xmin, ymax, xmax] normalized to 1000."
         pred = generate_qwen_response(model, processor, [im], prompt, max_new_tokens=32)
 
         try:
@@ -412,7 +480,7 @@ def evaluate_vrsbench_track(
             pred_vrs = (0, 0, 0, 0)
 
         rec = {
-            "sample_id": f"vrs_grd_{idx:05d}",
+            "sample_id": sid,
             "image_id": r.get("image_id", ""),
             "question_id": r.get("question_id", idx),
             "prompt": prompt,
@@ -428,6 +496,7 @@ def evaluate_vrsbench_track(
         append_prediction_record(grd_pred_file, rec)
         grd_preds.append({"predicted_box": list(pred_vrs)})
         grd_gts.append(r)
+        log_progress("VRSBench-Grd", idx, len(grd_eval), t0_grd, log_interval=50)
 
     grd_metrics = evaluator.evaluate_grounding(grd_preds, grd_gts)
 
@@ -436,18 +505,27 @@ def evaluate_vrsbench_track(
     vqa_records = json.loads(vqa_json.read_text(encoding="utf-8")) if vqa_json.exists() else []
     vqa_eval = vqa_records[:max_eval_samples]
     vqa_pred_file = vrs_preds_dir / "vrsbench_vqa_predictions.jsonl"
-    if vqa_pred_file.exists():
-        vqa_pred_file.unlink()
+    existing_vqa = load_existing_predictions(vqa_pred_file)
+    if existing_vqa:
+        logger.info(f"Resuming VRSBench VQA: found {len(existing_vqa)} existing predictions.")
 
     vqa_preds, vqa_gts = [], []
     t0_vqa = time.perf_counter()
     for idx, r in enumerate(vqa_eval):
+        sid = f"vrs_vqa_{idx:05d}"
+        if sid in existing_vqa:
+            rec = existing_vqa[sid]
+            vqa_preds.append({"prediction": rec.get("raw_prediction", "")})
+            vqa_gts.append(r)
+            log_progress("VRSBench-VQA (Resumed)", idx, len(vqa_eval), t0_vqa, log_interval=50)
+            continue
+
         im = resolve_vrs_image(r, img_dir, data_dir)
-        prompt = f"Question: {r[question]} Answer with a single word or short phrase."
+        prompt = f"Question: {r.get('question', '')} Answer with a single word or short phrase."
         pred = generate_qwen_response(model, processor, [im], prompt, max_new_tokens=16)
 
         rec = {
-            "sample_id": f"vrs_vqa_{idx:05d}",
+            "sample_id": sid,
             "image_id": r.get("image_id", ""),
             "question_id": r.get("question_id", idx),
             "prompt": prompt,
@@ -462,6 +540,7 @@ def evaluate_vrsbench_track(
         append_prediction_record(vqa_pred_file, rec)
         vqa_preds.append({"prediction": pred})
         vqa_gts.append(r)
+        log_progress("VRSBench-VQA", idx, len(vqa_eval), t0_vqa, log_interval=50)
 
     vqa_metrics = evaluator.evaluate_vqa(vqa_preds, vqa_gts)
 
@@ -490,8 +569,9 @@ def evaluate_cdvqa_track(
     evaluator = CDVQAEvaluator()
     cdvqa_pred_file = out_dir / "predictions/cdvqa_predictions.jsonl"
     cdvqa_pred_file.parent.mkdir(parents=True, exist_ok=True)
-    if cdvqa_pred_file.exists():
-        cdvqa_pred_file.unlink()
+    existing_cdvqa = load_existing_predictions(cdvqa_pred_file)
+    if existing_cdvqa:
+        logger.info(f"Resuming CDVQA: found {len(existing_cdvqa)} existing predictions.")
 
     cdvqa_q_file = PROJECT_ROOT / "data/official_cdvqa/Test_questions.json"
     cdvqa_a_file = PROJECT_ROOT / "data/official_cdvqa/Test_answers.json"
@@ -536,6 +616,15 @@ def evaluate_cdvqa_track(
         gt_answer = ans_by_qid.get(qid, "no")
         q_type = q_item.get("type", "change_or_not")
         q_text = q_item["question"]
+        sid = f"cdvqa_test_{idx:05d}"
+
+        if sid in existing_cdvqa:
+            rec = existing_cdvqa[sid]
+            norm_p = rec.get("normalized_prediction", evaluator.official_normalize_answer(rec.get("raw_prediction", "")))
+            predictions.append({"prediction": norm_p, "answer": norm_p})
+            ground_truths.append({"ground_truth": gt_answer, "answer": gt_answer, "type": q_type})
+            log_progress("CDVQA (Resumed)", idx, len(eval_q), t0, log_interval=20)
+            continue
 
         rec = evidence_records[idx % len(evidence_records)] if evidence_records else {}
         t0_p = Path(rec.get("cropped_t0") or rec.get("source_t0") or "")
@@ -562,7 +651,7 @@ def evaluate_cdvqa_track(
 
         norm_p = evaluator.official_normalize_answer(pred)
         pred_rec = {
-            "sample_id": f"cdvqa_test_{idx:05d}",
+            "sample_id": sid,
             "image_id": f"img_{q_item.get('img_id', 0)}",
             "question_id": qid,
             "prompt": prompt,
@@ -577,6 +666,7 @@ def evaluate_cdvqa_track(
         append_prediction_record(cdvqa_pred_file, pred_rec)
         predictions.append({"prediction": norm_p, "answer": norm_p})
         ground_truths.append({"ground_truth": gt_answer, "answer": gt_answer, "type": q_type})
+        log_progress("CDVQA", idx, len(eval_q), t0, log_interval=10)
 
     duration = round(time.perf_counter() - t0, 2)
     cdvqa_res = evaluator.evaluate(predictions, ground_truths)
@@ -595,7 +685,6 @@ def evaluate_cdvqa_track(
     cdvqa_out.mkdir(parents=True, exist_ok=True)
     (cdvqa_out / "evaluation_report.json").write_text(json.dumps(cdvqa_summary, indent=2))
     return cdvqa_summary
-
 
 def generate_master_manifest(out_dir: Path) -> Dict[str, Any]:
     """Generate the complete prediction_manifest.json across all benchmarks."""
@@ -711,7 +800,7 @@ def main():
 
     logger.info("=" * 75)
     logger.info("PHASE 0.5 BENCHMARK EVALUATION FINISHED SUCCESSFULLY")
-    logger.info(f"All predictions streamed to: {out_p / "qwen/predictions"}")
+    logger.info(f"All predictions streamed to: {out_p / 'qwen/predictions'}")
     logger.info("=" * 75)
 
 
