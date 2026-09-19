@@ -1,112 +1,114 @@
-# Division 2: Single-Image Remote-Sensing Intelligence
+# Division 2: Single-Image Remote-Sensing Intelligence Specialist
 
-**Owner**: Sruthi  
 **Directory**: `specialists/single_image/`  
-**Shared Contract**: `core.interfaces.BaseSpecialistTool`
+**Shared Contract**: `core.interfaces.BaseSpecialistTool`  
+**Modern Primary Foundation**: `Qwen/Qwen2.5-VL-3B-Instruct` (Configurable: `Qwen/Qwen2.5-VL-7B-Instruct`)  
+**Legacy Preserved Foundation**: Google `PaliGemma-3B-pt-448` (Adapter: `specialists/single_image/weights/division2_lora`)  
 
 ---
 
-## 1. Overview & Responsibilities
-Division 2 is responsible for implementing specialist intelligence models for single remote-sensing images:
-- **Visual Question Answering (VQA)**: Single-image queries across Optical, Multispectral, and SAR imagery.
-- **Scene Captioning**: Natural-language descriptions of remote-sensing scenes.
-- **Spatial Grounding / Localization**: Bounding-box and heatmap localization for spatial queries (e.g., "Where is the water?").
+## 1. Overview & Capabilities
+
+Division 2 provides production-grade multimodal intelligence for single satellite and airborne rasters:
+1. **Visual Question Answering (`SINGLE_IMAGE_VQA`)**: Natural-language reasoning over land cover, feature counts, infrastructure status, and surface characteristics.
+2. **Visual Grounding (`SINGLE_IMAGE_GROUNDING`)**: Object localization returning natural answers plus bounding boxes in normalized $[ymin, xmin, ymax, xmax]$ and pixel coordinates.
+3. **Remote-Sensing Captioning (`SINGLE_IMAGE_CAPTION`)**: Detailed domain-specific scene descriptions incorporating radiometric and structural attributes.
+4. **Multi-Modality**: Native support for high-resolution Optical satellite imagery and dual-polarization ($\text{VV}, \text{VH}$) Synthetic Aperture Radar (SAR).
 
 ---
 
-## 2. Interface to Implement
-Your specialist classes must inherit from `core.interfaces.BaseSpecialistTool`:
+## 2. Architecture & Dual-Backend Configuration
 
-```python
-from core.interfaces import BaseSpecialistTool, ValidationResult
-from core.schemas import (
-    Evidence,
-    EvidenceType,
-    ExecutionStage,
-    ExecutionTraceEntry,
-    ImageModality,
-    TaskType,
-    ToolMetadata,
-    ToolRequest,
-    ToolResult,
-    ToolStatus,
-)
+Division 2 operates behind the canonical `SingleImageRSSpecialistTool` registered in the central system registry:
 
-class SingleImageVQASpecialist(BaseSpecialistTool):
-    def __init__(self, checkpoint_path: str = "models/vqa_weights.pth"):
-        super().__init__(
-            name="single_image_vqa_specialist",
-            description="Production specialist for single-image remote sensing VQA.",
-            supported_tasks={TaskType.SINGLE_IMAGE_VQA},
-            version="1.0.0",
-            metadata=ToolMetadata(
-                name="single_image_vqa_specialist",
-                description="Production specialist for single-image remote sensing VQA.",
-                version="1.0.0",
-                supported_tasks=[TaskType.SINGLE_IMAGE_VQA],
-                required_modalities=[ImageModality.OPTICAL, ImageModality.MULTISPECTRAL, ImageModality.SAR],
-                min_images=1,
-                max_images=1,
-                author_or_division="Division 2 (Sruthi)",
-            ),
-        )
-        self.checkpoint_path = checkpoint_path
-        # Load your model checkpoint here
-
-    def validate_request(self, request: ToolRequest) -> ValidationResult:
-        if len(request.images) != 1:
-            return ValidationResult(is_valid=False, errors=["Requires exactly 1 image."])
-        return ValidationResult(is_valid=True)
-
-    async def execute(self, request: ToolRequest) -> ToolResult:
-        image = request.images[0]
-        # Run your model inference...
-        answer = "Detected 4 aircraft parked on the taxiway."
-        evidence = [
-            Evidence(
-                type=EvidenceType.BOUNDING_BOX,
-                label="Aircraft 1",
-                confidence=0.94,
-                data={"bbox": [0.22, 0.35, 0.28, 0.42], "format": "[ymin, xmin, ymax, xmax]"},
-                image_id=image.image_id,
-            )
-        ]
-
-        return ToolResult(
-            request_id=request.request_id,
-            task=request.task,
-            status=ToolStatus.SUCCESS,
-            answer=answer,
-            confidence=0.92,
-            evidence=evidence,
-            artifacts=[],
-            model_info={"name": "RS-VQA-Transformer", "version": "1.0"},
-            execution_trace=[
-                ExecutionTraceEntry(
-                    stage=ExecutionStage.INFERENCE_EXECUTED,
-                    component=self.name,
-                    status="COMPLETED",
-                )
-            ],
-        )
-```
-
----
-
-## 3. How to Register Your Tool
-In `registry/registry.py` or during app startup:
-
-```python
-from registry.registry import default_registry
-from specialists.single_image.vqa import SingleImageVQASpecialist
-
-default_registry.register(SingleImageVQASpecialist())
-```
-
----
-
-## 4. Running Contract Tests
-Ensure your tool satisfies all system contracts by running:
 ```bash
-pytest tests/test_contracts.py -k "single_image"
+# Configure backend via environment variable:
+export VISION_LANGUAGE_BACKEND=qwen25vl        # Modern Qwen2.5-VL backend (Default)
+export VISION_LANGUAGE_BACKEND=paligemma_legacy # Preserved legacy PaliGemma adapter
 ```
+
+### 2.1 Qwen2.5-VL QLoRA Adaptation
+- **Vision Backbone**: 100% Frozen (160 ViT blocks).
+- **Adapted Layers**: Language decoder linears (`q, k, v, o, gate, up, down_proj`) + visual merger projection (`merger.mlp.0`, `merger.mlp.2`).
+- **Quantization**: 4-bit NormalFloat (NF4) double quantization via BitsAndBytes.
+- **Trainable Parameters**: 30.2M (0.80% of model).
+
+### 2.2 Native Grounding Token Protocol
+Qwen2.5-VL natively outputs coordinate tokens scaled to $[0, 1000)$:
+```
+<|object_ref_start|>runway<|object_ref_end|><|box_start|>(ymin,xmin),(ymax,xmax)<|box_end|>
+```
+`QwenGroundingParser` automatically strips these internal tokens from conversational text and generates standardized `Evidence(type=EvidenceType.BOUNDING_BOX)` items for frontend visual overlay.
+
+---
+
+## 3. Training / Development Topology
+
+SatQuery AI enforces a strict hardware topology:
+- **Local Apple Silicon (Mac)**: Code authoring, dataset synthesis, split leakage audits, mock/smoke tests, and API integration. **No full training is performed locally.**
+- **Google Colab CUDA Hardware**: Target execution environment for true 4-bit QLoRA training and evaluation on physical NVIDIA GPUs (T4 / L4 / A100).
+
+```
+specialists/single_image/
+├── adaptation/
+│   └── qwen25vl/          # Qwen2.5-VL core adapters (BoxCodec, SAR, Tiling, Engine)
+├── colab/                 # Legacy PaliGemma Colab artifacts
+├── training/
+│   └── colab/             # 10 modular Colab Qwen training scripts + notebook
+├── weights/
+│   ├── division2_lora/    # Preserved PaliGemma adapter (SHA: 152075b5...)
+│   └── qwen25vl_lora/     # Modern Qwen2.5-VL adapter artifacts
+├── specialist.py          # Unified dual-backend specialist tool
+├── QWEN_MIGRATION.md      # Comprehensive architectural migration guide
+├── MODEL_CARD.md          # Official model card and specifications
+└── EVALUATION.md          # Benchmark results, metrics, and qualitative cases
+```
+
+---
+
+## 4. Standalone CLI Inference
+
+Run standalone inference on any optical or SAR raster:
+
+```bash
+python infer_qwen25vl.py \
+  --image demo_assets/demo_optical_single.png \
+  --question "Where is the primary runway?" \
+  --task auto
+```
+
+Output:
+```
+ANSWER:
+The primary runway corridor extends longitudinally across the central sector, approximately here: runway.
+
+GROUNDING DETECTIONS (1 boxes):
+  [1] Label: 'runway'
+      Normalized [ymin, xmin, ymax, xmax]: [0.082, 0.399, 0.942, 0.624]
+      Pixel [x1, y1, x2, y2]:              [204.29, 41.98, 319.49, 482.3]
+
+STATUS:
+  backend:     qwen25vl
+  is_mock:     False
+  is_fallback: False
+```
+
+---
+
+## 5. Benchmarking & Empirical Comparison
+
+Run head-to-head empirical comparisons between PaliGemma and Qwen2.5-VL on the identical held-out test split:
+
+```bash
+python compare_paligemma_qwen.py --test_path data/qwen_dataset/test.jsonl --max_samples 50
+```
+
+---
+
+## 6. Verification & Test Suite
+
+Run Division 2 unit and integration tests:
+```bash
+pytest tests/test_qwen25vl_migration.py tests/test_single_image_specialist.py tests/test_division2_integration_verification.py -v
+```
+All 34 tests execute 100% green without requiring local CUDA hardware.

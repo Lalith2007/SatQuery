@@ -75,10 +75,41 @@ class ExecutionStage(str, Enum):
     TOOL_SELECTED = "TOOL_SELECTED"
     MODEL_INITIALIZED = "MODEL_INITIALIZED"
     INFERENCE_EXECUTED = "INFERENCE_EXECUTED"
+    TINYCD_EXECUTED = "TINYCD_EXECUTED"
+    CHANGE_MASK_GENERATED = "CHANGE_MASK_GENERATED"
+    REGION_EXTRACTED = "REGION_EXTRACTED"
+    VLM_INPUT_PREPARED = "VLM_INPUT_PREPARED"
+    VLM_EXECUTED = "VLM_EXECUTED"
+    ANSWER_GENERATED = "ANSWER_GENERATED"
     EVIDENCE_GENERATED = "EVIDENCE_GENERATED"
     RESULT_AGGREGATED = "RESULT_AGGREGATED"
     RESULT_RETURNED = "RESULT_RETURNED"
     ERROR_ENCOUNTERED = "ERROR_ENCOUNTERED"
+
+
+class ChangedRegionEvidence(BaseModel):
+    """Intermediate evidence contract representing localized bi-temporal change regions."""
+    evidence_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique evidence ID")
+    source_t0_path: str = Field(description="File system path to source T0 image")
+    source_t1_path: str = Field(description="File system path to source T1 image")
+    predicted_mask_path: str = Field(description="File system path to predicted binary change mask")
+    predicted_heatmap_path: Optional[str] = Field(default=None, description="Path to change probability heatmap")
+    selected_region_id: int = Field(default=1, description="Index of primary selected change region")
+    selected_region_pixel_bbox: List[int] = Field(default_factory=list, description="[ymin, xmin, ymax, xmax] in source image pixels")
+    selected_region_normalized_bbox: List[float] = Field(default_factory=list, description="[ymin, xmin, ymax, xmax] in normalized coordinates (0-1)")
+    area_pixels: int = Field(default=0, description="Area of selected region in pixels")
+    area_fraction: float = Field(default=0.0, description="Fraction of total scene area covered by change")
+    crop_dimensions: List[int] = Field(default_factory=list, description="[height, width] of the cropped patch")
+    cropped_t1_path: str = Field(description="File system path to cropped T1 post-change visual patch")
+    cropped_t0_path: Optional[str] = Field(default=None, description="File system path to cropped T0 pre-change visual patch")
+    cropped_mask_path: Optional[str] = Field(default=None, description="File system path to cropped binary change mask for the region")
+    visualization_overlay_path: str = Field(description="Path to visual overlay of change mask/bbox on T1 for the region")
+    candidate_regions: List[Dict[str, Any]] = Field(default_factory=list, description="All deterministically sorted candidate regions")
+    tinycd_threshold: float = Field(default=0.5, description="TinyCD probability threshold used")
+    temporal_ordering: str = Field(default="T0->T1", description="Chronological ordering of acquisitions")
+    has_change: bool = Field(default=True, description="False if mask is empty / no regions detected")
+    fallback_reason: Optional[str] = Field(default=None, description="Explicit documentation if falling back to full image")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Operational audit metadata")
 
 
 # ---------------------------------------------------------------------------
@@ -242,6 +273,7 @@ class QueryRequest(BaseModel):
     images: List[ImageInput] = Field(min_length=1, description="List of image inputs")
     task_hint: Optional[TaskType] = Field(default=None, description="Optional manual override for task type")
     config: Dict[str, Any] = Field(default_factory=dict, description="Optional runtime parameters")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Optional request metadata")
 
 
 class QueryResponse(BaseModel):

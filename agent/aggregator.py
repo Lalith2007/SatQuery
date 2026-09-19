@@ -111,15 +111,49 @@ class ResultAggregator:
         all_artifacts: List[Artifact] = []
         confidences = []
         overall_status = ToolStatus.SUCCESS
+        agg_metadata: dict = {"workflow_steps": len(tool_results)}
+
+        is_change_vqa_workflow = (resolved_task == TaskType.CHANGE_VQA)
 
         for idx, res in enumerate(tool_results):
-            combined_answers.append(f"[Step {idx + 1} - {res.task.value}]: {res.answer}")
+            # Human-readable stage labeling for composed Change-VQA
+            if is_change_vqa_workflow:
+                if idx == 0 and "change" in res.task.value.lower():
+                    stage_title = "Step 1 [Change Detection Stage - TinyCD]"
+                elif idx == 1:
+                    stage_title = "Step 2 [Semantic Interpretation Stage - VLM]"
+                else:
+                    stage_title = f"Step {idx + 1} - {res.task.value}"
+            else:
+                stage_title = f"Step {idx + 1} - {res.task.value}"
+
+            combined_answers.append(f"[{stage_title}]:\n{res.answer}")
             all_evidence.extend(res.evidence)
             all_artifacts.extend(res.artifacts)
             if res.confidence is not None:
                 confidences.append(res.confidence)
             if res.status != ToolStatus.SUCCESS:
                 overall_status = res.status
+
+            # Extract provenance & metadata
+            if res.metadata:
+                if "tinycd_provenance" in res.metadata:
+                    agg_metadata["tinycd_provenance"] = res.metadata["tinycd_provenance"]
+                if "changed_region_evidence" in res.metadata:
+                    agg_metadata["changed_region_evidence"] = res.metadata["changed_region_evidence"]
+                if "vlm_provenance" in res.metadata:
+                    agg_metadata["vlm_provenance"] = res.metadata["vlm_provenance"]
+                if "change_vqa_status" in res.metadata:
+                    agg_metadata["change_vqa_status"] = res.metadata["change_vqa_status"]
+                if "tinycd_detection" in res.metadata:
+                    agg_metadata["tinycd_detection"] = res.metadata["tinycd_detection"]
+                if "semantic_vlm_interpretation" in res.metadata:
+                    agg_metadata["semantic_vlm_interpretation"] = res.metadata["semantic_vlm_interpretation"]
+                if "evidence_package" in res.metadata:
+                    agg_metadata["evidence_package"] = res.metadata["evidence_package"]
+                if "evidence_artifact_ids" in res.metadata:
+                    agg_metadata["evidence_artifact_ids"] = res.metadata["evidence_artifact_ids"]
+
             system_trace.extend(res.execution_trace)
 
         final_answer = "\n\n".join(combined_answers)
@@ -134,6 +168,7 @@ class ResultAggregator:
                     "tool_count": len(tool_results),
                     "evidence_count": len(all_evidence),
                     "artifact_count": len(all_artifacts),
+                    "is_change_vqa": is_change_vqa_workflow,
                 },
             )
         )
@@ -153,5 +188,5 @@ class ResultAggregator:
             agent_decision=agent_decision,
             selected_tools=sel_tools,
             errors=errs,
-            metadata={"workflow_steps": len(tool_results)},
+            metadata=agg_metadata,
         )

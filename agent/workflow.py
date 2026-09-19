@@ -85,7 +85,14 @@ class WorkflowPlanner:
             dependencies=[],
             pass_context_from_previous=False,
         )
-        step2_task = next(iter(secondary_tool.supported_tasks))
+        sec_task_param = intent.extracted_parameters.get("secondary_task")
+        if sec_task_param and sec_task_param in secondary_tool.supported_tasks:
+            step2_task = sec_task_param
+        elif TaskType.SINGLE_IMAGE_VQA in secondary_tool.supported_tasks:
+            step2_task = TaskType.SINGLE_IMAGE_VQA
+        else:
+            step2_task = sorted(list(secondary_tool.supported_tasks), key=lambda x: x.value)[0]
+
         step2 = TaskPlanStep(
             step_index=1,
             task=step2_task,

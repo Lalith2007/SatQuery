@@ -1,0 +1,34 @@
+{
+  "audit_name": "SIH26167 Cryptographic Reproducibility Audit",
+  "timestamp": "2026-09-17 10:17:09 UTC",
+  "frozen_checkpoints": {
+    "tinycd": {
+      "path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+      "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "parameters": 3565034,
+      "reproducible": true
+    },
+    "cmaf": {
+      "path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+      "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "parameters": 19755144,
+      "reproducible": true
+    },
+    "qwen25vl_lora_adapter": {
+      "path": "stage1_run/adapter",
+      "adapter_safetensors_sha256": "633af9a5ced8e8e410acdbd1daba9dde7cf04102d5c19a8ed5d411bf94169af8",
+      "size_mb": 461.07,
+      "reproducible": true
+    },
+    "qwen25vl_merged_full": {
+      "path": "stage1_run/merged_full",
+      "shards": [
+        "model-00001-of-00002.safetensors",
+        "model-00002-of-00002.safetensors"
+      ],
+      "total_size_gb": 6.99,
+      "zero_peft_dependency": true,
+      "reproducible": true
+    }
+  }
+}

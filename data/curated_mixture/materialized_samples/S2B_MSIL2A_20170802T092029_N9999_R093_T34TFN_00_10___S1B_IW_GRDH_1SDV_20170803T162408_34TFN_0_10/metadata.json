@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07139",
+    "source_row_id": 4090523,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_10___S1B_IW_GRDH_1SDV_20170803T162408_34TFN_0_10",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_10",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170803T162408_34TFN_0_10",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Provide a description of this satellite image, including its geographic location, season, and land cover types.",
+    "output": "This satellite image, captured during the summer in Serbia, showcases a predominantly forested landscape within the \"cold, no dry season, warm summer\" climate zone. The dominant feature is the expansive broad-leaved forest, covering approximately 1,215,000 square meters. Adjacent to the broad-leaved forest are areas of land principally occupied by agriculture with significant areas of natural vegetation, which spans around 224,000 square meters and is distributed over two smaller patches of 115,000 and 109,000 square meters. Furthermore, the broad-leaved forest also borders a small area of complex cultivation patterns, which accounts for less than 5% of the total area, or 72,000 square meters. The broad-leaved forest shares borders with both the land principally occupied by agriculture with significant areas of natural vegetation and the complex cultivation patterns. The landscape is characterized by a mix of forest and agricultural areas, highlighting the diverse ecosystems within this region.",
+    "latitude": 43.23268815905905,
+    "longitude": 22.23890853893777,
+    "season": "Summer",
+    "climate_zone": "Cold, no dry season, warm summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07140",
+    "source_row_id": 4090511,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_10___S1B_IW_GRDH_1SDV_20170803T162408_34TFN_0_10",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_10",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170803T162408_34TFN_0_10",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Is any broad-leaved forest directly adjacent to land principally occupied by agriculture with significant areas of natural vegetation in this image?",
+    "output": "yes",
+    "latitude": 43.23268815905905,
+    "longitude": 22.23890853893777,
+    "season": "Summer",
+    "climate_zone": "Cold, no dry season, warm summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

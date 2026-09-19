@@ -1,0 +1,221 @@
+[
+  {
+    "scenario_id": "SCENARIO_1_OPTICAL_VQA",
+    "scenario_name": "Single optical image VQA",
+    "query": "What type of land cover and structures are visible in this scene?",
+    "image_count": 1,
+    "input_modalities": [
+      "optical"
+    ],
+    "task_resolved": "single_image_vqa",
+    "selected_specialist": "single_image_rs_specialist",
+    "expected_specialist": "single_image_rs_specialist",
+    "routing_match": true,
+    "status": "success",
+    "latency_ms": 39.77,
+    "trace_stages_count": 9,
+    "trace_stages": [
+      "REQUEST_RECEIVED",
+      "TASK_RESOLVED",
+      "INPUT_VALIDATED",
+      "TOOL_SELECTED",
+      "INFERENCE_EXECUTED",
+      "VLM_EXECUTED",
+      "ANSWER_GENERATED",
+      "RESULT_AGGREGATED",
+      "RESULT_RETURNED"
+    ],
+    "answer_preview": "Multiple structural complexes and functional facilities are organized across the scene with paved access arteries."
+  },
+  {
+    "scenario_id": "SCENARIO_2_SAR_VQA",
+    "scenario_name": "Single SAR image VQA",
+    "query": "Analyze backscatter intensity patterns to identify urban structures in this SAR image.",
+    "image_count": 1,
+    "input_modalities": [
+      "sar"
+    ],
+    "task_resolved": "single_image_vqa",
+    "selected_specialist": "single_image_rs_specialist",
+    "expected_specialist": "single_image_rs_specialist",
+    "routing_match": true,
+    "status": "success",
+    "latency_ms": 2.82,
+    "trace_stages_count": 9,
+    "trace_stages": [
+      "REQUEST_RECEIVED",
+      "TASK_RESOLVED",
+      "INPUT_VALIDATED",
+      "TOOL_SELECTED",
+      "INFERENCE_EXECUTED",
+      "VLM_EXECUTED",
+      "ANSWER_GENERATED",
+      "RESULT_AGGREGATED",
+      "RESULT_RETURNED"
+    ],
+    "answer_preview": "Multiple structural complexes and functional facilities are organized across the scene with paved access arteries."
+  },
+  {
+    "scenario_id": "SCENARIO_3_GROUNDING",
+    "scenario_name": "Single-image grounding",
+    "query": "Detect and localize all buildings and residential structures.",
+    "image_count": 1,
+    "input_modalities": [
+      "optical"
+    ],
+    "task_resolved": "single_image_grounding",
+    "selected_specialist": "single_image_rs_specialist",
+    "expected_specialist": "single_image_rs_specialist",
+    "routing_match": true,
+    "status": "success",
+    "latency_ms": 39.69,
+    "trace_stages_count": 10,
+    "trace_stages": [
+      "REQUEST_RECEIVED",
+      "TASK_RESOLVED",
+      "INPUT_VALIDATED",
+      "TOOL_SELECTED",
+      "EVIDENCE_GENERATED",
+      "INFERENCE_EXECUTED",
+      "VLM_EXECUTED",
+      "ANSWER_GENERATED",
+      "RESULT_AGGREGATED",
+      "RESULT_RETURNED"
+    ],
+    "answer_preview": "The main industrial structure is located toward the center-right of the scene, approximately here: building. It displays"
+  },
+  {
+    "scenario_id": "SCENARIO_4_CAPTIONING",
+    "scenario_name": "Single-image captioning",
+    "query": "Generate a detailed descriptive caption of this remote sensing scene.",
+    "image_count": 1,
+    "input_modalities": [
+      "optical"
+    ],
+    "task_resolved": "single_image_caption",
+    "selected_specialist": "single_image_rs_specialist",
+    "expected_specialist": "single_image_rs_specialist",
+    "routing_match": true,
+    "status": "success",
+    "latency_ms": 19.0,
+    "trace_stages_count": 9,
+    "trace_stages": [
+      "REQUEST_RECEIVED",
+      "TASK_RESOLVED",
+      "INPUT_VALIDATED",
+      "TOOL_SELECTED",
+      "INFERENCE_EXECUTED",
+      "VLM_EXECUTED",
+      "ANSWER_GENERATED",
+      "RESULT_AGGREGATED",
+      "RESULT_RETURNED"
+    ],
+    "answer_preview": "High-resolution OPTICAL satellite imagery depicting an organized landscape. The scene comprises structured operational i"
+  },
+  {
+    "scenario_id": "SCENARIO_5_BITEMPORAL_CHANGE",
+    "scenario_name": "Bi-temporal change query",
+    "query": "Detect and segment all structural changes between the two dates.",
+    "image_count": 2,
+    "input_modalities": [
+      "optical",
+      "optical"
+    ],
+    "task_resolved": "change_analysis",
+    "selected_specialist": "bitemporal_change_specialist",
+    "expected_specialist": "bitemporal_change_specialist",
+    "routing_match": true,
+    "status": "success",
+    "latency_ms": 1060.89,
+    "trace_stages_count": 16,
+    "trace_stages": [
+      "REQUEST_RECEIVED",
+      "TASK_RESOLVED",
+      "INPUT_VALIDATED",
+      "TOOL_SELECTED",
+      "INPUT_VALIDATED",
+      "INPUT_VALIDATED",
+      "MODEL_INITIALIZED",
+      "INFERENCE_EXECUTED",
+      "TINYCD_EXECUTED",
+      "CHANGE_MASK_GENERATED",
+      "REGION_EXTRACTED",
+      "ANSWER_GENERATED",
+      "EVIDENCE_GENERATED",
+      "RESULT_RETURNED",
+      "RESULT_AGGREGATED",
+      "RESULT_RETURNED"
+    ],
+    "answer_preview": "Bi-temporal analysis detected surface changes across approximately 11.1% of the scene, distributed across 6 distinct spa"
+  },
+  {
+    "scenario_id": "SCENARIO_6_CHANGE_VQA",
+    "scenario_name": "Change-VQA",
+    "query": "Describe what type of buildings were newly constructed in the detected change region.",
+    "image_count": 2,
+    "input_modalities": [
+      "optical",
+      "optical"
+    ],
+    "task_resolved": "change_vqa",
+    "selected_specialist": "bitemporal_change_specialist",
+    "expected_specialist": "bitemporal_change_specialist",
+    "routing_match": true,
+    "status": "partial_success",
+    "latency_ms": 208.53,
+    "trace_stages_count": 19,
+    "trace_stages": [
+      "REQUEST_RECEIVED",
+      "TASK_RESOLVED",
+      "INPUT_VALIDATED",
+      "TOOL_SELECTED",
+      "INPUT_VALIDATED",
+      "INPUT_VALIDATED",
+      "MODEL_INITIALIZED",
+      "INFERENCE_EXECUTED",
+      "TINYCD_EXECUTED",
+      "CHANGE_MASK_GENERATED",
+      "REGION_EXTRACTED",
+      "ANSWER_GENERATED",
+      "EVIDENCE_GENERATED",
+      "RESULT_RETURNED",
+      "VLM_INPUT_PREPARED",
+      "VLM_EXECUTED",
+      "ANSWER_GENERATED",
+      "RESULT_AGGREGATED",
+      "RESULT_RETURNED"
+    ],
+    "answer_preview": "[Step 1 [Change Detection Stage - TinyCD]]:\nBi-temporal analysis detected surface changes across approximately 11.1% of "
+  },
+  {
+    "scenario_id": "SCENARIO_7_OPTICAL_SAR",
+    "scenario_name": "Optical + SAR query",
+    "query": "Perform cross-modal land cover segmentation fusing co-registered optical and SAR imagery.",
+    "image_count": 2,
+    "input_modalities": [
+      "optical",
+      "sar"
+    ],
+    "task_resolved": "optical_sar_analysis",
+    "selected_specialist": "optical_sar_cross_modal_specialist",
+    "expected_specialist": "optical_sar_cross_modal_specialist",
+    "routing_match": true,
+    "status": "success",
+    "latency_ms": 249.45,
+    "trace_stages_count": 11,
+    "trace_stages": [
+      "REQUEST_RECEIVED",
+      "TASK_RESOLVED",
+      "INPUT_VALIDATED",
+      "TOOL_SELECTED",
+      "INPUT_VALIDATED",
+      "INFERENCE_EXECUTED",
+      "INFERENCE_EXECUTED",
+      "EVIDENCE_GENERATED",
+      "RESULT_RETURNED",
+      "RESULT_AGGREGATED",
+      "RESULT_RETURNED"
+    ],
+    "answer_preview": "Joint optical-SAR cross-modal analysis successfully processed co-registered Sentinel-1/2 rasters using 8-class neural se"
+  }
+]

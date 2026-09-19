@@ -1,0 +1,28 @@
+{
+  "benchmark": "VRSBench",
+  "task": "High-Resolution Remote Sensing VQA and Visual Grounding",
+  "dataset_provenance": "Wuhan University / LIESMARS (Ling et al., 2024)",
+  "sensor": "High-Resolution Optical (0.5m - 2m GSD)",
+  "total_quarantined_samples": 18,
+  "breakdown": {
+    "total_acquired": 18,
+    "harness_smoke_subset": 1,
+    "evaluation_subset": 18,
+    "grounding_records": 13,
+    "vqa_records": 5
+  },
+  "tasks_included": [
+    "vqa",
+    "grounding"
+  ],
+  "evaluator": "VRSBenchEvaluator",
+  "model_target": "Qwen2.5-VL-3B-Instruct (Vision-Language Adapter)",
+  "model_status": "NOT_READY (PENDING QWEN TRAINING MERGE)",
+  "harness_status": "VERIFIED \u2014 ARITHMETIC OPERATIONAL",
+  "official_benchmark_score": "NOT AVAILABLE",
+  "score_note": "Non-Fabrication Policy: Qwen2.5-VL-3B-Instruct training is running on remote Colab instance. Scores will be computed upon checkpoint merge.",
+  "smoke_test_result": {
+    "box_iou_test": 1.0,
+    "harness_verified": true
+  }
+}

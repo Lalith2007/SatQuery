@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07131",
+    "source_row_id": 4090429,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_05___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_5",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_05",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_5",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Give a detailed overview of the image content, including the geographic location and land cover features.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a diverse landscape within the \"temperate, no dry season, hot summer\" climate zone. The dominant feature is the broad-leaved forest, covering approximately 584,000 square meters, which borders with complex cultivation patterns (~428,000 sqm) and land principally occupied by agriculture with significant areas of natural vegetation (~414,000 sqm). Moreover, the broad-leaved forest is also adjacent to a small patch of natural grassland and sparsely vegetated areas, which accounts for less than 5% of the total area. The complex cultivation patterns, which are larger than the land principally occupied by agriculture with significant areas of natural vegetation, are adjacent to the land principally occupied by agriculture with significant areas of natural vegetation. Overall, the image presents a mix of forest and agricultural areas, highlighting the region's ecological diversity.",
+    "latitude": 43.28670357621553,
+    "longitude": 22.240004376568827,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07132",
+    "source_row_id": 4090413,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_05___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_5",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_05",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_5",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Does any instance of complex cultivation patterns directly border land principally occupied by agriculture with significant areas of natural vegetation in this scene?",
+    "output": "yes",
+    "latitude": 43.28670357621553,
+    "longitude": 22.240004376568827,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

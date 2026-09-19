@@ -8,26 +8,27 @@ import {
   TaskType,
 } from '../types/api';
 import { api } from '../services/api';
+import { DEMO_MANIFEST, DemoSampleItem, DemoManifestData } from '../data/demoManifest';
 
 export const PRESET_SCENARIOS: PresetScenario[] = [
   {
     id: 'demo-a',
     name: 'Demo A: Single-Image VQA',
     category: 'Single Image',
-    subtitle: 'Copernicus Sentinel-2 MSI Optical VQA',
-    query: 'What is the dominant land cover and infrastructure in this scene?',
-    source: 'Copernicus Sentinel-2 (ESA)',
+    subtitle: 'Copernicus Sentinel-2 MSI Optical VQA (15 Real Scenes)',
+    query: DEMO_MANIFEST.demos.demo_a.samples[0].query,
+    source: 'Copernicus Sentinel-2 (ESA) / RSVQA-LR Val Split',
     sensor: 'MSI 10m True-Color RGB',
     license: 'CC BY-SA 3.0 IGO',
     expectedTask: 'single_image_vqa',
     iconName: 'Eye',
     images: [
       {
-        path_or_uri: 'demo_assets/demo_optical_single.png',
+        path_or_uri: 'demo_assets/demo_a_vqa/vqa_01.png',
         format: 'png',
         modality: 'optical',
-        role: 'Sentinel-2 MSI Optical',
-        name: 'demo_optical_single.png',
+        role: 'Sentinel-2 MSI Optical Scene #1',
+        name: 'vqa_01.png',
       },
     ],
   },
@@ -35,20 +36,20 @@ export const PRESET_SCENARIOS: PresetScenario[] = [
     id: 'demo-b',
     name: 'Demo B: Spatial Grounding',
     category: 'Single Image',
-    subtitle: 'USGS High-Res Aerial Airfield Localization',
-    query: 'Where is the airport runway and apron in this image?',
-    source: 'USGS Aerial Orthoimagery',
-    sensor: '0.5m High-Resolution NAIP',
-    license: 'Public Domain (USGS)',
+    subtitle: 'High-Res Aerial & Satellite Feature Localization (15 Real Scenes)',
+    query: DEMO_MANIFEST.demos.demo_b.samples[0].query,
+    source: 'LEVIR-CD Test Partition (0.5m GSD)',
+    sensor: '0.5m High-Resolution Optical',
+    license: 'Academic Research Open Access',
     expectedTask: 'single_image_grounding',
     iconName: 'Crosshair',
     images: [
       {
-        path_or_uri: 'demo_assets/demo_airport_grounding.png',
+        path_or_uri: 'demo_assets/demo_b_grounding/grounding_01.png',
         format: 'png',
         modality: 'optical',
-        role: 'USGS Airport Orthoimagery',
-        name: 'demo_airport_grounding.png',
+        role: 'LEVIR-CD Orthoimagery Scene #1',
+        name: 'grounding_01.png',
       },
     ],
   },
@@ -56,27 +57,27 @@ export const PRESET_SCENARIOS: PresetScenario[] = [
     id: 'demo-c',
     name: 'Demo C: Bi-Temporal Change',
     category: 'Bi-Temporal',
-    subtitle: 'LEVIR-CD High-Res Surface Change Intelligence',
-    query: 'What changed between these two acquisition dates?',
-    source: 'LEVIR-CD Benchmark (Beihang Univ)',
+    subtitle: 'LEVIR-CD Building Construction Detection (15 Real Pairs)',
+    query: DEMO_MANIFEST.demos.demo_c.samples[0].query,
+    source: 'LEVIR-CD Benchmark Test Split (Beihang Univ)',
     sensor: '0.5m Google Earth / WorldView',
     license: 'Academic Research Open Access',
     expectedTask: 'change_vqa',
     iconName: 'GitCompare',
     images: [
       {
-        path_or_uri: 'demo_assets/demo_change_t0.png',
+        path_or_uri: 'demo_assets/demo_c_change/change_01_t0.png',
         format: 'png',
         modality: 'optical',
         role: 'T0 — Baseline Acquisition',
-        name: 'demo_change_t0.png',
+        name: 'change_01_t0.png',
       },
       {
-        path_or_uri: 'demo_assets/demo_change_t1.png',
+        path_or_uri: 'demo_assets/demo_c_change/change_01_t1.png',
         format: 'png',
         modality: 'optical',
         role: 'T1 — Developed Acquisition',
-        name: 'demo_change_t1.png',
+        name: 'change_01_t1.png',
       },
     ],
   },
@@ -84,27 +85,27 @@ export const PRESET_SCENARIOS: PresetScenario[] = [
     id: 'demo-d',
     name: 'Demo D: Optical-SAR Fusion',
     category: 'Cross-Modal',
-    subtitle: 'Sentinel-2 Optical + Sentinel-1 C-Band SAR',
-    query: 'Use optical and SAR images together to identify structures beneath clouds.',
-    source: 'Copernicus Sentinel-1/2 (ESA)',
-    sensor: 'MSI Optical + C-SAR GRD (CMAF ResNet-50)',
-    license: 'CC BY-SA 3.0 IGO',
+    subtitle: 'WHU-OPT-SAR Co-Registered Cross-Modal Intelligence (15 Real Pairs)',
+    query: DEMO_MANIFEST.demos.demo_d.samples[0].query,
+    source: 'WHU-OPT-SAR Test Split (Wuhan Univ)',
+    sensor: '0.55m Optical + SAR Backscatter GeoTIFF',
+    license: 'Academic Research Open Access',
     expectedTask: 'optical_sar_analysis',
     iconName: 'Layers',
     images: [
       {
-        path_or_uri: 'demo_assets/demo_optical_cross.png',
+        path_or_uri: 'demo_assets/demo_d_optical_sar/cross_01_opt.png',
         format: 'png',
         modality: 'optical',
-        role: 'Sentinel-2 Clouded Optical',
-        name: 'demo_optical_cross.png',
+        role: 'High-Res Optical RGB',
+        name: 'cross_01_opt.png',
       },
       {
-        path_or_uri: 'demo_assets/demo_sar_cross.tif',
+        path_or_uri: 'demo_assets/demo_d_optical_sar/cross_01_sar.tif',
         format: 'tiff',
         modality: 'sar',
-        role: 'Sentinel-1 SAR Radar Amplitude',
-        name: 'demo_sar_cross.tif',
+        role: 'SAR Amplitude GeoTIFF',
+        name: 'cross_01_sar.tif',
       },
     ],
   },
@@ -112,27 +113,27 @@ export const PRESET_SCENARIOS: PresetScenario[] = [
     id: 'demo-e',
     name: 'Demo E: Multi-Tool Workflow',
     category: 'Multi-Tool',
-    subtitle: 'LEVIR-CD Change Detection → Scene Analysis',
-    query: 'What changed, where did it happen, and what is present in the change?',
-    source: 'LEVIR-CD Dataset',
-    sensor: '0.5m Bi-Temporal Satellite',
+    subtitle: 'Autonomous TinyCD Change Detection → Qwen-VL Reasoning (15 Real Triplets)',
+    query: DEMO_MANIFEST.demos.demo_e.samples[0].query,
+    source: 'LEVIR-CD / CDVQA Test Evidence',
+    sensor: '0.5m Bi-Temporal Multi-Resolution Crops',
     license: 'Academic Research Open Access',
     expectedTask: 'change_vqa',
     iconName: 'Workflow',
     images: [
       {
-        path_or_uri: 'demo_assets/demo_change_t0.png',
+        path_or_uri: 'demo_assets/demo_e_workflow/workflow_01_t0.png',
         format: 'png',
         modality: 'optical',
-        role: 'T0 — Pre-Development',
-        name: 'demo_change_t0.png',
+        role: 'T0 — Focused Region Crop',
+        name: 'workflow_01_t0.png',
       },
       {
-        path_or_uri: 'demo_assets/demo_change_t1.png',
+        path_or_uri: 'demo_assets/demo_e_workflow/workflow_01_t1.png',
         format: 'png',
         modality: 'optical',
-        role: 'T1 — Post-Development',
-        name: 'demo_change_t1.png',
+        role: 'T1 — Focused Region Crop',
+        name: 'workflow_01_t1.png',
       },
     ],
   },
@@ -152,6 +153,10 @@ interface AnalysisContextType {
   setInputMode: (mode: 'preset' | 'upload') => void;
   selectedPreset: PresetScenario | null;
   selectPreset: (preset: PresetScenario) => void;
+  selectedSceneIndex: number;
+  selectSceneIndex: (index: number) => void;
+  demoManifest: DemoManifestData;
+  activeSceneSample: DemoSampleItem | null;
   uploadedFiles: UploadedFileItem[];
   addUploadedFiles: (files: File[]) => void;
   removeUploadedFile: (id: string) => void;
@@ -185,9 +190,99 @@ interface AnalysisContextType {
 
 const AnalysisContext = createContext<AnalysisContextType | null>(null);
 
+function buildPresetForScene(basePreset: PresetScenario, sceneIndex: number): PresetScenario {
+  const trackKey = basePreset.id.replace('-', '_') as 'demo_a' | 'demo_b' | 'demo_c' | 'demo_d' | 'demo_e';
+  const track = DEMO_MANIFEST.demos[trackKey];
+  if (!track || !track.samples[sceneIndex]) return basePreset;
+
+  const sample = track.samples[sceneIndex];
+  const num = String(sceneIndex + 1).padStart(2, '0');
+
+  let images = basePreset.images;
+  if (trackKey === 'demo_a') {
+    images = [
+      {
+        path_or_uri: sample.relative_path || `demo_assets/demo_a_vqa/vqa_${num}.png`,
+        format: 'png',
+        modality: 'optical',
+        role: `Sentinel-2 MSI Scene #${sceneIndex + 1}`,
+        name: sample.file_name || `vqa_${num}.png`,
+      },
+    ];
+  } else if (trackKey === 'demo_b') {
+    images = [
+      {
+        path_or_uri: sample.relative_path || `demo_assets/demo_b_grounding/grounding_${num}.png`,
+        format: 'png',
+        modality: 'optical',
+        role: `LEVIR-CD Orthoimagery Scene #${sceneIndex + 1}`,
+        name: sample.file_name || `grounding_${num}.png`,
+      },
+    ];
+  } else if (trackKey === 'demo_c') {
+    images = [
+      {
+        path_or_uri: sample.t0_path || `demo_assets/demo_c_change/change_${num}_t0.png`,
+        format: 'png',
+        modality: 'optical',
+        role: `T0 Acquisition (${sample.scene_id})`,
+        name: sample.t0_file || `change_${num}_t0.png`,
+      },
+      {
+        path_or_uri: sample.t1_path || `demo_assets/demo_c_change/change_${num}_t1.png`,
+        format: 'png',
+        modality: 'optical',
+        role: `T1 Acquisition (${sample.scene_id})`,
+        name: sample.t1_file || `change_${num}_t1.png`,
+      },
+    ];
+  } else if (trackKey === 'demo_d') {
+    images = [
+      {
+        path_or_uri: sample.optical_path || `demo_assets/demo_d_optical_sar/cross_${num}_opt.png`,
+        format: 'png',
+        modality: 'optical',
+        role: `Optical RGB (${sample.tile_stem})`,
+        name: sample.optical_file || `cross_${num}_opt.png`,
+      },
+      {
+        path_or_uri: sample.sar_path || `demo_assets/demo_d_optical_sar/cross_${num}_sar.tif`,
+        format: 'tiff',
+        modality: 'sar',
+        role: `SAR GeoTIFF (${sample.tile_stem})`,
+        name: sample.sar_file || `cross_${num}_sar.tif`,
+      },
+    ];
+  } else if (trackKey === 'demo_e') {
+    images = [
+      {
+        path_or_uri: sample.t0_path || `demo_assets/demo_e_workflow/workflow_${num}_t0.png`,
+        format: 'png',
+        modality: 'optical',
+        role: `T0 Region Crop (${sample.scene_id})`,
+        name: sample.t0_file || `workflow_${num}_t0.png`,
+      },
+      {
+        path_or_uri: sample.t1_path || `demo_assets/demo_e_workflow/workflow_${num}_t1.png`,
+        format: 'png',
+        modality: 'optical',
+        role: `T1 Region Crop (${sample.scene_id})`,
+        name: sample.t1_file || `workflow_${num}_t1.png`,
+      },
+    ];
+  }
+
+  return {
+    ...basePreset,
+    query: sample.query,
+    images,
+  };
+}
+
 export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [inputMode, setInputMode] = useState<'preset' | 'upload'>('preset');
   const [selectedPreset, setSelectedPreset] = useState<PresetScenario | null>(PRESET_SCENARIOS[0]);
+  const [selectedSceneIndex, setSelectedSceneIndex] = useState<number>(0);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFileItem[]>([]);
   const [query, setQuery] = useState<string>(PRESET_SCENARIOS[0].query);
   const [isCustomQuery, setIsCustomQuery] = useState<boolean>(false);
@@ -225,10 +320,29 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const selectPreset = (preset: PresetScenario) => {
-    setSelectedPreset(preset);
+    const updatedPreset = buildPresetForScene(preset, 0);
+    setSelectedPreset(updatedPreset);
+    setSelectedSceneIndex(0);
     setInputMode('preset');
-    setQuery(preset.query);
+    setQuery(updatedPreset.query);
     setIsCustomQuery(false);
+  };
+
+  const selectSceneIndex = (index: number) => {
+    if (!selectedPreset) return;
+    const updatedPreset = buildPresetForScene(selectedPreset, index);
+    setSelectedPreset(updatedPreset);
+    setSelectedSceneIndex(index);
+    setInputMode('preset');
+    setQuery(updatedPreset.query);
+    setIsCustomQuery(false);
+  };
+
+  const getActiveSceneSample = (): DemoSampleItem | null => {
+    if (!selectedPreset) return null;
+    const trackKey = selectedPreset.id.replace('-', '_') as 'demo_a' | 'demo_b' | 'demo_c' | 'demo_d' | 'demo_e';
+    const track = DEMO_MANIFEST.demos[trackKey];
+    return track?.samples[selectedSceneIndex] || null;
   };
 
   const addUploadedFiles = (files: File[]) => {
@@ -238,11 +352,12 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const currentCount = uploadedFiles.length + idx;
       
       let defaultRole = 'Primary Image';
-      if (currentCount === 0) defaultRole = 'T0 — Baseline / Optical';
-      else if (currentCount === 1) defaultRole = isSar ? 'SAR Radar Layer' : 'T1 — Follow-Up';
+      if (currentCount === 0) defaultRole = isSar ? 'SAR Amplitude' : 'T0 / Baseline Image';
+      else if (currentCount === 1) defaultRole = isSar ? 'SAR Amplitude' : 'T1 / Comparison Image';
+      else defaultRole = `Image #${currentCount + 1}`;
 
       return {
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: `upload-${Date.now()}-${idx}`,
         file: f,
         previewUrl: URL.createObjectURL(f),
         role: defaultRole,
@@ -256,9 +371,11 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const removeUploadedFile = (id: string) => {
     setUploadedFiles((prev) => {
-      const item = prev.find((i) => i.id === id);
-      if (item) URL.revokeObjectURL(item.previewUrl);
-      return prev.filter((i) => i.id !== id);
+      const filtered = prev.filter((f) => f.id !== id);
+      if (filtered.length === 0) {
+        setInputMode('preset');
+      }
+      return filtered;
     });
   };
 
@@ -273,31 +390,37 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const clearUploads = () => {
     uploadedFiles.forEach((f) => URL.revokeObjectURL(f.previewUrl));
     setUploadedFiles([]);
+    setInputMode('preset');
   };
 
   const executeAnalysis = async (customQueryOverride?: string) => {
-    const activeQuery = customQueryOverride !== undefined ? customQueryOverride : query;
+    const activeQuery = customQueryOverride || query;
     if (!activeQuery.trim()) {
-      setError('Please enter a query or select a preset scenario.');
+      setError('Query prompt cannot be empty.');
       return;
     }
 
     setIsLoading(true);
     setError(null);
-    setLoadingStage('Initializing agent orchestration...');
+    setResult(null);
+    setActiveArtifact(null);
+    setActiveEvidence(null);
+
     setPipelineStages([
-      { stage: 'Validating image geometry & CRS', status: 'active' },
-      { stage: 'Resolving intent & specialist routing', status: 'pending' },
-      { stage: 'Executing domain vision-language neural model', status: 'pending' },
-      { stage: 'Generating grounding evidence & spatial maps', status: 'pending' },
-      { stage: 'Synthesizing evidence-grounded response', status: 'pending' },
+      { stage: 'Agent Intent Formulation & Routing', status: 'active' },
+      { stage: 'Specialist Tool Pipeline Execution', status: 'pending' },
+      { stage: 'Evidence Extraction & Artifact Generation', status: 'pending' },
+      { stage: 'Vision-Language Synthesis', status: 'pending' },
     ]);
 
     try {
       let res: QueryResponse;
 
-      if (inputMode === 'upload' && uploadedFiles.length > 0) {
-        // Multipart Upload Pipeline
+      if (inputMode === 'upload') {
+        if (uploadedFiles.length === 0) {
+          throw new Error('Please upload at least one satellite image file.');
+        }
+
         const formData = new FormData();
         formData.append('query', activeQuery);
         
@@ -315,7 +438,6 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
         res = await api.submitQueryMultipart(formData);
       } else {
-        // Preset Pipeline
         if (!selectedPreset) {
           throw new Error('No preset scenario selected.');
         }
@@ -341,7 +463,6 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setPipelineStages((prev) => prev.map((s) => ({ ...s, status: 'completed' })));
       setResult(res);
 
-      // Select high-priority visual artifact automatically
       if (res.artifacts && res.artifacts.length > 0) {
         const visualPriority = (name: string) => {
           const n = (name || '').toLowerCase();
@@ -381,6 +502,10 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setInputMode,
         selectedPreset,
         selectPreset,
+        selectedSceneIndex,
+        selectSceneIndex,
+        demoManifest: DEMO_MANIFEST,
+        activeSceneSample: getActiveSceneSample(),
         uploadedFiles,
         addUploadedFiles,
         removeUploadedFile,

@@ -130,18 +130,37 @@ tools = registry.find_tools_for_task(TaskType.OPTICAL_SAR_ANALYSIS)
 Run the complete Division 4 test suite across all 4 implementation phases:
 
 ```bash
-# Run Division 4 tests
-.\.venv\Scripts\pytest.exe tests/specialists/test_optical_sar_phase1.py tests/specialists/test_optical_sar_phase2.py tests/specialists/test_optical_sar_phase3.py tests/specialists/test_optical_sar_phase4.py
+# Run Division 4 tests (all phases)
+PYTHONPATH=. .venv/bin/python -m pytest \
+  tests/specialists/test_optical_sar_phase1.py \
+  tests/specialists/test_optical_sar_phase2.py \
+  tests/specialists/test_optical_sar_phase3.py \
+  tests/specialists/test_optical_sar_phase4.py \
+  tests/specialists/test_optical_sar_retraining_pipeline.py \
+  -v
 
 # Run full project test suite
-.\.venv\Scripts\pytest.exe tests/
+PYTHONPATH=. .venv/bin/python -m pytest tests/ -v
 ```
 
-**Test Coverage Summary:**
-- **Phase 1 (`test_optical_sar_phase1.py`):** Config, schemas, quantile normalization, NoData handling, spatial grid resampling.
+**Test Coverage Summary (26 tests, 5 phases):**
+- **Phase 1 (`test_optical_sar_phase1.py`):** Config, schemas, quantile normalization, NoData handling, spatial grid resampling. *Includes CM-EDGE-10 modality contract enforcement.*
 - **Phase 2 (`test_optical_sar_phase2.py`):** Encoders, CMAF cross-attention, query intent parsing, FiLM modulation, land-cover task head.
 - **Phase 3 (`test_optical_sar_phase3.py`):** Spatial evidence masks, bounding box derivation, visual overlays, confidence entropy heatmaps, specialist health check.
-- **Phase 4 (`test_optical_sar_phase4.py`):** Genuine cross-modal dual dependency verification, encoder swapping, tool registry integration, failure & error handling.
+- **Phase 4 (`test_optical_sar_phase4.py`):** Genuine cross-modal dual dependency verification, encoder swapping, tool registry integration, failure & error handling. *Includes CM-EDGE-11 corrupted-input fail-closed enforcement.*
+- **Retraining pipeline (`test_optical_sar_retraining_pipeline.py`):** Dataset manifest, WHU-OPT-SAR tile generation, training loop contract, checkpoint export.
+
+### Post-Session Bug Fixes
+
+Three production safety defects discovered and resolved during QA session 2026-09-10:
+
+| Bug | File | Fix |
+| :--- | :--- | :--- |
+| **CM-EDGE-10** — Positional heuristic bypassed explicit modality declarations, misclassifying OPTICAL images as SAR | `specialists/optical_sar/schemas.py` | Three-pass modality resolution: explicit → filename heuristic (UNKNOWN only) → positional (UNKNOWN only) |
+| **CM-EDGE-11** — Corrupted input silently replaced with random tensor; `SUCCESS` returned with fabricated prediction | `specialists/optical_sar/preprocessing.py`, `config.py`, `service.py` | `allow_synthetic_fallback=False` by default; `IOError` raised and propagated to `ToolStatus.FAILED` |
+| **Trace provenance gap** — CMAF inference trace entry missing `model`, `architecture`, `sha256`, `parameter_count` fields | `specialists/optical_sar/service.py` | Enriched `ExecutionTraceEntry` with full provenance metadata matching Division 3 standard |
+
+Full regression: **248/248 tests passing** post-fix.
 
 ---
 

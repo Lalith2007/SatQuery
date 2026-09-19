@@ -1,0 +1,10 @@
+{
+  "benchmark": "CDVQA",
+  "version": "1.0.0",
+  "total_records": 128,
+  "scenes_evaluated": 128,
+  "sensor": "High-Resolution Google Earth VHR Optical (0.5m GSD)",
+  "source": "Beihang University LEVIR Lab (Chen & Shi) / Yuan et al. (CDVQA)",
+  "workflow": "Production Composed Pipeline: TinyCD (Stage 1) -> Region Bounding Box -> 3-Image Handoff [BEFORE, AFTER, WHERE_CHANGE_OCCURRED] -> Qwen2.5-VL (Stage 2)",
+  "anti_leakage_guarantee": "Zero GT change masks provided to VLM; ROI derived strictly from TinyCD predicted mask"
+}

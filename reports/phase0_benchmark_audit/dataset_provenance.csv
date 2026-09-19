@@ -1,0 +1,7 @@
+Dataset,Official Source,Release / DOI,Split,Samples,Annotation Count,Local Path,Checksum / Integrity,Contamination Status
+LEVIR-CD,Beihang University LEVIR Lab (Chen & Shi),2020 (DOI: 10.1109/JSTARS.2020.2991007),Official Test,128 pairs,128 binary masks,data/official_levir_cd/test/,"A/, B/, label/ verified",PASS (Zero train/test overlap)
+WHU-OPT-SAR,Wuhan University / LIESMARS (Li et al.),2022 (DOI: 10.1016/j.isprsjprs.2022.08.006),Official Test,"4,950 tiles","308,687,656 valid pixels",data/official_whu_opt_sar/test/,15 parent scenes verified,PASS (Zero train/test overlap)
+BigEarthNet.txt,K-HUB / HuggingFace,2024 Stage-1 Curated Mixture,Held-Out Test,850 pairs,850 instructions/targets,data/qwen_dataset/test.jsonl,1.7 MB JSONL verified,PASS (Isolated test partition)
+RSVQA-LR,"Sylvain Lobry, Diego Marcos, Devis Tuia",Zenodo (DOI: 10.5281/zenodo.6344334),Official Validation,"2,000 rasters","2,000 QA pairs",data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet,174.1 MB parquet verified,PASS (Validation partition)
+VRSBench,Wuhan University / LIESMARS (Ling et al.),2024 (arXiv:2406.18430),Official Evaluation,"16,159 referring / 9,350 img","16,159 referring expressions",data/benchmark_samples/vrsbench/,VRSBench_EVAL_*.json verified,PASS (Evaluation partition)
+CDVQA,Yuan et al. (Wuhan University),2022 (DOI: 10.1109/TGRS.2022.3168127),Unofficial LEVIR Subset,128 scenes,128 synthetic descriptions,datasets/evaluation/cdvqa/manifest.jsonl,manifest.jsonl verified,"WARNING (Pipeline subset, not official test)"

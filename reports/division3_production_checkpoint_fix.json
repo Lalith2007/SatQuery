@@ -1,0 +1,74 @@
+{
+  "audit_timestamp": "2026-09-10T14:50:00Z",
+  "task": "DIVISION 3 PRODUCTION FIX — FORCE AUTHORITATIVE TINYCD BACKEND",
+  "status": "PASS",
+  "production_architecture": "TinyCD",
+  "adapter_class": "specialists.temporal_change.model_adapter.TinyCDAdapter",
+  "specialist_class": "specialists.temporal_change.specialist.BiTemporalChangeSpecialistTool",
+  "checkpoint": {
+    "path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "size_bytes": 14326623,
+    "parameter_count": 3565034,
+    "weight_tensors": 145,
+    "strict_load": "PASS",
+    "missing_keys": 0,
+    "unexpected_keys": 0
+  },
+  "provenance_gate": {
+    "enforced_at_startup": true,
+    "fail_closed_status": "CHECKPOINT_INVALID",
+    "random_fallback_blocked": true,
+    "silent_checkpoint_fallback_blocked": true,
+    "untrained_changeformer_blocked": true,
+    "untrained_siamese_diff_blocked": true
+  },
+  "threshold_policy": {
+    "production_threshold": 0.50,
+    "status": "FROZEN"
+  },
+  "forensic_clarification": "17.69% F1 was produced by an untrained randomly initialized SiameseFeatureDiff fallback caused by an architecture/checkpoint dispatch misconfiguration. It is not a TinyCD result.",
+  "metrics": {
+    "forensic_sample_test_10": {
+      "f1": 0.839047,
+      "iou": 0.722603,
+      "precision": 0.791918,
+      "recall": 0.891864,
+      "oa": 0.966805,
+      "tp": 22869,
+      "fp": 6009,
+      "fn": 2773,
+      "tn": 223693,
+      "predicted_change_fraction": 0.109303,
+      "ground_truth_change_fraction": 0.097015
+    },
+    "official_128_scenes_regression": {
+      "scene_count": 128,
+      "total_pixels_evaluated": 33554432,
+      "f1": 0.788359,
+      "iou": 0.650533,
+      "precision": 0.828452,
+      "recall": 0.751842,
+      "oa": 0.979384,
+      "tp": 321399,
+      "fp": 66547,
+      "fn": 106015,
+      "tn": 33060471,
+      "elapsed_seconds": 12.12,
+      "throughput_fps": 10.56
+    }
+  },
+  "safety_tests": {
+    "test_missing_checkpoint_fails_closed": "PASS",
+    "test_corrupted_checkpoint_sha256_fails_closed": "PASS",
+    "test_empty_checkpoint_changeformer_blocked": "PASS",
+    "test_specialist_execution_fails_closed_without_random_inference": "PASS",
+    "test_successful_execution_trace_includes_authoritative_metadata": "PASS",
+    "test_levir_cd_test_10_regression_metrics": "PASS"
+  },
+  "readiness": {
+    "retraining_required": false,
+    "model_replacement_required": false,
+    "production_ready": true
+  }
+}

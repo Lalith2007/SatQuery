@@ -1,0 +1,119 @@
+{
+  "audit_title": "SatQuery AI — Public Benchmark Dataset Acquisition & Provenance Audit",
+  "audit_date": "2026-09-11",
+  "audit_version": "1.0.0",
+  "policy_compliance": {
+    "non_fabrication_rule": true,
+    "strict_real_data": true,
+    "zero_evaluation_contamination": true,
+    "no_synthetic_substitutions": true,
+    "subset_transparency": true
+  },
+  "benchmarks": {
+    "bigearthnet_txt": {
+      "dataset_name": "BigEarthNet.txt Benchmark Split",
+      "version": "BigEarthNet-MM v1.0",
+      "source": "TU Berlin / DLR (Sumbul et al.)",
+      "split": "Held-Out Test Split (data/qwen_dataset/test.jsonl)",
+      "sample_count": 850,
+      "unique_pairs": 425,
+      "modality": "Sentinel-1 SAR + Sentinel-2 Optical",
+      "download_size_mb": 420.5,
+      "sampling_seed": 42,
+      "status": "ACQUIRED_AND_PARTITIONED",
+      "quarantine_guarantee": "14,304 training records quarantined; 850 evaluation records held-out with zero overlap",
+      "sha256_manifest": "data/qwen_dataset/dataset_split_report.json"
+    },
+    "rsvqa_lr": {
+      "dataset_name": "RSVQA Low Resolution (LR)",
+      "version": "1.0.0",
+      "source": "Sylvain Lobry, Diego Marcos, Devis Tuia / Zenodo",
+      "doi": "10.5281/zenodo.6344334",
+      "split": "validation (data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet)",
+      "sample_count": 2000,
+      "unique_images": 100,
+      "unique_questions": 869,
+      "modality": "Sentinel-2 MSI (10m GSD)",
+      "download_size_mb": 174.1,
+      "sampling_seed": 42,
+      "status": "ACQUIRED_AND_VERIFIED",
+      "quarantine_guarantee": "Isolated validation split; zero overlap with model training splits",
+      "file_path": "data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet"
+    },
+    "vrsbench": {
+      "dataset_name": "VRSBench (VQA and Visual Grounding)",
+      "version": "v1.1.0",
+      "source": "Wuhan University / LIESMARS (Ling et al., 2024)",
+      "split": "Representative Test Partition (datasets/evaluation/vrsbench/manifest.jsonl)",
+      "sample_count": 18,
+      "sample_breakdown": {
+        "total_acquired": 18,
+        "grounding_records": 13,
+        "vqa_records": 5,
+        "harness_smoke_subset": 1,
+        "evaluation_subset": 18,
+        "reconciliation_note": "Earlier draft planning documents noted 150 records as a target sample quota. Exactly 18 records (13 referring grounding with bounding boxes + 5 VQA question-answer pairs) were materialized in data/benchmark_samples/vrsbench/ and partitioned into datasets/evaluation/vrsbench/manifest.jsonl. No VRSBench score is claimed or evaluated prior to Qwen model inference."
+      },
+      "modality": "High-Resolution Optical (0.5 - 2.0m GSD)",
+      "download_size_mb": 1.4,
+      "sampling_seed": 42,
+      "tasks": ["referring_grounding", "vqa"],
+      "status": "ACQUIRED_AND_VERIFIED",
+      "quarantine_guarantee": "Held-out evaluation samples with official ground-truth annotations"
+    },
+    "cdvqa": {
+      "dataset_name": "Change Detection Visual Question Answering (CDVQA)",
+      "version": "v1.0 (LEVIR-CD Bi-Temporal Base)",
+      "source": "Yuan et al. / Beihang University LEVIR Lab",
+      "split": "Official Held-Out Test Set (data/official_levir_cd/test/)",
+      "sample_count": 128,
+      "modality": "Bi-Temporal Optical (0.5m GSD)",
+      "download_size_mb": 1240.0,
+      "sampling_seed": null,
+      "status": "ACQUIRED_AND_OPERATIONAL",
+      "quarantine_guarantee": "Predictions generated strictly by TinyCD; data/official_levir_cd/test/label/ strictly unread during inference"
+    },
+    "levir_cd": {
+      "dataset_name": "LEVIR-CD Bi-Temporal Change Detection",
+      "version": "Official Release",
+      "source": "Beihang University LEVIR Lab (Chen & Shi)",
+      "split": "Official Held-Out Test Set",
+      "sample_count": 128,
+      "pixels_evaluated": 8388608,
+      "status": "EVALUATED_AND_FROZEN",
+      "metrics": {
+        "f1": 0.7931,
+        "iou": 0.6571,
+        "overall_accuracy": 0.9799,
+        "precision": 0.8336,
+        "recall": 0.7563
+      }
+    },
+    "whu_opt_sar": {
+      "dataset_name": "WHU-OPT-SAR Cross-Modal Land-Cover Classification",
+      "version": "Official Release",
+      "source": "Wuhan University (Li et al.)",
+      "split": "Official Held-Out Test Set (15 scenes, 4,950 tiles)",
+      "sample_count": 4950,
+      "pixels_evaluated": 308687656,
+      "status": "EVALUATED_AND_FROZEN",
+      "metrics": {
+        "overall_accuracy": 0.7171,
+        "mean_iou": 0.3508,
+        "macro_f1": 0.4662,
+        "weighted_f1": 0.7418
+      }
+    },
+    "isro_sac_target": {
+      "dataset_name": "ISRO / SAC Mission Benchmark Dataset",
+      "version": "Restricted Agency Data",
+      "source": "Smart India Hackathon / ISRO SAC Problem Statement",
+      "split": "Restricted Official Test",
+      "sample_count": 0,
+      "download_size_mb": 0.0,
+      "status": "AWAITING_OFFICIAL_DATA",
+      "quarantine_guarantee": "No synthetic or fabricated rasters substituted; evaluation harness is ready for private jury evaluation"
+    }
+  },
+  "dataset_acquisition_summary": "COMPLETE_FOR_PUBLIC_BENCHMARKS__AWAITING_ISRO_SAC"
+}

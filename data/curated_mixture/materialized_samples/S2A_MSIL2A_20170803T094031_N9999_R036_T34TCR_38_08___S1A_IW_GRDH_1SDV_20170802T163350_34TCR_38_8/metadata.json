@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_01179",
+    "source_row_id": 778111,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_38_08___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_38_8",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_38_08",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_38_8",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Provide a description of this image, including the location, season, and distribution of land cover types.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a predominantly agricultural landscape within the \"temperate, no dry season, hot summer\" climate zone. The largest area is arable land, spanning approximately 945,000 square meters, and is distributed over two individual areas, one of which is a larger area (~927,000 sqm) and the other a marginal area. The second most prominent feature is transitional woodland and shrub, covering around 376,000 square meters, and is also spread over two individual areas, with one smaller area (~332,000 sqm) and one marginal area. Additionally, a smaller patch of broad-leaved forest (~119,000 sqm) is present. The arable land borders both transitional woodland and shrub and broad-leaved forest. Furthermore, the transitional woodland and shrub is adjacent to the broad-leaved forest.",
+    "latitude": 45.94454105389695,
+    "longitude": 19.015718127501614,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_01180",
+    "source_row_id": 778096,
+    "pair_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_38_08___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_38_8",
+    "patch_id": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_38_08",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170802T163350_34TCR_38_8",
+    "parent_granule": "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Is any arable land immediately next to a broad-leaved forest?",
+    "output": "yes",
+    "latitude": 45.94454105389695,
+    "longitude": 19.015718127501614,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

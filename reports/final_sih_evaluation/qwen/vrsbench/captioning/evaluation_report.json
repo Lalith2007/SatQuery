@@ -1,0 +1,12 @@
+{
+  "benchmark": "VRSBench",
+  "task": "Image Captioning",
+  "dataset_split": "Official Evaluation Partition (Deterministic 500-Sample Evaluation Subset)",
+  "sample_count": 500,
+  "model": "Qwen2.5-VL-3B-Instruct (merged_full)",
+  "checkpoint_path": "/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/merged_full",
+  "environment": "Google Colab CUDA (Tesla T4)",
+  "metric_result": "NOT AVAILABLE \u2014 METRIC NOT GENERATED",
+  "status": "NOT AVAILABLE \u2014 METRIC NOT GENERATED",
+  "evaluation_note": "CUDA inference was executed across 500 captioning samples in Colab. However, the execution log did not output the final captioning score (CIDEr/BLEU-4). Enforcing strict non-fabrication rule: metric marked NOT AVAILABLE \u2014 METRIC NOT GENERATED."
+}

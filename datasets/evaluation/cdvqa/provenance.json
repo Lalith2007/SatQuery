@@ -1,0 +1,5 @@
+{
+  "base_dataset": "LEVIR-CD Held-Out Test Set (128 scenes)",
+  "pairs_verified_on_disk": 128,
+  "ingestion_status": "ACQUIRED_AND_VERIFIED"
+}

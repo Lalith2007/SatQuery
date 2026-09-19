@@ -1,0 +1,13 @@
+{
+  "benchmark": "ISRO/SAC Mission Target Evaluation",
+  "organization": "ISRO Space Applications Centre (SAC)",
+  "sensor_modalities": "Cartosat-2S (0.65m Optical) + RISAT-1A (C-Band SAR)",
+  "dataset_status": "AWAITING OFFICIAL EVALUATION DATA",
+  "local_data_size_bytes": 0,
+  "evaluator": "ISROSACGenericEvaluator",
+  "evaluator_status": "READY FOR PRIVATE EVALUATION DATA INGESTION",
+  "model_target": "SatQuery AI Multi-Specialist Architecture",
+  "model_status": "NOT_READY (PENDING QWEN TRAINING MERGE & MISSION DATA INGESTION)",
+  "official_benchmark_score": "NOT AVAILABLE",
+  "forensic_guarantee": "Strict Non-Fabrication Policy: Zero mock, synthetic, or simulated rasters substituted. No public datasets substituted for official mission data."
+}

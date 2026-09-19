@@ -1,0 +1,105 @@
+{
+  "timestamp": "2026-09-11 16:18:11 UTC",
+  "auditor": "Senior Multimodal Systems Engineer & Benchmark Auditor",
+  "verdicts": {
+    "authoritative_tinycd_result": {
+      "status": "PASS",
+      "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+      "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "parameter_count": 3565034,
+      "test_split": "128 held-out LEVIR-CD scenes (8,388,608 pixels)",
+      "metrics": {
+        "precision": 0.8336,
+        "recall": 0.7563,
+        "f1": 0.7931,
+        "iou": 0.6571,
+        "overall_accuracy": 0.9799,
+        "specificity": 0.9919
+      },
+      "runtime": {
+        "primary_production_throughput_fps": 12.34,
+        "secondary_forward_only_throughput_fps": 36.61,
+        "mean_scene_latency_ms": 30.73,
+        "median_scene_latency_ms": 30.4
+      }
+    },
+    "authoritative_cmaf_result": {
+      "status": "PASS",
+      "checkpoint": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+      "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "parameter_count": 19755144,
+      "test_split": "4,950 held-out WHU-OPT-SAR test tiles (308,687,656 valid pixels across 15 parent scenes)",
+      "metrics": {
+        "overall_accuracy": 0.717099,
+        "miou": 0.350793,
+        "macro_f1": 0.466209,
+        "macro_precision": 0.465837,
+        "macro_recall": 0.524761,
+        "weighted_f1": 0.741756,
+        "weighted_iou": 0.603848,
+        "weighted_precision": 0.776939,
+        "weighted_recall": 0.717099
+      },
+      "runtime": {
+        "primary_production_batched_throughput_tiles_per_sec": 17.38,
+        "secondary_forward_only_throughput_tiles_per_sec": 19.76,
+        "mean_batch_latency_ms": 126.91
+      }
+    },
+    "old_cmaf_84_44_claim": {
+      "status": "REMOVED OR EXPLICITLY REJECTED EVERYWHERE",
+      "resolution": "All active benchmark scoreboards enforce OA 71.71%, mIoU 35.08%, Macro-F1 46.62%, Weighted-F1 74.18%. The stale unverified 84.44% OA / 0.8122 Kappa draft entry has been purged or explicitly quarantined as an ungrounded draft in git history."
+    },
+    "qwen_model_name": {
+      "status": "PASS",
+      "verified_active_target": "Qwen2.5-VL-3B-Instruct",
+      "base_model_id": "Qwen/Qwen2.5-VL-3B-Instruct",
+      "parameter_count": "~3.09B",
+      "evidence": "configs/qwen25vl_qlora.yaml, specialists/single_image/training/colab/colab_qwen25vl_training.ipynb, and specialists/single_image/specialist.py confirm target is Qwen2.5-VL-3B-Instruct."
+    },
+    "rsvqa_provenance": {
+      "status": "VERIFIED",
+      "dataset": "RSVQA-LR",
+      "source": "Sylvain Lobry, Diego Marcos, Devis Tuia / Zenodo (DOI: 10.5281/zenodo.6344334)",
+      "split": "validation (rsvqa_lr_val.parquet)",
+      "record_count": 2000,
+      "image_count": 100,
+      "question_count": 869,
+      "role": "Benchmark evaluation partition (held-out from training; validation split per official source naming)",
+      "score": "NOT AVAILABLE"
+    },
+    "vrsbench_provenance": {
+      "status": "VERIFIED",
+      "dataset": "VRSBench",
+      "source": "Wuhan University / LIESMARS (Ling et al., 2024)",
+      "split": "representative_test_partition",
+      "total_acquired": 18,
+      "breakdown": {
+        "grounding_records": 13,
+        "vqa_records": 5,
+        "harness_smoke_subset": 1,
+        "evaluation_subset": 18
+      },
+      "reconciliation_note": "Earlier draft documents referenced 150 records as a target quota. Exactly 18 records (13 grounding + 5 VQA) were materialized in data/benchmark_samples/vrsbench/ and partitioned into datasets/evaluation/vrsbench/manifest.jsonl. No score is claimed prior to Qwen model inference.",
+      "role": "Quarantined benchmark evaluation partition",
+      "score": "NOT AVAILABLE"
+    },
+    "cdvqa_status": {
+      "status": "PIPELINE VERIFIED \u2014 QWEN PENDING",
+      "canonical_terminology": "CDVQA: PIPELINE VERIFIED \u2014 QWEN SEMANTIC EVALUATION PENDING",
+      "evidence": "Composed workflow (TinyCD detect + ROI crop + 3-image handoff) verified end-to-end; semantic natural language evaluation awaiting merged Qwen weights.",
+      "score": "NOT AVAILABLE"
+    },
+    "isro_sac": {
+      "status": "AWAITING OFFICIAL DATA",
+      "canonical_terminology": "ISRO/SAC: AWAITING OFFICIAL EVALUATION DATA",
+      "local_data_size_bytes": 0,
+      "substitution_policy": "STRICT ZERO SUBSTITUTION (No public dataset substituted for classified mission data)",
+      "score": "NOT AVAILABLE"
+    },
+    "repository_consistency": {
+      "status": "PASS",
+      "summary": "All 7 benchmark tracks verified against physical disk manifests and frozen checkpoints with 100% compliance with strict non-fabrication standards."
+    }
+  }
+}

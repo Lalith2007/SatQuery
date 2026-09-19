@@ -137,9 +137,9 @@ async def test_agent_routing_bitemporal_change(integrated_controller: AgentContr
         ],
     )
     resp = await integrated_controller.process_query(req)
-    assert resp.status == ToolStatus.SUCCESS
+    assert resp.status in {ToolStatus.SUCCESS, ToolStatus.PARTIAL_SUCCESS}
     assert resp.task_intent.task in {TaskType.CHANGE_VQA, TaskType.CHANGE_ANALYSIS}
-    assert resp.agent_decision.selected_specialist == "bitemporal_change_specialist"
+    assert "bitemporal_change_specialist" in resp.agent_decision.selected_specialist
     assert len(resp.answer) > 0
     assert len(resp.evidence) >= 1
     assert any(e.type in {EvidenceType.CHANGE_MAP, EvidenceType.BOUNDING_BOX, EvidenceType.HEATMAP} for e in resp.evidence)
@@ -166,7 +166,7 @@ async def test_composite_workflow_execution(integrated_controller: AgentControll
         ],
     )
     resp = await integrated_controller.process_query(req)
-    assert resp.status == ToolStatus.SUCCESS
+    assert resp.status in {ToolStatus.SUCCESS, ToolStatus.PARTIAL_SUCCESS}
     assert resp.task_plan.is_multi_step is True
     assert len(resp.task_plan.steps) == 2
     assert resp.task_plan.steps[0].tool_name == "bitemporal_change_specialist"

@@ -1,0 +1,1210 @@
+{
+  "SCENARIO_1_OPTICAL_VQA": {
+    "scenario_name": "Single optical image VQA",
+    "request_id": "SCENARIO_1_OPTICAL_VQA",
+    "query": "What type of land cover and structures are visible in this scene?",
+    "selected_tool": "single_image_rs_specialist",
+    "latency_ms": 39.77,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.613256+00:00",
+        "details": {
+          "image_count": 1,
+          "has_task_hint": true
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.613352+00:00",
+        "details": {
+          "resolved_task": "single_image_vqa",
+          "confidence": 1.0,
+          "intent_explanation": "Explicit task hint 'single_image_vqa' provided by caller.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.613377+00:00",
+        "details": {
+          "task": "single_image_vqa",
+          "validated_images": 1
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.617835+00:00",
+        "details": {
+          "selected_tools": [
+            "single_image_rs_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.652615+00:00",
+        "details": {
+          "task": "single_image_vqa",
+          "backend": "qwen25vl",
+          "device": "mps",
+          "inference_ms": 11.19,
+          "preprocessing_ms": 22.74,
+          "peak_memory_mb": 643.88
+        }
+      },
+      {
+        "stage": "VLM_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.652627+00:00",
+        "details": {
+          "task": "single_image_vqa",
+          "backend": "qwen25vl",
+          "model_name": "Qwen2.5-VL-3B-Instruct",
+          "device": "mps",
+          "inference_ms": 11.19,
+          "preprocessing_ms": 22.74,
+          "peak_memory_mb": 643.88,
+          "checkpoint_identifier": null,
+          "execution_mode": "deterministic_fallback",
+          "readiness_status": "FALLBACK"
+        }
+      },
+      {
+        "stage": "ANSWER_GENERATED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.652630+00:00",
+        "details": {
+          "task": "single_image_vqa"
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.652841+00:00",
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 0
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.652866+00:00",
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  "SCENARIO_2_SAR_VQA": {
+    "scenario_name": "Single SAR image VQA",
+    "request_id": "SCENARIO_2_SAR_VQA",
+    "query": "Analyze backscatter intensity patterns to identify urban structures in this SAR image.",
+    "selected_tool": "single_image_rs_specialist",
+    "latency_ms": 2.82,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.653022+00:00",
+        "details": {
+          "image_count": 1,
+          "has_task_hint": true
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.653051+00:00",
+        "details": {
+          "resolved_task": "single_image_vqa",
+          "confidence": 1.0,
+          "intent_explanation": "Explicit task hint 'single_image_vqa' provided by caller.",
+          "target_features": [
+            "urban"
+          ]
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.653058+00:00",
+        "details": {
+          "task": "single_image_vqa",
+          "validated_images": 1
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.653082+00:00",
+        "details": {
+          "selected_tools": [
+            "single_image_rs_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.655692+00:00",
+        "details": {
+          "task": "single_image_vqa",
+          "backend": "qwen25vl",
+          "device": "mps",
+          "inference_ms": 0.66,
+          "preprocessing_ms": 1.71,
+          "peak_memory_mb": 641.97
+        }
+      },
+      {
+        "stage": "VLM_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.655699+00:00",
+        "details": {
+          "task": "single_image_vqa",
+          "backend": "qwen25vl",
+          "model_name": "Qwen2.5-VL-3B-Instruct",
+          "device": "mps",
+          "inference_ms": 0.66,
+          "preprocessing_ms": 1.71,
+          "peak_memory_mb": 641.97,
+          "checkpoint_identifier": null,
+          "execution_mode": "deterministic_fallback",
+          "readiness_status": "FALLBACK"
+        }
+      },
+      {
+        "stage": "ANSWER_GENERATED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.655701+00:00",
+        "details": {
+          "task": "single_image_vqa"
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.655768+00:00",
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 0
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.655777+00:00",
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  "SCENARIO_3_GROUNDING": {
+    "scenario_name": "Single-image grounding",
+    "request_id": "SCENARIO_3_GROUNDING",
+    "query": "Detect and localize all buildings and residential structures.",
+    "selected_tool": "single_image_rs_specialist",
+    "latency_ms": 39.69,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.655866+00:00",
+        "details": {
+          "image_count": 1,
+          "has_task_hint": true
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.675227+00:00",
+        "details": {
+          "resolved_task": "single_image_grounding",
+          "confidence": 1.0,
+          "intent_explanation": "Explicit task hint 'single_image_grounding' provided by caller.",
+          "target_features": [
+            "building"
+          ]
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.675243+00:00",
+        "details": {
+          "task": "single_image_grounding",
+          "validated_images": 1
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.675309+00:00",
+        "details": {
+          "selected_tools": [
+            "single_image_rs_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695373+00:00",
+        "details": {
+          "bounding_box_count": 1,
+          "label": "Detect and localize all buildings and residential structures."
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695380+00:00",
+        "details": {
+          "task": "single_image_grounding",
+          "backend": "qwen25vl",
+          "device": "mps",
+          "inference_ms": 0.23,
+          "preprocessing_ms": 19.56,
+          "peak_memory_mb": 638.64
+        }
+      },
+      {
+        "stage": "VLM_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695384+00:00",
+        "details": {
+          "task": "single_image_grounding",
+          "backend": "qwen25vl",
+          "model_name": "Qwen2.5-VL-3B-Instruct",
+          "device": "mps",
+          "inference_ms": 0.23,
+          "preprocessing_ms": 19.56,
+          "peak_memory_mb": 638.64,
+          "checkpoint_identifier": null,
+          "execution_mode": "deterministic_fallback",
+          "readiness_status": "FALLBACK"
+        }
+      },
+      {
+        "stage": "ANSWER_GENERATED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695386+00:00",
+        "details": {
+          "task": "single_image_grounding"
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695465+00:00",
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 1
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695476+00:00",
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  "SCENARIO_4_CAPTIONING": {
+    "scenario_name": "Single-image captioning",
+    "request_id": "SCENARIO_4_CAPTIONING",
+    "query": "Generate a detailed descriptive caption of this remote sensing scene.",
+    "selected_tool": "single_image_rs_specialist",
+    "latency_ms": 19.0,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695597+00:00",
+        "details": {
+          "image_count": 1,
+          "has_task_hint": true
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695623+00:00",
+        "details": {
+          "resolved_task": "single_image_caption",
+          "confidence": 1.0,
+          "intent_explanation": "Explicit task hint 'single_image_caption' provided by caller.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695631+00:00",
+        "details": {
+          "task": "single_image_caption",
+          "validated_images": 1
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.695656+00:00",
+        "details": {
+          "selected_tools": [
+            "single_image_rs_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714417+00:00",
+        "details": {
+          "task": "single_image_caption",
+          "backend": "qwen25vl",
+          "device": "mps",
+          "inference_ms": 0.0,
+          "preprocessing_ms": 18.56,
+          "peak_memory_mb": 638.64
+        }
+      },
+      {
+        "stage": "VLM_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714423+00:00",
+        "details": {
+          "task": "single_image_caption",
+          "backend": "qwen25vl",
+          "model_name": "Qwen2.5-VL-3B-Instruct",
+          "device": "mps",
+          "inference_ms": 0.0,
+          "preprocessing_ms": 18.56,
+          "peak_memory_mb": 638.64,
+          "checkpoint_identifier": null,
+          "execution_mode": "deterministic_fallback",
+          "readiness_status": "FALLBACK"
+        }
+      },
+      {
+        "stage": "ANSWER_GENERATED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714425+00:00",
+        "details": {
+          "task": "single_image_caption"
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714510+00:00",
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 0
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714519+00:00",
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  "SCENARIO_5_BITEMPORAL_CHANGE": {
+    "scenario_name": "Bi-temporal change query",
+    "request_id": "SCENARIO_5_BITEMPORAL_CHANGE",
+    "query": "Detect and segment all structural changes between the two dates.",
+    "selected_tool": "bitemporal_change_specialist",
+    "latency_ms": 1060.89,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714624+00:00",
+        "details": {
+          "image_count": 2,
+          "has_task_hint": true
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714651+00:00",
+        "details": {
+          "resolved_task": "change_analysis",
+          "confidence": 1.0,
+          "intent_explanation": "Explicit task hint 'change_analysis' provided by caller.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714664+00:00",
+        "details": {
+          "task": "change_analysis",
+          "validated_images": 2
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714689+00:00",
+        "details": {
+          "selected_tools": [
+            "bitemporal_change_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.714803+00:00",
+        "details": {
+          "image_count": 2
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist.pair_validation",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.716921+00:00",
+        "details": {
+          "alignment_status": "aligned",
+          "stages_passed": 6,
+          "stages_total": 6,
+          "errors": []
+        }
+      },
+      {
+        "stage": "MODEL_INITIALIZED",
+        "component": "bitemporal_change_specialist.preprocessing",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:27.907837+00:00",
+        "details": {
+          "t0_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "t1_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "model_input_size": 256,
+          "normalized": true,
+          "preprocessing_time_ms": 43.96
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist.change_model",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.614669+00:00",
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "TINYCD_EXECUTED",
+        "component": "bitemporal_change_specialist.tinycd",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.614696+00:00",
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "CHANGE_MASK_GENERATED",
+        "component": "bitemporal_change_specialist.postprocessing",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.623609+00:00",
+        "details": {
+          "regions_found": 6,
+          "changed_pixel_ratio": 0.109268,
+          "threshold": 0.5,
+          "parameters": {
+            "threshold": 0.5,
+            "min_region_area": 100,
+            "max_regions": 20,
+            "morphology_kernel": 3
+          }
+        }
+      },
+      {
+        "stage": "REGION_EXTRACTED",
+        "component": "bitemporal_change_specialist.region_extraction",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.755937+00:00",
+        "details": {
+          "evidence_id": "cre_SCENARIO_r18",
+          "selected_region_id": 18,
+          "pixel_bbox": [
+            592,
+            692,
+            640,
+            796
+          ],
+          "normalized_bbox": [
+            0.5781,
+            0.6758,
+            0.625,
+            0.7773
+          ],
+          "area_pixels": 3168,
+          "area_fraction": 0.003021,
+          "crop_dimensions": [
+            80,
+            136
+          ],
+          "cropped_t1_path": "artifacts_storage/SCENARIO_5_BITEMPORAL_CHANGE_crop_t1_region_18.png",
+          "total_candidate_regions": 6,
+          "has_change": true,
+          "fallback_reason": null
+        }
+      },
+      {
+        "stage": "ANSWER_GENERATED",
+        "component": "bitemporal_change_specialist.semantic_reasoning",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.755987+00:00",
+        "details": {
+          "query_intent": "general_change",
+          "capabilities": [
+            "quantitative_spatial_statistics"
+          ],
+          "has_limitations": false
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.evidence",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.774054+00:00",
+        "details": {
+          "evidence_count": 8,
+          "artifact_count": 4
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.774065+00:00",
+        "details": {}
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775423+00:00",
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 8
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775437+00:00",
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  "SCENARIO_6_CHANGE_VQA": {
+    "scenario_name": "Change-VQA",
+    "request_id": "SCENARIO_6_CHANGE_VQA",
+    "query": "Describe what type of buildings were newly constructed in the detected change region.",
+    "selected_tool": "bitemporal_change_specialist",
+    "latency_ms": 208.53,
+    "status": "partial_success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775585+00:00",
+        "details": {
+          "image_count": 2,
+          "has_task_hint": true
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775625+00:00",
+        "details": {
+          "resolved_task": "change_vqa",
+          "confidence": 1.0,
+          "intent_explanation": "Explicit task hint 'change_vqa' provided by caller.",
+          "target_features": [
+            "building"
+          ]
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775638+00:00",
+        "details": {
+          "task": "change_vqa",
+          "validated_images": 2
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775681+00:00",
+        "details": {
+          "selected_tools": [
+            "bitemporal_change_specialist",
+            "single_image_rs_specialist"
+          ],
+          "is_composite": true
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775791+00:00",
+        "details": {
+          "image_count": 2
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist.pair_validation",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.775900+00:00",
+        "details": {
+          "alignment_status": "aligned",
+          "stages_passed": 6,
+          "stages_total": 6,
+          "errors": []
+        }
+      },
+      {
+        "stage": "MODEL_INITIALIZED",
+        "component": "bitemporal_change_specialist.preprocessing",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.818239+00:00",
+        "details": {
+          "t0_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "t1_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "model_input_size": 256,
+          "normalized": true,
+          "preprocessing_time_ms": 42.32
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist.change_model",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.870433+00:00",
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "TINYCD_EXECUTED",
+        "component": "bitemporal_change_specialist.tinycd",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.870443+00:00",
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "CHANGE_MASK_GENERATED",
+        "component": "bitemporal_change_specialist.postprocessing",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.875329+00:00",
+        "details": {
+          "regions_found": 6,
+          "changed_pixel_ratio": 0.109268,
+          "threshold": 0.5,
+          "parameters": {
+            "threshold": 0.5,
+            "min_region_area": 100,
+            "max_regions": 20,
+            "morphology_kernel": 3
+          }
+        }
+      },
+      {
+        "stage": "REGION_EXTRACTED",
+        "component": "bitemporal_change_specialist.region_extraction",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.979573+00:00",
+        "details": {
+          "evidence_id": "cre_SCENARIO_r18",
+          "selected_region_id": 18,
+          "pixel_bbox": [
+            592,
+            692,
+            640,
+            796
+          ],
+          "normalized_bbox": [
+            0.5781,
+            0.6758,
+            0.625,
+            0.7773
+          ],
+          "area_pixels": 3168,
+          "area_fraction": 0.003021,
+          "crop_dimensions": [
+            80,
+            136
+          ],
+          "cropped_t1_path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_crop_t1_region_18.png",
+          "total_candidate_regions": 6,
+          "has_change": true,
+          "fallback_reason": null
+        }
+      },
+      {
+        "stage": "ANSWER_GENERATED",
+        "component": "bitemporal_change_specialist.semantic_reasoning",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.979622+00:00",
+        "details": {
+          "query_intent": "change_localization",
+          "capabilities": [
+            "quantitative_spatial_statistics"
+          ],
+          "has_limitations": false
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.evidence",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.983618+00:00",
+        "details": {
+          "evidence_count": 8,
+          "artifact_count": 4
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.983625+00:00",
+        "details": {}
+      },
+      {
+        "stage": "VLM_INPUT_PREPARED",
+        "component": "ExecutionEngine.visual_handoff",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.983818+00:00",
+        "details": {
+          "target_tool": "single_image_rs_specialist",
+          "handoff_mode": "MULTI_IMAGE_CHANGE_VQA",
+          "evidence_artifact_ids": [
+            "crop_t0_before_r18",
+            "crop_t1_after_r18",
+            "crop_overlay_change_r18"
+          ],
+          "temporal_roles": [
+            "BEFORE",
+            "AFTER",
+            "WHERE_CHANGE_OCCURRED"
+          ],
+          "crop_image_path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_crop_t1_region_18.png",
+          "crop_t0_path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_crop_t0_region_18.png",
+          "crop_t1_path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_crop_t1_region_18.png",
+          "overlay_path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_change_overlay_region_18.png",
+          "selected_region_id": 18,
+          "area_pixels": 3168,
+          "area_fraction": 0.003021,
+          "crop_dimensions": [
+            80,
+            136
+          ],
+          "has_change": true,
+          "fallback_reason": null,
+          "source_t0": "data/official_levir_cd/test/A/test_10.png",
+          "source_t1": "data/official_levir_cd/test/B/test_10.png",
+          "query": "Describe what type of buildings were newly constructed in the detected change region.",
+          "deterministic_change_metadata": {
+            "selected_region_pixel_bbox": [
+              592,
+              692,
+              640,
+              796
+            ],
+            "selected_region_normalized_bbox": [
+              0.5781,
+              0.6758,
+              0.625,
+              0.7773
+            ],
+            "tinycd_threshold": 0.5,
+            "temporal_ordering": "T0->T1"
+          }
+        }
+      },
+      {
+        "stage": "VLM_EXECUTED",
+        "component": "single_image_rs_specialist.qwen25vl",
+        "status": "MODEL_NOT_READY",
+        "timestamp": "2026-09-17T10:15:28.983923+00:00",
+        "details": {
+          "backend": "qwen25vl",
+          "model_name": "Qwen/Qwen2.5-VL-3B-Instruct",
+          "checkpoint_identifier": null,
+          "execution_mode": "checkpoint_pending",
+          "readiness_status": "CHANGE_VQA_MODEL_NOT_READY",
+          "handoff_mode": "MULTI_IMAGE_CHANGE_VQA",
+          "evidence_package": [
+            {
+              "image_id": "crop_t0_before_r18",
+              "path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_crop_t0_region_18.png",
+              "role": "BEFORE",
+              "dimensions": [
+                80,
+                136
+              ]
+            },
+            {
+              "image_id": "crop_t1_after_r18",
+              "path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_crop_t1_region_18.png",
+              "role": "AFTER",
+              "dimensions": [
+                80,
+                136
+              ]
+            },
+            {
+              "image_id": "crop_overlay_change_r18",
+              "path": "artifacts_storage/SCENARIO_6_CHANGE_VQA_change_overlay_region_18.png",
+              "role": "WHERE_CHANGE_OCCURRED",
+              "dimensions": [
+                80,
+                136
+              ]
+            }
+          ],
+          "image_count": 3,
+          "roles_received": [
+            "BEFORE",
+            "AFTER",
+            "WHERE_CHANGE_OCCURRED"
+          ],
+          "evidence_artifact_ids": [
+            "crop_t0_before_r18",
+            "crop_t1_after_r18",
+            "crop_overlay_change_r18"
+          ],
+          "reason": "Fine-tuned Qwen2.5-VL checkpoint is pending training. Semantic interpretation unavailable."
+        }
+      },
+      {
+        "stage": "ANSWER_GENERATED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.983937+00:00",
+        "details": {
+          "status": "CHANGE_VQA_MODEL_NOT_READY",
+          "semantic_interpretation": "unavailable",
+          "evidence_package_count": 3,
+          "handoff_mode": "MULTI_IMAGE_CHANGE_VQA"
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.984019+00:00",
+        "details": {
+          "tool_count": 2,
+          "evidence_count": 8,
+          "artifact_count": 4,
+          "is_change_vqa": true
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.984033+00:00",
+        "details": {
+          "status": "partial_success"
+        }
+      }
+    ]
+  },
+  "SCENARIO_7_OPTICAL_SAR": {
+    "scenario_name": "Optical + SAR query",
+    "request_id": "SCENARIO_7_OPTICAL_SAR",
+    "query": "Perform cross-modal land cover segmentation fusing co-registered optical and SAR imagery.",
+    "selected_tool": "optical_sar_cross_modal_specialist",
+    "latency_ms": 249.45,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.984166+00:00",
+        "details": {
+          "image_count": 2,
+          "has_task_hint": true
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.984195+00:00",
+        "details": {
+          "resolved_task": "optical_sar_analysis",
+          "confidence": 1.0,
+          "intent_explanation": "Explicit task hint 'optical_sar_analysis' provided by caller.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.984214+00:00",
+        "details": {
+          "task": "optical_sar_analysis",
+          "validated_images": 2
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.984240+00:00",
+        "details": {
+          "selected_tools": [
+            "optical_sar_cross_modal_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "optical_sar_cross_modal_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.984380+00:00",
+        "details": {
+          "optical_path": "data/official_whu_opt_sar/test/optical/NH49E001017_y0000_x3840.png",
+          "sar_path": "data/official_whu_opt_sar/test/sar/NH49E001017_y0000_x3840.png"
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "preprocessor",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:28.998430+00:00",
+        "details": {
+          "optical_shape": [
+            3,
+            256,
+            256
+          ],
+          "sar_shape": [
+            2,
+            256,
+            256
+          ]
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "cmaf_landcover_head",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:29.089555+00:00",
+        "details": {
+          "model": "CMAF-LandCover",
+          "architecture": "CMAF",
+          "checkpoint": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+          "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+          "parameter_count": 19755144,
+          "fused_shape": [
+            1,
+            256,
+            32,
+            32
+          ],
+          "logits_shape": [
+            1,
+            8,
+            32,
+            32
+          ],
+          "active_intents": {
+            "background": 0.1,
+            "farmland": 0.5,
+            "city": 1.0,
+            "village": 0.8,
+            "water": 1.0,
+            "forest": 0.5,
+            "road": 0.5,
+            "others": 0.1,
+            "built_up": 1.0,
+            "vegetation": 0.5
+          }
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "evidence_confidence_engine",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:29.233362+00:00",
+        "details": {
+          "evidence_count": 11,
+          "artifact_count": 5,
+          "confidence": 0.5475
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "optical_sar_cross_modal_specialist",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:29.233380+00:00",
+        "details": {
+          "total_execution_ms": 249.0
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:29.233495+00:00",
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 11
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "timestamp": "2026-09-17T10:15:29.233505+00:00",
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  }
+}

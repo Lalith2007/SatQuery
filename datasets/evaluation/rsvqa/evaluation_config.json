@@ -1,0 +1,11 @@
+{
+  "evaluator": "RSVQAEvaluator",
+  "metrics": [
+    "accuracy",
+    "presence_accuracy",
+    "count_accuracy",
+    "comparison_accuracy"
+  ],
+  "model_target": "Qwen2.5-VL-3B-Instruct (Vision-Language Adapter)",
+  "status": "EVALUATOR_READY_PENDING_QWEN_WEIGHTS"
+}

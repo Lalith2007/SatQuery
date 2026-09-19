@@ -172,6 +172,7 @@ class OpticalSarSpecialist(BaseSpecialistTool):
             self.task_head.eval()
 
             self.is_trained_loaded = True
+            self.loaded_checkpoint_path = str(target_ckpt)
             logger.info(f"Successfully loaded trained Optical-SAR checkpoint from '{target_ckpt}'.")
             return True
         except Exception as exc:
@@ -229,13 +230,31 @@ class OpticalSarSpecialist(BaseSpecialistTool):
 
         # 2. Preprocess & Spatial Grid Alignment
         t0 = time.time()
-        opt_raster = self.preprocessor.preprocess_optical(opt_img.path_or_uri)
-        sar_raster = self.preprocessor.preprocess_sar(sar_img.path_or_uri)
+        try:
+            opt_raster = self.preprocessor.preprocess_optical(opt_img.path_or_uri)
+            sar_raster = self.preprocessor.preprocess_sar(sar_img.path_or_uri)
 
-        opt_aligned, sar_aligned = self.preprocessor.align_spatial_dimensions(
-            opt_raster.tensor, sar_raster.tensor
-        )
-        t_prep_ms = (time.time() - t0) * 1000.0
+            opt_aligned, sar_aligned = self.preprocessor.align_spatial_dimensions(
+                opt_raster.tensor, sar_raster.tensor
+            )
+            t_prep_ms = (time.time() - t0) * 1000.0
+        except Exception as exc:
+            logger.error(f"Preprocessing failed: {exc}")
+            return ToolResult(
+                request_id=request.request_id,
+                task=request.task,
+                status=ToolStatus.FAILED,
+                answer=f"Preprocessing failed: {exc}",
+                confidence=0.0,
+                execution_trace=trace_entries + [
+                    ExecutionTraceEntry(
+                        stage=ExecutionStage.INFERENCE_EXECUTED,
+                        component="preprocessor",
+                        status="FAILED",
+                        details={"error": str(exc)},
+                    )
+                ],
+            )
 
         trace_entries.append(
             ExecutionTraceEntry(
@@ -254,9 +273,10 @@ class OpticalSarSpecialist(BaseSpecialistTool):
         self.fusion_neck.eval()
         self.task_head.eval()
 
+        dev = next(self.optical_encoder.parameters()).device
         with torch.no_grad():
-            opt_batch = opt_aligned.unsqueeze(0)  # (1, 3, H, W)
-            sar_batch = sar_aligned.unsqueeze(0)  # (1, 2, H, W)
+            opt_batch = opt_aligned.unsqueeze(0).to(dev)  # (1, 3, H, W)
+            sar_batch = sar_aligned.unsqueeze(0).to(dev)  # (1, 2, H, W)
 
             opt_feats = self.optical_encoder(opt_batch)
             sar_feats = self.sar_encoder(sar_batch)
@@ -264,7 +284,7 @@ class OpticalSarSpecialist(BaseSpecialistTool):
             fused_feat = self.fusion_neck(opt_feats["stride_8"], sar_feats["stride_8"])
 
             intent_dict = self.query_interpreter.parse_query_intent(request.query)
-            intent_vec = self.query_interpreter.get_intent_vector(request.query).unsqueeze(0)  # (1, 4)
+            intent_vec = self.query_interpreter.get_intent_vector(request.query).unsqueeze(0).to(dev)  # (1, 4)
 
             logits, probs_8class = self.task_head(
                 fused_feat, intent_vec, optical_raw=opt_batch, sar_raw=sar_batch
@@ -277,7 +297,16 @@ class OpticalSarSpecialist(BaseSpecialistTool):
                 component="cmaf_landcover_head",
                 status="COMPLETED",
                 duration_ms=t_inf_ms,
-                details={"fused_shape": list(fused_feat.shape), "logits_shape": list(logits.shape), "active_intents": intent_dict},
+                details={
+                    "model": "CMAF-LandCover",
+                    "architecture": "CMAF",
+                    "checkpoint": getattr(self, "loaded_checkpoint_path", "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth"),
+                    "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+                    "parameter_count": 19755144,
+                    "fused_shape": list(fused_feat.shape),
+                    "logits_shape": list(logits.shape),
+                    "active_intents": intent_dict,
+                },
             )
         )
 

@@ -496,7 +496,7 @@ class TestGate4SampleInference:
         # Verify artifacts were generated
         assert len(result.artifacts) > 0
         for a in result.artifacts:
-            assert a.type == "change_map"
+            assert a.type in {"change_map", "crop", "highlighted_image"}
 
 
 # ============================================================

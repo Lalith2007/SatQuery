@@ -1,0 +1,85 @@
+{
+  "manifest_timestamp": "2026-09-17 10:17:00 UTC",
+  "datasets": {
+    "bigearthnet_stage1": {
+      "dataset_name": "BigEarthNet.txt (Stage 1 Multimodal RS Foundation)",
+      "source": "TorchGeo / TU Berlin / Clasen et al.",
+      "version": "1.0.0-curated",
+      "sensors": [
+        "Sentinel-1 SAR (Dual-pol ratio composite)",
+        "Sentinel-2 MSI (RGB True Color)"
+      ],
+      "total_pairs": 8000,
+      "total_supervised_samples": 16000,
+      "splits": {
+        "train": 14304,
+        "validation": 846,
+        "held_out_test": 850
+      },
+      "spatial_isolation": "Strict granule/tile boundary partitioning (zero MGRS cross-split leakage)",
+      "tasks": [
+        "dense_visual_grounding",
+        "multimodal_vqa",
+        "scene_captioning"
+      ],
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    "levir_cd": {
+      "dataset_name": "LEVIR-CD (Bi-Temporal Change Detection Benchmark)",
+      "source": "Beihang University LEVIR Lab (Chen & Shi)",
+      "url": "https://justchenhao.github.io/LEVIR/",
+      "native_resolution": "1024x1024 px (0.5m GSD optical)",
+      "split": "test",
+      "sample_count": 128,
+      "local_path": "data/official_levir_cd/test/",
+      "quarantine_policy": "Predictions derive strictly from TinyCD; ground truth label/ is never accessed during inference",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    "whu_opt_sar": {
+      "dataset_name": "WHU-OPT-SAR (Optical-SAR Cross-Modal Segmentation Benchmark)",
+      "source": "Wuhan University / Li et al.",
+      "native_resolution": "512x512 px (0.5m GSD Optical + SAR)",
+      "split": "test",
+      "sample_count": 4950,
+      "parent_scenes_count": 15,
+      "local_path": "data/official_whu_opt_sar/test/",
+      "classes": 8,
+      "border_pixel_value": 255,
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    "rsvqa_lr": {
+      "dataset_name": "RSVQA-LR (Remote Sensing Visual Question Answering - Low Resolution)",
+      "source": "Sylvain Lobry, Diego Marcos, Devis Tuia / Zenodo (DOI: 10.5281/zenodo.6344334)",
+      "sensor": "Sentinel-2 MSI (10m GSD Optical)",
+      "split": "validation",
+      "sample_count": 2000,
+      "local_path": "data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet",
+      "status": "VERIFIED_EVAL_PARTITION"
+    },
+    "vrsbench": {
+      "dataset_name": "VRSBench (Visual Remote Sensing Benchmark for VLMs)",
+      "source": "Wuhan University / Xiang et al. (arXiv:2407.08170)",
+      "repository": "https://huggingface.co/datasets/xiang709/VRSBench",
+      "tasks": [
+        "image_captioning",
+        "visual_grounding",
+        "visual_question_answering"
+      ],
+      "evaluation_partitions": {
+        "captioning": "VRSBench_EVAL_Cap.json",
+        "grounding": "VRSBench_EVAL_referring.json",
+        "vqa": "VRSBench_EVAL_vqa.json"
+      },
+      "status": "VERIFIED_EVAL_PARTITION"
+    },
+    "cdvqa": {
+      "dataset_name": "CDVQA (Change Detection Visual Question Answering)",
+      "source": "Beihang University LEVIR Lab / Yuan et al.",
+      "base_dataset": "LEVIR-CD Held-Out Test Set",
+      "sample_count": 128,
+      "visual_handoff": "3-Image Evidence Package [BEFORE, AFTER, WHERE_CHANGE_OCCURRED]",
+      "local_path": "reports/final_sih_evaluation/qwen/cdvqa/cdvqa_evidence_manifest.jsonl",
+      "status": "TINYCD_EVIDENCE_PACKAGED"
+    }
+  }
+}

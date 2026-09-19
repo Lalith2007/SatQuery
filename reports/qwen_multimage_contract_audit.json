@@ -1,0 +1,51 @@
+{
+  "audit_title": "Qwen2.5-VL Multimodal Contract & Change-VQA Application Wrapper Audit",
+  "audit_date": "2026-09-11",
+  "audit_version": "1.0.0",
+  "contract_gates": {
+    "native_qwen_processor": "PASS",
+    "application_three_image_wrapper": "PASS",
+    "standard_single_image_wrapper": "PASS",
+    "change_vqa_three_image_end_to_end_contract": "PASS",
+    "dataset_acquisition": "COMPLETE",
+    "qwen_training_status": "READY TO START"
+  },
+  "processor_verification": {
+    "model_id": "Qwen/Qwen2.5-VL-3B-Instruct",
+    "input_ids_shape": [1, 1566],
+    "image_grid_thw": [[1, 6, 10], [1, 6, 10], [1, 74, 74]],
+    "vision_start_count": 3,
+    "vision_end_count": 3,
+    "image_pad_token_count": 1399,
+    "image_1_t0_tokens": 15,
+    "image_2_t1_tokens": 15,
+    "image_3_overlay_tokens": 1369,
+    "training_mode_supervised_tokens": 17
+  },
+  "wrapper_verification": {
+    "inference_engine_file": "specialists/single_image/adaptation/qwen25vl/inference.py",
+    "specialist_file": "specialists/single_image/specialist.py",
+    "execution_engine_file": "agent/execution_engine.py",
+    "change_vqa_method": "run_change_vqa(images=[t0, t1, overlay], query, metadata, roles)",
+    "single_image_method": "run_vqa(image, question, query)",
+    "validation_rules": {
+      "standard_single_image_tasks": "exactly 1 image (unexpected counts rejected with ToolStatus.FAILED / ValueError)",
+      "change_vqa_default_tasks": "exactly 3 images [T0, T1, overlay] (unexpected counts rejected)",
+      "change_vqa_t1_fallback": "exactly 1 image (only enabled when metadata['vlm_contract'] == 'single_image_t1')"
+    }
+  },
+  "regression_tests": {
+    "total_tests_run": 35,
+    "total_passed": 35,
+    "total_failed": 0,
+    "suite_breakdown": {
+      "test_change_vqa_three_image_contract.py": "9/9 PASSED",
+      "test_qwen_three_image_processor.py": "1/1 PASSED",
+      "test_change_vqa_no_leakage.py": "3/3 PASSED",
+      "test_change_vqa_workflow_fix.py": "3/3 PASSED",
+      "test_single_image_specialist.py": "13/13 PASSED",
+      "test_routing.py": "6/6 PASSED"
+    }
+  },
+  "final_gate_decision": "READY FOR QWEN TRAINING"
+}

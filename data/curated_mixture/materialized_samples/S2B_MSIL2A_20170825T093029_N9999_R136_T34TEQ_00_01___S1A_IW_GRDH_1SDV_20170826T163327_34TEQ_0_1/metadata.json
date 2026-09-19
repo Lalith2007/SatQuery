@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07695",
+    "source_row_id": 4492974,
+    "pair_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_01___S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_1",
+    "patch_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_01",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_1",
+    "parent_granule": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Explain the features in the image, highlighting the geographic context, season, and land cover classes.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a predominantly agricultural landscape within the \"temperate, no dry season, hot summer\" climate zone. The landscape is characterized by arable land (~799,000 sqm) and pastures (~641,000 sqm), which are adjacent to each other. The arable land is fragmented into two areas, with a large expanse covering approximately 661,000 square meters and a smaller area of about 138,000 square meters. The pastures are also distributed across three distinct areas, comprising a large section of around 398,000 square meters, a smaller section of about 241,000 square meters, and a marginal area covering less than 5% of the total area. The arable land borders with pastures, highlighting a diverse and dynamic agricultural landscape.",
+    "latitude": 45.13763395893212,
+    "longitude": 21.007376659450454,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07696",
+    "source_row_id": 4492968,
+    "pair_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_01___S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_1",
+    "patch_id": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ_00_01",
+    "s1_name": "S1A_IW_GRDH_1SDV_20170826T163327_34TEQ_0_1",
+    "parent_granule": "S2B_MSIL2A_20170825T093029_N9999_R136_T34TEQ",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "bounding box",
+    "task": "point",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Generate a bounding box enclosing the land cover class instance at <point>(0.83, 0.87)</point> in the satellite image.",
+    "output": "[0.49 0.59, 1.0 1.0]",
+    "latitude": 45.13763395893212,
+    "longitude": 21.007376659450454,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "coarse_patch_level_referring_expression",
+    "grounding_resolution_note": "BigEarthNet.txt provides coarse patch-level spatial referring expression supervision on 120x120 pixels. Fine-grained sub-meter object grounding is reserved for Stage 2 (DIOR-RSVG/RSVG)."
+  }
+]

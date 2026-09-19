@@ -1,0 +1,198 @@
+{
+  "audit_metadata": {
+    "system_name": "SatQuery AI",
+    "problem_statement": "Smart India Hackathon - ISRO/SAC Problem Statement",
+    "audit_type": "Dataset Provenance and Empirical Evaluation Audit",
+    "auditor_role": "Senior ML Evaluation Auditor & Remote-Sensing AI Systems Validator",
+    "audit_timestamp": "2026-09-11T14:36:00+05:30",
+    "git_branch": "feature/sruthi-single-image",
+    "evaluation_standard": "Strict Non-Fabrication Rule & Empirical Forward Pass Verification"
+  },
+  "evaluation_rule_definition": {
+    "final_rule": "Empirical evaluation requires: (1) Ingestion of real held-out data samples, (2) Real forward inference pass using production model weights, and (3) Objective comparison against held-out ground truth annotations.",
+    "disqualified_signals": [
+      "Presence of dataset files, parquet archives, or manifests on disk without model inference",
+      "Unit or integration tests passing on synthetic mock dictionaries",
+      "Evaluator metric arithmetic or text normalization checks",
+      "Agentic controller natural-language routing tests",
+      "Historical cached logs, documentation claims, or unverified script outputs"
+    ]
+  },
+  "target_datasets": {
+    "rsvqa": {
+      "dataset_name": "RSVQA",
+      "full_name": "Remote Sensing Visual Question Answering (Lobry et al., 2020)",
+      "modality": "Sentinel-2 Optical (10m / LR & HR)",
+      "evaluator_class": "RSVQAEvaluator",
+      "evaluator_filepath": "evaluation/benchmarks/rsvqa.py",
+      "disk_artifacts": [
+        "data/benchmark_samples/rsvqa/rsvqa_lr_val.parquet",
+        "data/benchmark_samples/rsvqa/sample_records.json",
+        "data/benchmark_samples/rsvqa/images/"
+      ],
+      "disk_footprint_bytes": 174055266,
+      "unit_test_reference": "tests/test_evaluation_benchmarks.py::test_rsvqa_evaluation",
+      "unit_test_sample_count": 3,
+      "system_validation_report_status": "PASS — HARNESS ONLY (Arithmetic & text normalization logic verified; not Qwen model accuracy)",
+      "model_forward_pass_executed": false,
+      "empirical_accuracy_measured": false,
+      "provenance_classification": "HARNESS ONLY / NOT EVALUATED",
+      "forensic_notes": "Parquet archive is present on disk and evaluator arithmetic functions correctly on synthetic test samples. No end-to-end model inference has been executed on this dataset."
+    },
+    "cdvqa": {
+      "dataset_name": "CDVQA",
+      "full_name": "Change Detection Visual Question Answering",
+      "modality": "Bi-Temporal High-Resolution Optical",
+      "evaluator_class": "CDVQAEvaluator",
+      "evaluator_filepath": "evaluation/benchmarks/cdvqa.py",
+      "disk_artifacts": [
+        "data/official_levir_cd/ (Image pairs utilized for harness plumbing validation)"
+      ],
+      "disk_footprint_bytes": 0,
+      "unit_test_reference": "tests/test_evaluation_benchmarks.py::test_cdvqa_evaluation",
+      "unit_test_sample_count": 2,
+      "system_validation_report_status": "PASS — HARNESS ONLY (BLEU & ROUGE string matching algorithms verified)",
+      "model_forward_pass_executed": false,
+      "empirical_accuracy_measured": false,
+      "provenance_classification": "HARNESS ONLY / NOT EVALUATED",
+      "forensic_notes": "Evaluator computes BLEU-1, BLEU-4, ROUGE-L, and binary change questions. Evaluator harness was tested using LEVIR-CD image pairs for plumbing. LEVIR-CD mask change detection does not equal CDVQA textual evaluation. No VQA model inference has been executed."
+    },
+    "isro_sac_target": {
+      "dataset_name": "ISRO/SAC Target Data",
+      "full_name": "Cartosat-2S High-Resolution Optical & RISAT SAR Spaceborne Mission Data",
+      "modality": "Optical (0.65m) + C-Band SAR (1-3m)",
+      "evaluator_class": "ISROSACGenericEvaluator",
+      "evaluator_filepath": "evaluation/benchmarks/isro_sac.py",
+      "disk_artifacts": [],
+      "disk_footprint_bytes": 0,
+      "unit_test_reference": "tests/test_evaluation_benchmarks.py::test_isro_sac_generic_evaluation_without_hardcoded_answers",
+      "unit_test_sample_count": 2,
+      "system_validation_report_status": "PASS — HARNESS ONLY (SIMULATED) / ACTUAL ISRO/SAC DATA EVALUATION = NOT EXECUTED",
+      "model_forward_pass_executed": false,
+      "empirical_accuracy_measured": false,
+      "provenance_classification": "NOT EVALUATED / STUB",
+      "forensic_notes": "Raw Cartosat-2S and RISAT-1/1A mission rasters are proprietary spaceborne assets unavailable in development environment. Generic evaluator provides schema and scoring interface without hardcoded answers, ready for air-gapped jury execution."
+    }
+  },
+  "production_baselines": {
+    "levir_cd": {
+      "dataset_name": "LEVIR-CD",
+      "division": "Division 3 — Bi-Temporal Change Intelligence",
+      "specialist_tool": "bitemporal_change_specialist",
+      "architecture": "TinyCD",
+      "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+      "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "evaluation_split": "Official held-out test split",
+      "scene_count": 128,
+      "evaluated_pixels": 8388608,
+      "model_forward_pass_executed": true,
+      "empirical_accuracy_measured": true,
+      "metrics": {
+        "f1_score": 0.7931,
+        "iou": 0.6571,
+        "overall_accuracy": 0.9799,
+        "precision": 0.8336,
+        "recall": 0.7563,
+        "specificity": 0.9919
+      },
+      "provenance_classification": "EMPIRICALLY EVALUATED",
+      "production_freeze_status": "FROZEN_READY_FOR_RELEASE"
+    },
+    "whu_opt_sar": {
+      "dataset_name": "WHU-OPT-SAR",
+      "division": "Division 4 — Cross-Modal Optical-SAR Analysis",
+      "specialist_tool": "optical_sar_cross_modal_specialist",
+      "architecture": "CMAF (Cross-Modal Attention Fusion)",
+      "checkpoint_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+      "checkpoint_sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "evaluation_split": "Official held-out test split",
+      "scene_count": 15,
+      "tile_count": 4950,
+      "model_forward_pass_executed": true,
+      "empirical_accuracy_measured": true,
+      "metrics": {
+        "overall_accuracy": 0.717099,
+        "miou": 0.350793,
+        "macro_f1": 0.466209,
+        "macro_precision": 0.465837,
+        "macro_recall": 0.524761,
+        "weighted_f1": 0.741756,
+        "weighted_iou": 0.603848,
+        "weighted_precision": 0.776939,
+        "weighted_recall": 0.717099
+      },
+      "historical_rejected_note": "REJECTED HISTORICAL RESULT — NOT AUTHORITATIVE: An earlier unverified draft entry noted 84.44% OA / 0.8122 Kappa / 76.54% Macro-F1. Forensic audit proved this was an ungrounded draft without test logs or code artifacts. The authoritative frozen benchmark across all 4,950 held-out test tiles is OA: 71.71%, mIoU: 35.08%, Macro-F1: 46.62%, Weighted-F1: 74.18%.",
+      "provenance_classification": "EMPIRICALLY EVALUATED",
+      "production_freeze_status": "FROZEN_READY_FOR_RELEASE"
+    }
+  },
+  "provenance_matrix_summary": [
+    {
+      "dataset": "LEVIR-CD",
+      "task": "Bi-Temporal Building Change Detection",
+      "status": "OFFICIAL FULL EVALUATION COMPLETE",
+      "benchmark_results": "F1: 79.31%, IoU: 65.71%, OA: 97.99%"
+    },
+    {
+      "dataset": "WHU-OPT-SAR",
+      "task": "Cross-Modal Optical-SAR Land-Cover",
+      "status": "OFFICIAL FULL EVALUATION COMPLETE",
+      "benchmark_results": "OA: 71.71%, mIoU: 35.08%, Macro-F1: 46.62%, Weighted-F1: 74.18%"
+    },
+    {
+      "dataset": "RSVQA-LR",
+      "task": "Remote Sensing Visual Question Answering",
+      "status": "DATA READY / MODEL NOT READY",
+      "benchmark_results": "None (Model fine-tuning pending in Colab)"
+    },
+    {
+      "dataset": "VRSBench Grounding",
+      "task": "Visual Grounding / Localization",
+      "status": "DATA READY / MODEL NOT READY",
+      "benchmark_results": "None (Model fine-tuning pending in Colab)"
+    },
+    {
+      "dataset": "VRSBench VQA",
+      "task": "Visual Question Answering",
+      "status": "DATA READY / MODEL NOT READY",
+      "benchmark_results": "None (Model fine-tuning pending in Colab)"
+    },
+    {
+      "dataset": "VRSBench Captioning",
+      "task": "Remote Sensing Scene Captioning",
+      "status": "DATA READY / MODEL NOT READY",
+      "benchmark_results": "None (Model fine-tuning pending in Colab)"
+    },
+    {
+      "dataset": "CDVQA",
+      "task": "Change Detection VQA",
+      "status": "END-TO-END FUNCTIONAL — VLM CHECKPOINT PENDING",
+      "benchmark_results": "Composed workflow functional (TinyCD detection + ROI crop handoff); VLM weights pending in Colab"
+    },
+    {
+      "dataset": "BigEarthNet.txt",
+      "task": "Multi-Modal Zero-Shot Classification",
+      "status": "DATA READY / MODEL NOT READY",
+      "benchmark_results": "None (Stage 1 strictly quarantined for training)"
+    },
+    {
+      "dataset": "ISRO/SAC Target",
+      "task": "Cartosat-2S + RISAT SAR Spaceborne Intelligence",
+      "status": "NOT AVAILABLE / AWAITING OFFICIAL DATA",
+      "benchmark_results": "None (Classified mission archives unavailable)"
+    }
+  ],
+  "cross_references": {
+    "change_vqa_pipeline_audit": "reports/change_vqa_pipeline_audit.json",
+    "official_public_benchmark_audit": "reports/official_public_benchmark_audit.json"
+  },
+  "integrity_certification": {
+    "division_3_freeze_preserved": true,
+    "division_4_freeze_preserved": true,
+    "no_checkpoints_modified": true,
+    "no_synthetic_metrics_fabricated": true,
+    "quarantine_verified": true,
+    "certification_verdict": "VERIFIED_ACCURATE_FORENSIC_PROVENANCE"
+  }
+}
+

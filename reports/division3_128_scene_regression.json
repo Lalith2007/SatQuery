@@ -1,0 +1,23 @@
+{
+  "scene_count": 128,
+  "total_pixels": 134217728,
+  "pixel_aggregated": {
+    "f1": 0.7883,
+    "iou": 0.6505,
+    "precision": 0.8285,
+    "recall": 0.7518,
+    "overall_accuracy": 0.9794
+  },
+  "spatial_profiles": {
+    "mean_gt_change_pct": 5.0943,
+    "mean_pred_change_pct": 4.6229,
+    "median_f1": 0.7598,
+    "median_iou": 0.6126
+  },
+  "totals": {
+    "tp": 5140351,
+    "fp": 1064353,
+    "fn": 1697053,
+    "tn": 126315971
+  }
+}

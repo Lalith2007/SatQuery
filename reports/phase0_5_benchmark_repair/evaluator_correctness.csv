@@ -1,0 +1,9 @@
+Benchmark,Official Metric Used,Official Procedure Verified,Prediction Mapping,Coordinate / Answer Mapping,Status
+BigEarthNet.txt,Grounding Mean IoU & VQA Accuracy,Yes (Official Stage-1 test protocol),Direct string & box parsing,Normalized 0-1000 to canonical pixel box,VERIFIED
+RSVQA-LR,Exact Match Accuracy (Overall & Per-Type),Yes (Lobry et al. closed-set protocol),Stream serialization to rsvqa_predictions.jsonl,Closed-vocab mapping (zero substring match),REPAIRED & VERIFIED
+VRSBench Grounding,"Acc@0.5 and Acc@0.7 (Unique, Non-Unique, All)",Yes (lx709/VRSBench compute_metrics.py),Stream serialization to vrsbench_grounding_predictions.jsonl,"CoordinateConverter: Qwen [0,1000] -> VRSBench [0,100] [x1,y1,x2,y2]",REPAIRED & VERIFIED
+VRSBench VQA,Classification Accuracy across 12 categories,Yes (lx709/VRSBench eval_vqa_gpt.ipynb),Stream serialization to vrsbench_vqa_predictions.jsonl,Exact match for yes/no and 0-99; token subset for open types,REPAIRED & VERIFIED
+VRSBench Captioning,Automatic BLEU-1..4 and ROUGE-L,Yes (lx709/VRSBench eval_fianl/caption_eval),Stream serialization to vrsbench_caption_predictions.jsonl,Tokenized n-gram matching with brevity penalty,REPAIRED & VERIFIED
+CDVQA,Overall & Per-Type Accuracy (8 change categories),Yes (Yuan et al. IEEE TGRS 2022),Stream serialization to cdvqa_predictions.jsonl,Direct question_id mapping to official Test_answers.json,REPAIRED & VERIFIED
+LEVIR-CD (TinyCD),"Precision, Recall, F1, IoU, OA, Specificity",Yes (Chen & Shi LEVIR-CD standard),Thresholded binary mask (0.50),Pixel-level confusion matrix against ground-truth PNG,VERIFIED
+WHU-OPT-SAR (CMAF),"OA, mIoU, Macro F1, Weighted F1, Per-class metrics",Yes (Li et al. WHU-OPT-SAR standard),Argmax multi-class raster (7 classes),Pixel confusion matrix excluding void/border pixels,VERIFIED

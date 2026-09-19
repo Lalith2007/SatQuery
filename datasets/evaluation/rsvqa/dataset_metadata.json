@@ -1,0 +1,13 @@
+{
+  "benchmark": "RSVQA-LR",
+  "version": "1.0.0",
+  "total_records": 2000,
+  "sensor": "Sentinel-2 (Optical MSI 10m GSD)",
+  "split": "validation",
+  "question_types": {
+    "presence": 1002,
+    "count": 0,
+    "comparison": 998
+  },
+  "quarantine_guarantee": "Strict validation partition; zero overlap with model training splits"
+}

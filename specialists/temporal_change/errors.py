@@ -75,6 +75,13 @@ class ChangeModelLoadError(ModelLoadError):
         super().__init__(message=message, details=details)
 
 
+class CheckpointProvenanceError(ChangeModelLoadError):
+    """Raised when checkpoint provenance, SHA-256, parameter count, or strict key validation fails."""
+
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(message=message, details=details)
+
+
 class ArtifactGenerationError(InferenceError):
     """Raised when evidence artifact generation fails."""
 

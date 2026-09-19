@@ -1,0 +1,8 @@
+Benchmark,Target File,Serialization Mode,Schema Compliance,Checkpoint Tracking,Status
+RSVQA-LR,predictions/rsvqa_predictions.jsonl,Immediate Stream Append,"Full (sample_id, prompt, raw, norm, gt, cat)",Qwen2.5-VL-3B-merged_full (c830b8...),CONTRACT ENFORCED
+VRSBench Captioning,predictions/vrsbench_caption_predictions.jsonl,Immediate Stream Append,"Full (sample_id, prompt, raw, norm, gt, cat)",Qwen2.5-VL-3B-merged_full (c830b8...),CONTRACT ENFORCED
+VRSBench Grounding,predictions/vrsbench_grounding_predictions.jsonl,Immediate Stream Append,"Full (sample_id, prompt, raw, norm, gt, unique)",Qwen2.5-VL-3B-merged_full (c830b8...),CONTRACT ENFORCED
+VRSBench VQA,predictions/vrsbench_vqa_predictions.jsonl,Immediate Stream Append,"Full (sample_id, prompt, raw, norm, gt, cat)",Qwen2.5-VL-3B-merged_full (c830b8...),CONTRACT ENFORCED
+CDVQA,predictions/cdvqa_predictions.jsonl,Immediate Stream Append,"Full (sample_id, qid, prompt, raw, norm, gt, cat)",Qwen2.5-VL-3B-merged_full (c830b8...),CONTRACT ENFORCED
+LEVIR-CD,final_sih_evaluation/predictions/levir_cd_predictions.npz,Compressed Numpy Array,"Full (128 masks, 1024x1024 float32)",ChangeDetector-TinyCD.pth (b9a100...),VERIFIED ON DISK
+WHU-OPT-SAR,final_sih_evaluation/predictions/whu_opt_sar_predictions.npz,Compressed Numpy Array,"Full (4950 tiles, 256x256 uint8)",cmaf_landcover_best.pth (26288c...),VERIFIED ON DISK

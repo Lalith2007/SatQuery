@@ -1,0 +1,11 @@
+{
+  "evaluator": "VRSBenchEvaluator",
+  "metrics": [
+    "exact_match",
+    "token_f1",
+    "box_iou",
+    "precision_at_50"
+  ],
+  "model_target": "Qwen2.5-VL-3B-Instruct (Vision-Language Adapter)",
+  "status": "EVALUATOR_READY_PENDING_QWEN_WEIGHTS"
+}

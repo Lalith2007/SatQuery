@@ -52,20 +52,34 @@ def extract_and_validate_optical_sar_inputs(request: ToolRequest) -> OpticalSarV
     optical_img: Optional[ImageInput] = None
     sar_img: Optional[ImageInput] = None
 
+    # First pass: Check explicit modalities
     for img in request.images:
         if img.modality in {ImageModality.OPTICAL, ImageModality.MULTISPECTRAL} and optical_img is None:
             optical_img = img
         elif img.modality == ImageModality.SAR and sar_img is None:
             sar_img = img
 
-    # Fallback heuristic if modalities are UNKNOWN: inspect file extension or sequence
-    if optical_img is None or sar_img is None:
-        for idx, img in enumerate(request.images):
+    # Second pass: Fallback heuristic ONLY for images with UNKNOWN modality
+    unknown_images = [
+        img for img in request.images
+        if img is not optical_img and img is not sar_img and img.modality == ImageModality.UNKNOWN
+    ]
+
+    if (optical_img is None or sar_img is None) and unknown_images:
+        for img in unknown_images:
             path_lower = img.path_or_uri.lower()
-            if optical_img is None and ("opt" in path_lower or "optical" in path_lower or "rgb" in path_lower or idx == 0):
+            if optical_img is None and ("opt" in path_lower or "optical" in path_lower or "rgb" in path_lower):
                 optical_img = img
-            elif sar_img is None and ("sar" in path_lower or "rad" in path_lower or "vv" in path_lower or idx == 1):
+            elif sar_img is None and ("sar" in path_lower or "rad" in path_lower or "vv" in path_lower):
                 sar_img = img
+
+    # If still unassigned and ALL images in request had UNKNOWN modality, infer from sequence
+    all_unknown = all(img.modality == ImageModality.UNKNOWN for img in request.images)
+    if all_unknown and len(request.images) >= 2:
+        if optical_img is None:
+            optical_img = request.images[0]
+        if sar_img is None:
+            sar_img = request.images[1]
 
     if optical_img is None:
         errors.append("No Optical or Multispectral image input identified in request.")

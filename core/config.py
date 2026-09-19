@@ -11,17 +11,27 @@ from pathlib import Path
 from typing import List, Optional
 
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+
+try:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+    _HAS_PYDANTIC_SETTINGS = True
+except ImportError:
+    from pydantic import BaseModel as BaseSettings  # type: ignore
+    SettingsConfigDict = None  # type: ignore
+    _HAS_PYDANTIC_SETTINGS = False
 
 
 class SatQuerySettings(BaseSettings):
     """Central settings model for the SatQuery AI application."""
-    model_config = SettingsConfigDict(
-        env_prefix="SATQUERY_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-    )
+    if _HAS_PYDANTIC_SETTINGS:
+        model_config = SettingsConfigDict(
+            env_prefix="SATQUERY_",
+            env_file=".env",
+            env_file_encoding="utf-8",
+            extra="ignore",
+        )
+    else:
+        model_config = {"extra": "ignore"}
 
     app_name: str = Field(default="SatQuery AI", description="Application display name")
     app_version: str = Field(default="0.1.0", description="Application version")

@@ -1,0 +1,53 @@
+{
+  "audit_name": "SIH26167 Anti-Leakage & Ground-Truth Quarantining Audit",
+  "timestamp": "2026-09-17 10:17:09 UTC",
+  "verdict": "PASS \u2014 ZERO GROUND-TRUTH LEAKAGE",
+  "benchmarks": {
+    "levir_cd": {
+      "benchmark": "LEVIR-CD",
+      "test_scenes": 128,
+      "ground_truth_isolation": "PASS \u2014 data/official_levir_cd/test/label/ was never opened during TinyCD forward pass",
+      "threshold_isolation": "PASS \u2014 Fixed production threshold 0.50 applied without test GT optimization",
+      "train_test_overlap": "PASS \u2014 Test split is strictly held-out (test_1 to test_128)",
+      "synthetic_inputs": "PASS \u2014 Real 0.5m Google Earth aerial imagery"
+    },
+    "whu_opt_sar": {
+      "benchmark": "WHU-OPT-SAR",
+      "test_tiles": 4950,
+      "parent_scenes": 15,
+      "ground_truth_isolation": "PASS \u2014 labels/ only read post-inference during confusion matrix accumulation",
+      "border_pixel_handling": "PASS \u2014 255 border pixels ignored strictly in metrics computation",
+      "train_test_overlap": "PASS \u2014 Test tiles derive from independent geographic scene footprints",
+      "modality_enforcement": "PASS \u2014 Optical (3-ch) and SAR (1-ch) validated before dual-encoder neck"
+    },
+    "cdvqa": {
+      "benchmark": "CDVQA",
+      "test_pairs": 128,
+      "region_extraction_source": "PASS \u2014 Predicted regions derived 100% from TinyCD activations (never GT label)",
+      "visual_handoff": "PASS \u2014 Exactly 3 images [BEFORE, AFTER, WHERE_CHANGE_OCCURRED] without GT hints",
+      "zero_ground_truth_leakage": "PASS \u2014 Answer labels quarantined for post-inference scoring"
+    },
+    "bigearthnet": {
+      "benchmark": "BigEarthNet.txt (Stage 1)",
+      "held_out_samples": 850,
+      "split_isolation": "PASS \u2014 Spatial isolation across Sentinel-2 MGRS granule boundaries",
+      "zero_cross_split_contamination": "PASS \u2014 Zero tile overlap between train (14,304), val (846), and test (850)"
+    },
+    "rsvqa_lr": {
+      "benchmark": "RSVQA-LR",
+      "validation_samples": 2000,
+      "answer_quarantine": "PASS \u2014 Model generates free-form text from image + question; GT answers only read for exact/semantic scoring",
+      "synthetic_data": "PASS \u2014 Genuine Sentinel-2 optical acquisitions"
+    },
+    "vrsbench": {
+      "benchmark": "VRSBench",
+      "tasks": [
+        "Captioning",
+        "Grounding",
+        "VQA"
+      ],
+      "coordinate_system": "PASS \u2014 Standardized [0, 1000] Qwen box tokens converted to benchmark conventions without GT cheating",
+      "answer_quarantine": "PASS \u2014 Question and image only provided to VLM"
+    }
+  }
+}

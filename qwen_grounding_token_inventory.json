@@ -1,0 +1,53 @@
+{
+  "model_id": "Qwen/Qwen2.5-VL-3B-Instruct",
+  "vocab_size": 151665,
+  "verified_grounding_tokens": {
+    "<|object_ref_start|>": {
+      "token_id": 151646,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|object_ref_end|>": {
+      "token_id": 151647,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|box_start|>": {
+      "token_id": 151648,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|box_end|>": {
+      "token_id": 151649,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|quad_start|>": {
+      "token_id": 151650,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|quad_end|>": {
+      "token_id": 151651,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|vision_start|>": {
+      "token_id": 151652,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|vision_end|>": {
+      "token_id": 151653,
+      "is_special": true,
+      "status": "VERIFIED"
+    },
+    "<|image_pad|>": {
+      "token_id": 151655,
+      "is_special": true,
+      "status": "VERIFIED"
+    }
+  },
+  "missing_tokens": [],
+  "all_required_present": true
+}

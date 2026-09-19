@@ -1,0 +1,33 @@
+{
+  "audit_phase": "Phase 0 \u2014 Benchmark Correctness, Evaluation Protocol & Data Integrity Audit",
+  "timestamp": "2026-09-18T10:50:00Z",
+  "status": "COMPLETE",
+  "phase0_verdict": "READY FOR STAGE 2",
+  "classifications": {
+    "rsvqa": "REQUIRES REVALIDATION",
+    "vrsbench_captioning": "NOT AVAILABLE",
+    "vrsbench_grounding": "INVALID",
+    "vrsbench_vqa": "REQUIRES REVALIDATION",
+    "cdvqa": "INVALID",
+    "levir_cd": "VERIFIED",
+    "whu_opt_sar": "VERIFIED",
+    "qwen_checkpoint": "VERIFIED",
+    "tinycd_checkpoint": "VERIFIED",
+    "cmaf_checkpoint": "VERIFIED",
+    "ground_truth_leakage": "PASS",
+    "synthetic_data": "NOT USED",
+    "reproducibility": "PASS"
+  },
+  "key_findings": {
+    "vrsbench_grounding_0_0484_root_cause": "Evaluator coordinate axis inversion (x and y swapped in runner parsing)",
+    "cdvqa_flaw": "Ground truth was a synthetic hardcoded template string rather than authentic Yuan et al. benchmark references",
+    "vlm_serialization_gap": "Individual predictions for RSVQA and VRSBench were not persisted to predictions.json on disk",
+    "specialists_status": "TinyCD (LEVIR-CD F1 79.31%) and CMAF (WHU-OPT-SAR OA 71.71%) are 100% independently verified"
+  },
+  "actionable_fixes_before_stage_2_training": [
+    "Deploy CoordinateConverter pipeline in VRSBench grounding harness",
+    "Enforce serialization of predictions.json in all evaluation runs",
+    "Ingest authentic CDVQA benchmark test annotations",
+    "Implement constrained decoding / official vocabulary evaluation for RSVQA-LR"
+  ]
+}

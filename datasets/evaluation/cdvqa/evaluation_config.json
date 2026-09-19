@@ -1,0 +1,11 @@
+{
+  "evaluator": "CDVQAEvaluator",
+  "metrics": [
+    "bleu_1",
+    "bleu_4",
+    "rouge_l",
+    "change_presence_accuracy"
+  ],
+  "model_target": "TinyCD (Frozen) + Qwen2.5-VL-3B-Instruct (Vision-Language Adapter)",
+  "status": "COMPOSED_WORKFLOW_FUNCTIONAL_PENDING_QWEN_WEIGHTS"
+}

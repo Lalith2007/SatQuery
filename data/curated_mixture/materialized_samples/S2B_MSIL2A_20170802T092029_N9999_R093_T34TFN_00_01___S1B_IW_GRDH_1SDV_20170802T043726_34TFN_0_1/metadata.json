@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07127",
+    "source_row_id": 4090335,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_01___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_1",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_01",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_1",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Provide a description of this image, including the location, season, and distribution of land cover types.",
+    "output": "This satellite image, captured during the summer in Serbia, showcases a diverse landscape within the \"cold, no dry season, warm summer\" climate zone. The dominant feature is the natural grassland and sparsely vegetated areas (827'000 sqm), which is distributed over two individual large areas (~462'000 sqm and ~365'000 sqm). This class is adjacent to broad-leaved forest (~547'000 sqm), which is distributed over two individual smaller areas (~282'000 sqm and ~265'000 sqm). The natural grassland and sparsely vegetated areas borders both the broad-leaved forest and a smaller patch of transitional woodland and shrub (~67'000 sqm). Moreover, the broad-leaved forest is also adjacent to the transitional woodland and shrub, indicating a complex ecosystem with a mix of forest and seminatural areas.",
+    "latitude": 43.32991552518784,
+    "longitude": 22.240883235177105,
+    "season": "Summer",
+    "climate_zone": "Cold, no dry season, warm summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07128",
+    "source_row_id": 4090317,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_01___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_1",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_01",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_1",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Is any broad-leaved forest and natural grassland or sparsely vegetated areas side by side in this image?",
+    "output": "yes",
+    "latitude": 43.32991552518784,
+    "longitude": 22.240883235177105,
+    "season": "Summer",
+    "climate_zone": "Cold, no dry season, warm summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

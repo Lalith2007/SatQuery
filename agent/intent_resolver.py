@@ -50,19 +50,25 @@ class IntentResolver:
         task_hint: Optional[TaskType] = None,
     ) -> TaskIntent:
         """Resolve query into structured TaskIntent."""
+        query_cleaned = query.strip().lower()
+        num_images = len(images) if images else 1
+        modalities = [img.modality for img in images] if images else []
+
         # 1. Manual Task Hint Override
         if task_hint:
             logger.info(f"Using explicit task hint: {task_hint.value}")
+            is_comp = (task_hint == TaskType.CHANGE_VQA)
+            sec_task = TaskType.SINGLE_IMAGE_GROUNDING if ("where" in query_cleaned and is_comp) else (TaskType.SINGLE_IMAGE_VQA if is_comp else None)
             return TaskIntent(
                 task=task_hint,
                 confidence=1.0,
                 intent_explanation=f"Explicit task hint '{task_hint.value}' provided by caller.",
                 target_features=cls._extract_target_features(query),
+                extracted_parameters={
+                    "is_composite": is_comp,
+                    "secondary_task": sec_task,
+                },
             )
-
-        query_cleaned = query.strip().lower()
-        num_images = len(images) if images else 1
-        modalities = [img.modality for img in images] if images else []
 
         # 2. Check for Optical-SAR Cross-Modal intent
         has_optical_and_sar_images = (
@@ -83,7 +89,7 @@ class IntentResolver:
         is_change_query = any(re.search(p, query_cleaned) for p in cls._CHANGE_PATTERNS)
         if is_change_query or (num_images == 2 and not has_optical_and_sar_images):
             # Check for composite multi-step query e.g. "what changed, where did it happen, and was it built-up?"
-            is_composite = (
+            is_explicit_composite = (
                 ("where" in query_cleaned and "change" in query_cleaned) or
                 ("what changed" in query_cleaned and any(w in query_cleaned for w in ["built-up", "urban", "identify", "characterize", "describe"])) or
                 ("," in query_cleaned and "and" in query_cleaned and "change" in query_cleaned)
@@ -93,7 +99,15 @@ class IntentResolver:
             is_question = query_cleaned.endswith("?") or any(
                 query_cleaned.startswith(w) for w in ["what", "how", "has", "did", "is", "can", "why"]
             )
-            resolved_task = TaskType.CHANGE_VQA if is_question else TaskType.CHANGE_ANALYSIS
+            is_semantic_change = (
+                is_question
+                or is_explicit_composite
+                or any(w in query_cleaned for w in ["describe", "what changed", "built-up", "constructed", "land-cover change", "where did the change occur"])
+            )
+            resolved_task = TaskType.CHANGE_VQA if is_semantic_change else TaskType.CHANGE_ANALYSIS
+
+            # Change-VQA strictly requires the composed TinyCD (spatial) + VLM (semantic) workflow
+            is_composite = (resolved_task == TaskType.CHANGE_VQA) or is_explicit_composite
 
             extracted_params = {
                 "is_composite": is_composite,
@@ -101,9 +115,10 @@ class IntentResolver:
             }
 
             intent_explanation = (
-                "Query requests a multi-step sequential workflow: bi-temporal change detection followed by localized region characterization."
+                "Query requests composed Change-VQA workflow: bi-temporal TinyCD change detection & region localization "
+                "followed by localized VLM semantic characterization."
                 if is_composite else
-                "Query requests temporal change detection / comparison between acquisitions."
+                "Query requests quantitative temporal change detection / comparison between acquisitions."
             )
 
             return TaskIntent(

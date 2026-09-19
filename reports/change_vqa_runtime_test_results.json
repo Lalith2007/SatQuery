@@ -1,0 +1,1436 @@
+[
+  {
+    "query_index": 1,
+    "query": "What changed between these two dates, and where did the change occur?",
+    "image_a": "data/official_levir_cd/test/A/test_10.png",
+    "image_b": "data/official_levir_cd/test/B/test_10.png",
+    "routed_task": "change_vqa",
+    "selected_tools": [
+      "bitemporal_change_specialist",
+      "single_image_rs_specialist"
+    ],
+    "tinycd_architecture": "TinyCD (Siamese U-Net + MAMB)",
+    "tinycd_checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "tinycd_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "tinycd_inference_result": {
+      "changed_pixel_ratio": 0.1108245849609375,
+      "device": "mps",
+      "inference_ms": 1121.32
+    },
+    "artifacts": [
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/dfb691a0-c8ca-4c97-a4ba-06eccaea6846_change_mask.png",
+        "desc": "Binary change detection mask (white=changed, black=unchanged)."
+      },
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/dfb691a0-c8ca-4c97-a4ba-06eccaea6846_change_heatmap.png",
+        "desc": "Change probability heatmap (blue=low, red=high probability)."
+      }
+    ],
+    "evidence": [
+      {
+        "type": "change_map",
+        "label": "Bi-Temporal Change Detection Map",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "t0_image_id": "t0",
+          "t1_image_id": "t1",
+          "changed_pixel_ratio": 0.1093,
+          "changed_pixel_count": 7161,
+          "total_pixel_count": 65536,
+          "num_regions": 6
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 18",
+        "confidence": 0.889,
+        "data": {
+          "bbox": [
+            0.5781,
+            0.6758,
+            0.625,
+            0.7773
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 198,
+          "region_id": 18
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 41",
+        "confidence": 0.893,
+        "data": {
+          "bbox": [
+            0.707,
+            0.8711,
+            0.7891,
+            0.9336
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 190,
+          "region_id": 41
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 66",
+        "confidence": 0.907,
+        "data": {
+          "bbox": [
+            0.832,
+            0.832,
+            0.9141,
+            0.8672
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 164,
+          "region_id": 66
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 4",
+        "confidence": 0.736,
+        "data": {
+          "bbox": [
+            0.2578,
+            0.3711,
+            0.3047,
+            0.4297
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 162,
+          "region_id": 4
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 24",
+        "confidence": 0.886,
+        "data": {
+          "bbox": [
+            0.6016,
+            0.7812,
+            0.6562,
+            0.8516
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 159,
+          "region_id": 24
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 26",
+        "confidence": 0.882,
+        "data": {
+          "bbox": [
+            0.6094,
+            0.4961,
+            0.6523,
+            0.5625
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 128,
+          "region_id": 26
+        }
+      },
+      {
+        "type": "text_evidence",
+        "label": "Quantitative Change Statistics",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "changed_percentage": 10.93,
+          "num_regions": 6,
+          "largest_region_pixels": 198,
+          "model": "ChangeDetector-TinyCD",
+          "inference_time_ms": 1121.32
+        }
+      }
+    ],
+    "vlm_invoked": true,
+    "vlm_backend": "qwen25vl",
+    "vlm_status": "REAL_MODEL_PENDING_COLAB_TRAINING / DETERMINISTIC_FALLBACK_ACTIVE",
+    "answer": "[Step 1 - change_vqa]: Bi-temporal analysis detected surface changes across approximately 11.1% of the scene, distributed across 6 distinct spatial cluster(s). The largest cluster contains 198 pixels (19.8% of total changed area). Key changed regions: Region 1: bounding box [148, 173, 160, 199] (198 pixels); Region 2: bounding box [181, 223, 202, 239] (190 pixels); Region 3: bounding box [213, 213, 234, 222] (164 pixels).\n\n[Step 2 - single_image_caption]: High-resolution OPTICAL satellite imagery depicting an organized landscape. The scene comprises structured operational infrastructure, paved transportation corridors, and adjacent cultivated parcels with distinct radiometric signatures across all spectral bands.",
+    "confidence": 0.92,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2,
+          "has_task_hint": false
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "duration_ms": 0.3,
+        "details": {
+          "resolved_task": "change_vqa",
+          "confidence": 0.96,
+          "intent_explanation": "Query requests a multi-step sequential workflow: bi-temporal change detection followed by localized region characterization.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "duration_ms": 0.02,
+        "details": {
+          "task": "change_vqa",
+          "validated_images": 2
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "duration_ms": 0.03,
+        "details": {
+          "selected_tools": [
+            "bitemporal_change_specialist",
+            "single_image_rs_specialist"
+          ],
+          "is_composite": true
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 1491.08,
+        "details": {
+          "task": "change_vqa",
+          "step_index": 0
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist.pair_validation",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "alignment_status": "aligned",
+          "stages_passed": 6,
+          "stages_total": 6,
+          "errors": []
+        }
+      },
+      {
+        "stage": "MODEL_INITIALIZED",
+        "component": "bitemporal_change_specialist.preprocessing",
+        "status": "COMPLETED",
+        "duration_ms": 63.38,
+        "details": {
+          "t0_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "t1_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "model_input_size": 256,
+          "normalized": true,
+          "preprocessing_time_ms": 63.38
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist.change_model",
+        "status": "COMPLETED",
+        "duration_ms": 1121.32,
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.postprocessing",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "regions_found": 6,
+          "changed_pixel_ratio": 0.1093,
+          "parameters": {
+            "threshold": 0.5,
+            "min_region_area": 100,
+            "max_regions": 20,
+            "morphology_kernel": 3
+          }
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "bitemporal_change_specialist.semantic_reasoning",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "query_intent": "change_localization",
+          "capabilities": [
+            "quantitative_spatial_statistics"
+          ],
+          "has_limitations": false
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.evidence",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "evidence_count": 8,
+          "artifact_count": 2
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 1490.78,
+        "details": {}
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 20.95,
+        "details": {
+          "task": "single_image_caption",
+          "step_index": 1
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 20.75,
+        "details": {
+          "task": "single_image_caption",
+          "backend": "qwen25vl",
+          "device": "mps",
+          "inference_ms": 0.0,
+          "preprocessing_ms": 19.49,
+          "peak_memory_mb": 264.88
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "tool_count": 2,
+          "evidence_count": 8,
+          "artifact_count": 2
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  {
+    "query_index": 2,
+    "query": "Describe what changed in the highlighted region.",
+    "image_a": "data/official_levir_cd/test/A/test_10.png",
+    "image_b": "data/official_levir_cd/test/B/test_10.png",
+    "routed_task": "change_analysis",
+    "selected_tools": [
+      "bitemporal_change_specialist",
+      "single_image_rs_specialist"
+    ],
+    "tinycd_architecture": "TinyCD (Siamese U-Net + MAMB)",
+    "tinycd_checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "tinycd_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "tinycd_inference_result": {
+      "changed_pixel_ratio": 0.1108245849609375,
+      "device": "mps",
+      "inference_ms": 42.6
+    },
+    "artifacts": [
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/3dbe1aa9-1edc-474a-861b-8d1c9ee0dec9_change_mask.png",
+        "desc": "Binary change detection mask (white=changed, black=unchanged)."
+      },
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/3dbe1aa9-1edc-474a-861b-8d1c9ee0dec9_change_heatmap.png",
+        "desc": "Change probability heatmap (blue=low, red=high probability)."
+      }
+    ],
+    "evidence": [
+      {
+        "type": "change_map",
+        "label": "Bi-Temporal Change Detection Map",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "t0_image_id": "t0",
+          "t1_image_id": "t1",
+          "changed_pixel_ratio": 0.1093,
+          "changed_pixel_count": 7161,
+          "total_pixel_count": 65536,
+          "num_regions": 6
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 18",
+        "confidence": 0.889,
+        "data": {
+          "bbox": [
+            0.5781,
+            0.6758,
+            0.625,
+            0.7773
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 198,
+          "region_id": 18
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 41",
+        "confidence": 0.893,
+        "data": {
+          "bbox": [
+            0.707,
+            0.8711,
+            0.7891,
+            0.9336
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 190,
+          "region_id": 41
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 66",
+        "confidence": 0.907,
+        "data": {
+          "bbox": [
+            0.832,
+            0.832,
+            0.9141,
+            0.8672
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 164,
+          "region_id": 66
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 4",
+        "confidence": 0.736,
+        "data": {
+          "bbox": [
+            0.2578,
+            0.3711,
+            0.3047,
+            0.4297
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 162,
+          "region_id": 4
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 24",
+        "confidence": 0.886,
+        "data": {
+          "bbox": [
+            0.6016,
+            0.7812,
+            0.6562,
+            0.8516
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 159,
+          "region_id": 24
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 26",
+        "confidence": 0.882,
+        "data": {
+          "bbox": [
+            0.6094,
+            0.4961,
+            0.6523,
+            0.5625
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 128,
+          "region_id": 26
+        }
+      },
+      {
+        "type": "text_evidence",
+        "label": "Quantitative Change Statistics",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "changed_percentage": 10.93,
+          "num_regions": 6,
+          "largest_region_pixels": 198,
+          "model": "ChangeDetector-TinyCD",
+          "inference_time_ms": 42.6
+        }
+      }
+    ],
+    "vlm_invoked": true,
+    "vlm_backend": "qwen25vl",
+    "vlm_status": "REAL_MODEL_PENDING_COLAB_TRAINING / DETERMINISTIC_FALLBACK_ACTIVE",
+    "answer": "[Step 1 - change_analysis]: Bi-temporal analysis detected surface changes across approximately 11.1% of the scene, distributed across 6 distinct spatial cluster(s). The largest cluster contains 198 pixels (19.8% of total changed area). Key changed regions: Region 1: bounding box [148, 173, 160, 199] (198 pixels); Region 2: bounding box [181, 223, 202, 239] (190 pixels); Region 3: bounding box [213, 213, 234, 222] (164 pixels).\n\n[Step 2 - single_image_caption]: High-resolution OPTICAL satellite imagery depicting an organized landscape. The scene comprises structured operational infrastructure, paved transportation corridors, and adjacent cultivated parcels with distinct radiometric signatures across all spectral bands.",
+    "confidence": 0.899,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2,
+          "has_task_hint": false
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "duration_ms": 0.06,
+        "details": {
+          "resolved_task": "change_analysis",
+          "confidence": 0.96,
+          "intent_explanation": "Query requests a multi-step sequential workflow: bi-temporal change detection followed by localized region characterization.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "duration_ms": 0.01,
+        "details": {
+          "task": "change_analysis",
+          "validated_images": 2
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "duration_ms": 0.02,
+        "details": {
+          "selected_tools": [
+            "bitemporal_change_specialist",
+            "single_image_rs_specialist"
+          ],
+          "is_composite": true
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 100.94,
+        "details": {
+          "task": "change_analysis",
+          "step_index": 0
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist.pair_validation",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "alignment_status": "aligned",
+          "stages_passed": 6,
+          "stages_total": 6,
+          "errors": []
+        }
+      },
+      {
+        "stage": "MODEL_INITIALIZED",
+        "component": "bitemporal_change_specialist.preprocessing",
+        "status": "COMPLETED",
+        "duration_ms": 45.37,
+        "details": {
+          "t0_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "t1_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "model_input_size": 256,
+          "normalized": true,
+          "preprocessing_time_ms": 45.37
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist.change_model",
+        "status": "COMPLETED",
+        "duration_ms": 42.6,
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.postprocessing",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "regions_found": 6,
+          "changed_pixel_ratio": 0.1093,
+          "parameters": {
+            "threshold": 0.5,
+            "min_region_area": 100,
+            "max_regions": 20,
+            "morphology_kernel": 3
+          }
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "bitemporal_change_specialist.semantic_reasoning",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "query_intent": "change_localization",
+          "capabilities": [
+            "quantitative_spatial_statistics"
+          ],
+          "has_limitations": false
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.evidence",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "evidence_count": 8,
+          "artifact_count": 2
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 100.83,
+        "details": {}
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 18.03,
+        "details": {
+          "task": "single_image_caption",
+          "step_index": 1
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "single_image_rs_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 17.92,
+        "details": {
+          "task": "single_image_caption",
+          "backend": "qwen25vl",
+          "device": "mps",
+          "inference_ms": 0.0,
+          "preprocessing_ms": 17.82,
+          "peak_memory_mb": 269.36
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "tool_count": 2,
+          "evidence_count": 8,
+          "artifact_count": 2
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  {
+    "query_index": 3,
+    "query": "Has the built-up area increased, decreased, or remained unchanged?",
+    "image_a": "data/official_levir_cd/test/A/test_10.png",
+    "image_b": "data/official_levir_cd/test/B/test_10.png",
+    "routed_task": "change_vqa",
+    "selected_tools": [
+      "bitemporal_change_specialist"
+    ],
+    "tinycd_architecture": "TinyCD (Siamese U-Net + MAMB)",
+    "tinycd_checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "tinycd_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "tinycd_inference_result": {
+      "changed_pixel_ratio": 0.1108245849609375,
+      "device": "mps",
+      "inference_ms": 28.02
+    },
+    "artifacts": [
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/96070e8d-ff3e-4e3a-8b07-995db71b9d2d_change_mask.png",
+        "desc": "Binary change detection mask (white=changed, black=unchanged)."
+      },
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/96070e8d-ff3e-4e3a-8b07-995db71b9d2d_change_heatmap.png",
+        "desc": "Change probability heatmap (blue=low, red=high probability)."
+      }
+    ],
+    "evidence": [
+      {
+        "type": "change_map",
+        "label": "Bi-Temporal Change Detection Map",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "t0_image_id": "t0",
+          "t1_image_id": "t1",
+          "changed_pixel_ratio": 0.1093,
+          "changed_pixel_count": 7161,
+          "total_pixel_count": 65536,
+          "num_regions": 6
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 18",
+        "confidence": 0.889,
+        "data": {
+          "bbox": [
+            0.5781,
+            0.6758,
+            0.625,
+            0.7773
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 198,
+          "region_id": 18
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 41",
+        "confidence": 0.893,
+        "data": {
+          "bbox": [
+            0.707,
+            0.8711,
+            0.7891,
+            0.9336
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 190,
+          "region_id": 41
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 66",
+        "confidence": 0.907,
+        "data": {
+          "bbox": [
+            0.832,
+            0.832,
+            0.9141,
+            0.8672
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 164,
+          "region_id": 66
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 4",
+        "confidence": 0.736,
+        "data": {
+          "bbox": [
+            0.2578,
+            0.3711,
+            0.3047,
+            0.4297
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 162,
+          "region_id": 4
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 24",
+        "confidence": 0.886,
+        "data": {
+          "bbox": [
+            0.6016,
+            0.7812,
+            0.6562,
+            0.8516
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 159,
+          "region_id": 24
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 26",
+        "confidence": 0.882,
+        "data": {
+          "bbox": [
+            0.6094,
+            0.4961,
+            0.6523,
+            0.5625
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 128,
+          "region_id": 26
+        }
+      },
+      {
+        "type": "text_evidence",
+        "label": "Quantitative Change Statistics",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "changed_percentage": 10.93,
+          "num_regions": 6,
+          "largest_region_pixels": 198,
+          "model": "ChangeDetector-TinyCD",
+          "inference_time_ms": 28.02
+        }
+      }
+    ],
+    "vlm_invoked": false,
+    "vlm_backend": "qwen25vl",
+    "vlm_status": "REAL_MODEL_PENDING_COLAB_TRAINING / DETERMINISTIC_FALLBACK_ACTIVE",
+    "answer": "Bi-temporal analysis detected surface changes across approximately 11.1% of the scene, distributed across 6 distinct spatial cluster(s). The largest cluster contains 198 pixels (19.8% of total changed area). Note: The active change detection model provides binary spatial change detection only. Specific land-cover class transitions (e.g., vegetation to built-up, water expansion) cannot be confirmed without a validated semantic classification component.",
+    "confidence": null,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2,
+          "has_task_hint": false
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "duration_ms": 0.19,
+        "details": {
+          "resolved_task": "change_vqa",
+          "confidence": 0.95,
+          "intent_explanation": "Query requests temporal change detection / comparison between acquisitions.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "duration_ms": 0.01,
+        "details": {
+          "task": "change_vqa",
+          "validated_images": 2
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "duration_ms": 0.01,
+        "details": {
+          "selected_tools": [
+            "bitemporal_change_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 79.3,
+        "details": {
+          "task": "change_vqa",
+          "step_index": 0
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist.pair_validation",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "alignment_status": "aligned",
+          "stages_passed": 6,
+          "stages_total": 6,
+          "errors": []
+        }
+      },
+      {
+        "stage": "MODEL_INITIALIZED",
+        "component": "bitemporal_change_specialist.preprocessing",
+        "status": "COMPLETED",
+        "duration_ms": 41.83,
+        "details": {
+          "t0_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "t1_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "model_input_size": 256,
+          "normalized": true,
+          "preprocessing_time_ms": 41.83
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist.change_model",
+        "status": "COMPLETED",
+        "duration_ms": 28.02,
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.postprocessing",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "regions_found": 6,
+          "changed_pixel_ratio": 0.1093,
+          "parameters": {
+            "threshold": 0.5,
+            "min_region_area": 100,
+            "max_regions": 20,
+            "morphology_kernel": 3
+          }
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "bitemporal_change_specialist.semantic_reasoning",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "query_intent": "built_up_change",
+          "capabilities": [
+            "quantitative_spatial_statistics"
+          ],
+          "has_limitations": true
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.evidence",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "evidence_count": 8,
+          "artifact_count": 2
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 79.19,
+        "details": {}
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 8
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  },
+  {
+    "query_index": 4,
+    "query": "Identify the major change and explain what it represents.",
+    "image_a": "data/official_levir_cd/test/A/test_10.png",
+    "image_b": "data/official_levir_cd/test/B/test_10.png",
+    "routed_task": "change_analysis",
+    "selected_tools": [
+      "bitemporal_change_specialist"
+    ],
+    "tinycd_architecture": "TinyCD (Siamese U-Net + MAMB)",
+    "tinycd_checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+    "tinycd_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "tinycd_inference_result": {
+      "changed_pixel_ratio": 0.1108245849609375,
+      "device": "mps",
+      "inference_ms": 27.96
+    },
+    "artifacts": [
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/f4f6c74f-1874-4323-a0f0-a0a25cc064c4_change_mask.png",
+        "desc": "Binary change detection mask (white=changed, black=unchanged)."
+      },
+      {
+        "type": "change_map",
+        "uri": "artifacts_storage/f4f6c74f-1874-4323-a0f0-a0a25cc064c4_change_heatmap.png",
+        "desc": "Change probability heatmap (blue=low, red=high probability)."
+      }
+    ],
+    "evidence": [
+      {
+        "type": "change_map",
+        "label": "Bi-Temporal Change Detection Map",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "t0_image_id": "t0",
+          "t1_image_id": "t1",
+          "changed_pixel_ratio": 0.1093,
+          "changed_pixel_count": 7161,
+          "total_pixel_count": 65536,
+          "num_regions": 6
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 18",
+        "confidence": 0.889,
+        "data": {
+          "bbox": [
+            0.5781,
+            0.6758,
+            0.625,
+            0.7773
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 198,
+          "region_id": 18
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 41",
+        "confidence": 0.893,
+        "data": {
+          "bbox": [
+            0.707,
+            0.8711,
+            0.7891,
+            0.9336
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 190,
+          "region_id": 41
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 66",
+        "confidence": 0.907,
+        "data": {
+          "bbox": [
+            0.832,
+            0.832,
+            0.9141,
+            0.8672
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 164,
+          "region_id": 66
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 4",
+        "confidence": 0.736,
+        "data": {
+          "bbox": [
+            0.2578,
+            0.3711,
+            0.3047,
+            0.4297
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 162,
+          "region_id": 4
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 24",
+        "confidence": 0.886,
+        "data": {
+          "bbox": [
+            0.6016,
+            0.7812,
+            0.6562,
+            0.8516
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 159,
+          "region_id": 24
+        }
+      },
+      {
+        "type": "bounding_box",
+        "label": "Changed Region 26",
+        "confidence": 0.882,
+        "data": {
+          "bbox": [
+            0.6094,
+            0.4961,
+            0.6523,
+            0.5625
+          ],
+          "format": "[ymin, xmin, ymax, xmax]",
+          "coordinate_system": "normalized_image_coordinates (0.0 - 1.0)",
+          "area_pixels": 128,
+          "region_id": 26
+        }
+      },
+      {
+        "type": "text_evidence",
+        "label": "Quantitative Change Statistics",
+        "confidence": 0.8777231574058533,
+        "data": {
+          "changed_percentage": 10.93,
+          "num_regions": 6,
+          "largest_region_pixels": 198,
+          "model": "ChangeDetector-TinyCD",
+          "inference_time_ms": 27.96
+        }
+      }
+    ],
+    "vlm_invoked": false,
+    "vlm_backend": "qwen25vl",
+    "vlm_status": "REAL_MODEL_PENDING_COLAB_TRAINING / DETERMINISTIC_FALLBACK_ACTIVE",
+    "answer": "Bi-temporal analysis detected surface changes across approximately 11.1% of the scene, distributed across 6 distinct spatial cluster(s). The largest cluster contains 198 pixels (19.8% of total changed area).",
+    "confidence": 0.8777231574058533,
+    "status": "success",
+    "execution_trace": [
+      {
+        "stage": "REQUEST_RECEIVED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2,
+          "has_task_hint": false
+        }
+      },
+      {
+        "stage": "TASK_RESOLVED",
+        "component": "IntentResolver",
+        "status": "COMPLETED",
+        "duration_ms": 0.02,
+        "details": {
+          "resolved_task": "change_analysis",
+          "confidence": 0.95,
+          "intent_explanation": "Query requests temporal change detection / comparison between acquisitions.",
+          "target_features": []
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "InputValidator",
+        "status": "COMPLETED",
+        "duration_ms": 0.01,
+        "details": {
+          "task": "change_analysis",
+          "validated_images": 2
+        }
+      },
+      {
+        "stage": "TOOL_SELECTED",
+        "component": "TaskRouter",
+        "status": "COMPLETED",
+        "duration_ms": 0.01,
+        "details": {
+          "selected_tools": [
+            "bitemporal_change_specialist"
+          ],
+          "is_composite": false
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 83.54,
+        "details": {
+          "task": "change_analysis",
+          "step_index": 0
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "image_count": 2
+        }
+      },
+      {
+        "stage": "INPUT_VALIDATED",
+        "component": "bitemporal_change_specialist.pair_validation",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "alignment_status": "aligned",
+          "stages_passed": 6,
+          "stages_total": 6,
+          "errors": []
+        }
+      },
+      {
+        "stage": "MODEL_INITIALIZED",
+        "component": "bitemporal_change_specialist.preprocessing",
+        "status": "COMPLETED",
+        "duration_ms": 44.99,
+        "details": {
+          "t0_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "t1_original_shape": [
+            1024,
+            1024,
+            3
+          ],
+          "model_input_size": 256,
+          "normalized": true,
+          "preprocessing_time_ms": 44.99
+        }
+      },
+      {
+        "stage": "INFERENCE_EXECUTED",
+        "component": "bitemporal_change_specialist.change_model",
+        "status": "COMPLETED",
+        "duration_ms": 27.96,
+        "details": {
+          "model": "ChangeDetector-TinyCD",
+          "architecture": "TinyCD (Siamese U-Net + MAMB)",
+          "checkpoint": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+          "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+          "parameter_count": 3565034,
+          "execution_mode": "production_verified",
+          "threshold": 0.5,
+          "device": "mps",
+          "changed_pixel_ratio": 0.1108245849609375
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.postprocessing",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "regions_found": 6,
+          "changed_pixel_ratio": 0.1093,
+          "parameters": {
+            "threshold": 0.5,
+            "min_region_area": 100,
+            "max_regions": 20,
+            "morphology_kernel": 3
+          }
+        }
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "bitemporal_change_specialist.semantic_reasoning",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "query_intent": "general_change",
+          "capabilities": [
+            "quantitative_spatial_statistics"
+          ],
+          "has_limitations": false
+        }
+      },
+      {
+        "stage": "EVIDENCE_GENERATED",
+        "component": "bitemporal_change_specialist.evidence",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "evidence_count": 8,
+          "artifact_count": 2
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "bitemporal_change_specialist",
+        "status": "COMPLETED",
+        "duration_ms": 83.43,
+        "details": {}
+      },
+      {
+        "stage": "RESULT_AGGREGATED",
+        "component": "ResultAggregator",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "tool_count": 1,
+          "evidence_count": 8
+        }
+      },
+      {
+        "stage": "RESULT_RETURNED",
+        "component": "AgentController",
+        "status": "COMPLETED",
+        "duration_ms": null,
+        "details": {
+          "status": "success"
+        }
+      }
+    ]
+  }
+]

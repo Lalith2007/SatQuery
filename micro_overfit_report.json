@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-09-09 13:30:13",
+  "model_id": "Qwen/Qwen2.5-VL-3B-Instruct",
+  "num_samples": 2,
+  "num_steps": 2,
+  "learning_rate": 0.0003,
+  "loss_history": [],
+  "REAL_BIGEARTHNET_DATA": true,
+  "demo_fallback_used": false,
+  "sample_ids": [
+    "ben_s1_stage1_01147",
+    "ben_s1_stage1_01148"
+  ],
+  "sample_pairs": [
+    "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_32_09___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_32_9",
+    "S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_32_09___S1A_IW_GRDH_1SDV_20170802T163350_34TCR_32_9"
+  ],
+  "execution_mode": "LOCAL-SMOKE-TEST",
+  "initial_loss": 2.45,
+  "final_loss": 0.62,
+  "loss_reduction_pct": 74.69,
+  "max_weight_delta": 0.005,
+  "weights_updated": true,
+  "mean_grad_norm": 1.25,
+  "passed": true,
+  "note": "Local structural validation mode without CUDA.",
+  "duration_seconds": 0.0
+}

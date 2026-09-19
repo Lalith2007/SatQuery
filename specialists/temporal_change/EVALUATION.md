@@ -139,3 +139,39 @@ Diagnostic panels saved under [`specialists/temporal_change/eval_results/d3_fres
 | **Inference Latency** | 15.49 ms (Tesla T4) | 27.32 ms (Apple MPS) | +11.83 ms |
 
 *Protocol Summary:* The fresh evaluation on the 128 standard LEVIR-CD parent test scenes confirms that the trained TinyCD checkpoint delivers substantially stronger performance (+13.00% F1, +16.17% IoU) than earlier preliminary Colab estimates on the larger 348-pair LEVIR-CD+ split.
+
+---
+
+## 9. Checkpoint Provenance Gate & Production Regression
+
+### Forensic Root Cause Clarification
+> **Forensic Audit Clarification:**
+> 17.69% F1 was produced by an untrained randomly initialized SiameseFeatureDiff fallback caused by an architecture/checkpoint dispatch misconfiguration. It is not a TinyCD result.
+
+The investigation demonstrated that a configuration dispatch issue previously caused the specialist to fall back to an untrained randomly initialized `SiameseFeatureDiff` stub when `model_architecture` defaulted to `"changeformer"`. The production configuration now permanently defaults to `model_architecture = "tinycd"`.
+
+### Fail-Closed Provenance Gate
+To guarantee that random/untrained inference can never occur in production:
+1. **Architecture Enforcement:** Architecture must be `tinycd`. Any missing checkpoint raises an immediate `CheckpointProvenanceError` (`STATUS = CHECKPOINT_INVALID`).
+2. **Cryptographic Validation:** Checkpoint SHA-256 is verified against authoritative hash `b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0`.
+3. **Strict State Dict Match:** Enforces `strict=True` with `missing_keys == 0` and `unexpected_keys == 0`.
+4. **Parameter Count Audit:** Validates exact parameter count of `3,565,034`.
+5. **Zero Untrained Fallback:** Silent fallback to untrained models is strictly forbidden.
+
+### Authoritative Production Regression Results
+Running the production `bitemporal_change_specialist` tool end-to-end with the verified TinyCD checkpoint yields:
+- **Forensic Sample (`test_10.png`):**
+  - F1: **`0.8390`** (Reference: 0.8392)
+  - IoU: **`0.7226`** (Reference: 0.7230)
+  - Precision: **`0.7919`** (Reference: 0.7870)
+  - Recall: **`0.8919`** (Reference: 0.8990)
+  - Overall Accuracy: **`0.9668`** (Reference: 0.9666)
+- **Official 128-Scene Benchmark Regression:**
+  - Overall Accuracy (OA): **`97.94%`**
+  - Precision: **`82.85%`**
+  - Recall: **`75.18%`**
+  - F1 Score: **`78.83%`**
+  - IoU: **`65.05%`**
+  - All 128 scenes completed in `12.12 s` (`10.56 FPS` full tool pipeline throughput).
+- **Production Threshold:** Remains locked at **`0.50`**.
+- **Model Replacement / Retraining Required:** **`NO`**.

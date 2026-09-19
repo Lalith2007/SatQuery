@@ -1,0 +1,248 @@
+{
+  "benchmark": "WHU-OPT-SAR",
+  "task": "Cross-Modal Optical-SAR Land-Cover Segmentation",
+  "model": "CMAF (Dual Encoders + Cross-Modal Attention Fusion)",
+  "checkpoint_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+  "checkpoint_sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+  "parameter_count": 19755144,
+  "submodule_parameters": {
+    "optical_encoder": 8543296,
+    "sar_encoder": 8540160,
+    "fusion_neck": 2297344,
+    "task_head": 374344
+  },
+  "device": "mps",
+  "evaluation_timestamp": "2026-09-11 15:51:50 UTC",
+  "dataset": {
+    "name": "WHU-OPT-SAR",
+    "split": "test",
+    "source": "Wuhan University / LIESMARS (Li et al.)",
+    "num_parent_scenes": 15,
+    "num_tiles": 4950,
+    "tile_dimensions": "256x256",
+    "total_pixels_raw": 324403200,
+    "valid_pixels": 308687656,
+    "ignored_pixels_255": 15715544,
+    "valid_pixel_percentage": 95.16
+  },
+  "overall_summary_metrics": {
+    "overall_accuracy": 0.717099,
+    "miou": 0.350793,
+    "macro_f1": 0.466209,
+    "macro_precision": 0.465837,
+    "macro_recall": 0.524761,
+    "weighted_f1": 0.741756,
+    "weighted_iou": 0.603848,
+    "weighted_precision": 0.776939,
+    "weighted_recall": 0.717099
+  },
+  "per_class_metrics": [
+    {
+      "class_id": 0,
+      "class_name": "Background",
+      "iou": 0.0,
+      "f1": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 1973,
+      "predicted_count": 2946950,
+      "tp": 0,
+      "fp": 2946950,
+      "fn": 1973
+    },
+    {
+      "class_id": 1,
+      "class_name": "Farmland",
+      "iou": 0.591998,
+      "f1": 0.743717,
+      "precision": 0.759605,
+      "recall": 0.728479,
+      "support": 111315326,
+      "predicted_count": 106754018,
+      "tp": 81090930,
+      "fp": 25663088,
+      "fn": 30224396
+    },
+    {
+      "class_id": 2,
+      "class_name": "City",
+      "iou": 0.445741,
+      "f1": 0.616627,
+      "precision": 0.684306,
+      "recall": 0.56113,
+      "support": 13218868,
+      "predicted_count": 10839447,
+      "tp": 7417501,
+      "fp": 3421946,
+      "fn": 5801367
+    },
+    {
+      "class_id": 3,
+      "class_name": "Village",
+      "iou": 0.333233,
+      "f1": 0.499887,
+      "precision": 0.441512,
+      "recall": 0.576049,
+      "support": 16869004,
+      "predicted_count": 22009292,
+      "tp": 9717374,
+      "fp": 12291918,
+      "fn": 7151630
+    },
+    {
+      "class_id": 4,
+      "class_name": "Water",
+      "iou": 0.507059,
+      "f1": 0.672912,
+      "precision": 0.692433,
+      "recall": 0.654462,
+      "support": 40822113,
+      "predicted_count": 38583509,
+      "tp": 26716511,
+      "fp": 11866998,
+      "fn": 14105602
+    },
+    {
+      "class_id": 5,
+      "class_name": "Forest",
+      "iou": 0.736931,
+      "f1": 0.848544,
+      "precision": 0.922688,
+      "recall": 0.785429,
+      "support": 118860724,
+      "predicted_count": 101179047,
+      "tp": 93356674,
+      "fp": 7822373,
+      "fn": 25504050
+    },
+    {
+      "class_id": 6,
+      "class_name": "Road",
+      "iou": 0.116754,
+      "f1": 0.209095,
+      "precision": 0.123631,
+      "recall": 0.6773,
+      "support": 3083943,
+      "predicted_count": 16895066,
+      "tp": 2088756,
+      "fp": 14806310,
+      "fn": 995187
+    },
+    {
+      "class_id": 7,
+      "class_name": "Others",
+      "iou": 0.074628,
+      "f1": 0.13889,
+      "precision": 0.102523,
+      "recall": 0.215239,
+      "support": 4515705,
+      "predicted_count": 9480327,
+      "tp": 971956,
+      "fp": 8508371,
+      "fn": 3543749
+    }
+  ],
+  "dominant_confusion_pairs": [
+    {
+      "ground_truth_class": "Forest",
+      "predicted_class": "Farmland",
+      "confused_pixels": 14411773,
+      "percentage_of_gt": 12.12
+    },
+    {
+      "ground_truth_class": "Farmland",
+      "predicted_class": "Water",
+      "confused_pixels": 8151523,
+      "percentage_of_gt": 7.32
+    },
+    {
+      "ground_truth_class": "Farmland",
+      "predicted_class": "Village",
+      "confused_pixels": 6447174,
+      "percentage_of_gt": 5.79
+    },
+    {
+      "ground_truth_class": "Water",
+      "predicted_class": "Farmland",
+      "confused_pixels": 5954585,
+      "percentage_of_gt": 14.59
+    },
+    {
+      "ground_truth_class": "Farmland",
+      "predicted_class": "Forest",
+      "confused_pixels": 5560010,
+      "percentage_of_gt": 4.99
+    },
+    {
+      "ground_truth_class": "Farmland",
+      "predicted_class": "Road",
+      "confused_pixels": 5257941,
+      "percentage_of_gt": 4.72
+    },
+    {
+      "ground_truth_class": "Forest",
+      "predicted_class": "Road",
+      "confused_pixels": 3111480,
+      "percentage_of_gt": 2.62
+    },
+    {
+      "ground_truth_class": "Village",
+      "predicted_class": "Farmland",
+      "confused_pixels": 2974760,
+      "percentage_of_gt": 17.63
+    },
+    {
+      "ground_truth_class": "Farmland",
+      "predicted_class": "Others",
+      "confused_pixels": 2910306,
+      "percentage_of_gt": 2.61
+    },
+    {
+      "ground_truth_class": "Forest",
+      "predicted_class": "Others",
+      "confused_pixels": 2684686,
+      "percentage_of_gt": 2.26
+    }
+  ],
+  "scene_level_metrics": [],
+  "runtime_performance": {
+    "total_eval_time_seconds": 284.87,
+    "mean_batch_latency_ms": 126.91,
+    "throughput_tiles_per_sec": 17.38
+  },
+  "visual_examples": [
+    {
+      "category": "representative_successful",
+      "tile_id": "NH49E001017_y0000_x3840",
+      "scene_id": "NH49E001017",
+      "accuracy": 0.884,
+      "panel_path": "reports/benchmark_eval/optical_sar/visual_examples/representative_successful_NH49E001017_y0000_x3840.png"
+    },
+    {
+      "category": "difficult_edge_case",
+      "tile_id": "NH49E005023_y0000_x1280",
+      "scene_id": "NH49E005023",
+      "accuracy": 0.512,
+      "panel_path": "reports/benchmark_eval/optical_sar/visual_examples/difficult_edge_case_NH49E005023_y0000_x1280.png"
+    },
+    {
+      "category": "complementary_cross_modal",
+      "tile_id": "NH49E006022_y0000_x3840",
+      "scene_id": "NH49E006022",
+      "accuracy": 0.826,
+      "panel_path": "reports/benchmark_eval/optical_sar/visual_examples/complementary_cross_modal_NH49E006022_y0000_x3840.png"
+    }
+  ],
+  "modality_contract_audit": {
+    "optical_encoder_input": "3-channel Optical MSI (RGB/B8)",
+    "sar_encoder_input": "2/3-channel SAR (VV/VH)",
+    "cross_modal_fusion": "Dual Cross-Modal Multi-Head Attention",
+    "contract_status": "PASS"
+  },
+  "anti_leakage_audit": {
+    "test_images_in_train": false,
+    "test_labels_used_during_inference": false,
+    "modality_substitution": false,
+    "status": "PASS"
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ben_s1_stage1_07135",
+    "source_row_id": 4090477,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_08___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_8",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_08",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_8",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "captioning",
+    "task": "None",
+    "sensor": "Sentinel-1 SAR",
+    "channels_rendered": [
+      "VV",
+      "VH",
+      "log(VV/VH)"
+    ],
+    "input": "Describe the satellite image in detail.",
+    "output": "This satellite image, captured during the summer season in Serbia, showcases a diverse landscape within the \"temperate, no dry season, hot summer\" climate zone. The dominant features are areas principally occupied by agriculture with significant natural vegetation (571,000 sqm), distributed over two individual areas, one larger (~434,000 sqm) and one smaller (~137,000 sqm), and broad-leaved forest (~488,000 sqm). Also present are complex cultivation patterns (~329,000 sqm), spread across two individual areas, one smaller (~317,000 sqm) and one marginal. The areas principally occupied by agriculture with significant natural vegetation border broad-leaved forest and complex cultivation patterns. Moreover, broad-leaved forest is adjacent to complex cultivation patterns and transitional woodland or shrub, which covers a marginal area of less than 5% (72,000 sqm). The complex cultivation patterns are also next to the areas principally occupied by agriculture with significant natural vegetation. The varied landscape suggests a complex interplay of agricultural practices and natural ecosystems.",
+    "latitude": 43.254294390039675,
+    "longitude": 22.239346509799027,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  },
+  {
+    "id": "ben_s1_stage1_07136",
+    "source_row_id": 4090459,
+    "pair_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_08___S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_8",
+    "patch_id": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN_00_08",
+    "s1_name": "S1B_IW_GRDH_1SDV_20170802T043726_34TFN_0_8",
+    "parent_granule": "S2B_MSIL2A_20170802T092029_N9999_R093_T34TFN",
+    "country": "Serbia",
+    "split": "train",
+    "annotation_type": "binary",
+    "task": "adjacency",
+    "sensor": "Sentinel-2 MSI",
+    "channels_rendered": [
+      "B04",
+      "B03",
+      "B02"
+    ],
+    "input": "Would you identify any broad-leaved forest as lying right beside complex cultivation patterns?",
+    "output": "yes",
+    "latitude": 43.254294390039675,
+    "longitude": 22.239346509799027,
+    "season": "Summer",
+    "climate_zone": "Temperate, no dry season, hot summer",
+    "grounding_semantic_level": "not_applicable",
+    "grounding_resolution_note": null
+  }
+]

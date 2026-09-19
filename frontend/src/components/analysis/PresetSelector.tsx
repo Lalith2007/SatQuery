@@ -14,7 +14,13 @@ import { api } from '../../services/api';
 import { Badge } from '../common/Badge';
 
 export const PresetSelector: React.FC = () => {
-  const { selectedPreset, selectPreset, inputMode } = useAnalysis();
+  const {
+    selectedPreset,
+    selectPreset,
+    selectedSceneIndex,
+    selectSceneIndex,
+    inputMode,
+  } = useAnalysis();
 
   const getIcon = (name: string) => {
     switch (name) {
@@ -37,6 +43,9 @@ export const PresetSelector: React.FC = () => {
     <div className="space-y-2.5">
       {PRESET_SCENARIOS.map((preset) => {
         const isSelected = inputMode === 'preset' && selectedPreset?.id === preset.id;
+        // CRITICAL FIX: Use selectedPreset.images when this card is active so changing variants updates the images!
+        const activeImages = isSelected && selectedPreset ? selectedPreset.images : preset.images;
+
         return (
           <div
             key={preset.id}
@@ -69,46 +78,89 @@ export const PresetSelector: React.FC = () => {
 
             {/* Visual Real Satellite Thumbnail Preview Strip */}
             <div className="grid grid-cols-2 gap-2 my-2">
-              {preset.images.map((img, i) => {
+              {activeImages.map((img, i) => {
                 const isTiff = img.name.endsWith('.tif') || img.name.endsWith('.tiff');
-                const imgUrl = api.getArtifactUrl(img.name);
+                // For TIFF files (e.g. SAR GeoTIFF), display the generated preview PNG so radar amplitude is visually visible
+                const displayFileName = isTiff ? img.name.replace(/\.tiff?$/, '_preview.png') : img.name;
+                const imgUrl = api.getArtifactUrl(displayFileName);
 
                 return (
                   <div
-                    key={i}
+                    key={`${img.name}-${isSelected ? selectedSceneIndex : 'static'}-${i}`}
                     className={`relative rounded-lg overflow-hidden border border-border-subtle bg-background ${
-                      preset.images.length === 1 ? 'col-span-2 h-20' : 'h-16'
+                      activeImages.length === 1 ? 'col-span-2 h-20' : 'h-16'
                     }`}
                   >
-                    {!isTiff ? (
-                      <img
-                        src={imgUrl}
-                        alt={img.role}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
+                    <img
+                      key={`${img.name}-${isSelected ? selectedSceneIndex : 'static'}`}
+                      src={imgUrl}
+                      alt={img.role}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        if (isTiff) {
+                          (e.target as HTMLElement).style.display = 'none';
+                          const fallback = (e.target as HTMLElement).parentElement?.querySelector('.tiff-fallback');
+                          if (fallback) (fallback as HTMLElement).classList.remove('hidden');
+                        } else {
                           (e.target as HTMLElement).style.opacity = '0.5';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-tr from-slate-900 via-slate-800 to-cyan-950/40 flex items-center justify-center p-2 text-center">
+                        }
+                      }}
+                    />
+                    {isTiff && (
+                      <div className="tiff-fallback hidden w-full h-full bg-gradient-to-tr from-slate-900 via-slate-800 to-cyan-950/40 flex items-center justify-center p-2 text-center">
                         <span className="text-[10px] font-mono text-cyan-300">
                           SAR Radar GeoTIFF
                         </span>
                       </div>
                     )}
-                    <div className="absolute bottom-1 left-1.5 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-xs text-[9px] font-mono text-text-secondary border border-white/10">
-                      {img.role}
+                    <div className="absolute bottom-1 left-1.5 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-xs text-[9px] font-mono text-text-secondary border border-white/10 flex items-center gap-1">
+                      <span>{img.role}</span>
+                      {isSelected && (
+                        <span className="text-cyan-400 font-bold ml-1">#{selectedSceneIndex + 1}</span>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
 
+            {/* 15 Real Satellite Scene Variants Strip */}
+            {isSelected && (
+              <div className="mt-2.5 pt-2 border-t border-cyan-500/30">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-semibold text-cyan-300 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    Real Scene Variant ({selectedSceneIndex + 1}/15):
+                  </span>
+                  <span className="text-[9px] text-emerald-400 font-mono">Held-Out Test Split</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {Array.from({ length: 15 }, (_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectSceneIndex(idx);
+                      }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all ${
+                        selectedSceneIndex === idx
+                          ? 'bg-cyan-500 text-black font-bold shadow-glow-cyan scale-105'
+                          : 'bg-background-elevated hover:bg-cyan-950 text-text-secondary hover:text-cyan-300 border border-border-subtle'
+                      }`}
+                      title={`Switch to Scene #${idx + 1}`}
+                    >
+                      #{idx + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Footer Metadata & CTA */}
-            <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-border-subtle/60 text-text-muted">
+            <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-border-subtle/60 text-text-muted mt-2">
               <span>Source: <strong className="text-text-secondary">{preset.source}</strong></span>
               <span className={`font-semibold flex items-center gap-1 ${isSelected ? 'text-cyan-400' : 'text-text-muted'}`}>
-                {isSelected ? 'Active Preset' : 'Select Preset'} <ArrowRight className="w-3 h-3" />
+                {isSelected ? 'Active Track' : 'Select Preset'} <ArrowRight className="w-3 h-3" />
               </span>
             </div>
           </div>

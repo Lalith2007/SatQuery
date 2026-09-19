@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-09-11 16:18:11 UTC",
+  "registry": {
+    "levir_cd": {
+      "official_source": "Beihang University LEVIR Lab (Chen & Shi)",
+      "task": "Bi-Temporal Change Detection",
+      "split": "test",
+      "scenes": 128,
+      "evaluation_resolution": "256x256",
+      "checkpoint_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "status": "EVALUATED_AND_FROZEN"
+    },
+    "whu_opt_sar": {
+      "official_source": "Wuhan University / LIESMARS (Li et al.)",
+      "task": "Optical-SAR Land-Cover Segmentation",
+      "split": "test",
+      "tiles": 4950,
+      "parent_scenes": 15,
+      "checkpoint_sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "status": "EVALUATED_AND_FROZEN"
+    },
+    "rsvqa_lr": {
+      "official_source": "Sylvain Lobry, Diego Marcos, Devis Tuia / Zenodo (DOI: 10.5281/zenodo.6344334)",
+      "task": "Remote Sensing VQA",
+      "split": "validation",
+      "records": 2000,
+      "unique_images": 100,
+      "unique_questions": 869,
+      "role": "Benchmark evaluation partition (held-out from training; validation split per official source naming)",
+      "status": "ACQUIRED_AND_QUARANTINED"
+    },
+    "vrsbench": {
+      "official_source": "Wuhan University / LIESMARS (Ling et al., 2024)",
+      "task": "VQA & Visual Grounding",
+      "split": "representative_test_partition",
+      "records": 18,
+      "breakdown": {
+        "total_acquired": 18,
+        "grounding_records": 13,
+        "vqa_records": 5,
+        "harness_smoke_subset": 1,
+        "evaluation_subset": 18
+      },
+      "role": "Benchmark evaluation partition (quarantined test partition; harness verified)",
+      "status": "ACQUIRED_AND_QUARANTINED"
+    },
+    "cdvqa": {
+      "official_source": "Beihang University / Yuan et al.",
+      "task": "Change Detection VQA",
+      "split": "official_levir_cd_test",
+      "scenes": 128,
+      "role": "Composed change-VQA pipeline evaluation partition",
+      "status": "PIPELINE_VERIFIED_QWEN_PENDING"
+    },
+    "isro_sac": {
+      "official_source": "ISRO Space Applications Centre (SAC)",
+      "task": "Multi-Sensor Joint Intelligence",
+      "split": "restricted_mission_target",
+      "local_data_size_bytes": 0,
+      "role": "Private jury mission benchmark",
+      "status": "AWAITING_OFFICIAL_DATA"
+    }
+  }
+}
