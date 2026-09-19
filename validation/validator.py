@@ -197,14 +197,20 @@ class InputValidator:
         
         Note: Does NOT require identical pixel dimensions.
         """
-        if len(images) < 2:
-            raise InvalidImageCountError(
-                f"Task '{task.value}' requires at least 2 images for bi-temporal analysis, but {len(images)} was provided."
-            )
-        if len(images) > 2:
-            raise InvalidImageCountError(
-                f"Task '{task.value}' currently supports pairs (2 images), but {len(images)} were provided."
-            )
+        if task == TaskType.CHANGE_VQA:
+            if len(images) < 2 or len(images) > 3:
+                raise InvalidImageCountError(
+                    f"Task '{task.value}' requires 2 images (pair) or 3 images ([T0, T1, overlay] handoff), but {len(images)} were provided."
+                )
+        else:
+            if len(images) < 2:
+                raise InvalidImageCountError(
+                    f"Task '{task.value}' requires at least 2 images for bi-temporal analysis, but {len(images)} was provided."
+                )
+            if len(images) > 2:
+                raise InvalidImageCountError(
+                    f"Task '{task.value}' currently supports pairs (2 images), but {len(images)} were provided."
+                )
 
         img_t0, img_t1 = images[0], images[1]
 

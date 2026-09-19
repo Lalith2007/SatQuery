@@ -1,0 +1,12 @@
+Audit Check,Target Specialist / Benchmark,Rule Enforced,Result,Status
+Train/Test Overlap,"All Models (Qwen, TinyCD, CMAF)",Strict disjoint split verification,0 overlapping samples across all benchmarks,PASS
+Ground Truth During Inference,RSVQA-LR,GT withheld until post-generation scoring,GT never passed to prompt or generation,PASS
+Ground Truth During Inference,VRSBench (All Tasks),GT withheld until post-generation scoring,GT never passed to prompt or generation,PASS
+Ground Truth During Inference,CDVQA,GT withheld until post-generation scoring,GT never passed to prompt or generation,PASS
+GT-Guided Visual Handoff,CDVQA / TinyCD,Only TinyCD predictions used for localization overlay,GT masks never used for cropping or region selection,PASS
+Ground Truth During Inference,LEVIR-CD (TinyCD),Unlabeled T0/T1 pairs only,Labels evaluated strictly post-sigmoid,PASS
+Ground Truth During Inference,WHU-OPT-SAR (CMAF),Unlabeled Optical/SAR pairs only,Labels evaluated strictly post-argmax,PASS
+Synthetic Reference Templates,CDVQA,Zero synthetic template sentences allowed,Hard rejection gate active (raises ValueError),PASS
+Synthetic Benchmark Imagery,All Benchmarks,100% genuine spaceborne/aerial rasters,Zero synthetic images used,PASS
+Threshold Tuning on Test Data,TinyCD & CMAF,Thresholds fixed at production specification (0.50),Zero post-hoc threshold tuning,PASS
+Checkpoint Provenance Gate,All Models,SHA-256 hash match mandatory before load,Strict strict=True loading enforced,PASS

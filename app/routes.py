@@ -100,18 +100,117 @@ async def get_legacy_demo_dashboard():
 
 @router.get("/health", summary="System Health & Status")
 async def get_health():
-    """Returns application health, version, registered tools, and status."""
+    """Returns comprehensive application health, hardware availability, and specialist statuses."""
+    import torch
     tool_health = default_registry.health_check_all()
     all_healthy = all(tool_health.values()) if tool_health else True
 
+    cuda_available = torch.cuda.is_available()
+    mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+    gpu_available = cuda_available or mps_available
+
+    tools_map = getattr(default_registry, "_tools", {})
+    qwen_tool = tools_map.get("single_image_rs_specialist")
+    tinycd_tool = tools_map.get("bitemporal_change_specialist")
+    cmaf_tool = tools_map.get("optical_sar_cross_modal_specialist")
+
+    qwen_loaded = qwen_tool is not None and getattr(qwen_tool, "qwen_engine", None) is not None and getattr(qwen_tool.qwen_engine, "is_loaded", False)
+    tinycd_loaded = tinycd_tool is not None and getattr(tinycd_tool, "_change_model", None) is not None and getattr(tinycd_tool._change_model, "is_ready", lambda: False)()
+    cmaf_loaded = cmaf_tool is not None and getattr(cmaf_tool, "is_trained_loaded", False)
+
+    qwen_available_on_disk = False
+    if qwen_tool is not None and getattr(qwen_tool, "qwen_engine", None):
+        base_id = getattr(qwen_tool.qwen_engine, "base_model_id", None)
+        if base_id and Path(base_id).exists():
+            qwen_available_on_disk = True
+
+    qwen_status = "READY" if qwen_loaded else ("AVAILABLE_ON_DISK" if qwen_available_on_disk else "NOT_LOADED")
+
+    models_status = {
+        "qwen25vl": {
+            "loaded": bool(qwen_loaded),
+            "status": qwen_status,
+        },
+        "tinycd": {
+            "loaded": bool(tinycd_loaded),
+            "status": "READY" if tinycd_loaded else "NOT_LOADED",
+        },
+        "cmaf": {
+            "loaded": bool(cmaf_loaded),
+            "status": "READY" if cmaf_loaded else "NOT_LOADED",
+        },
+    }
+
+    status_str = "healthy" if (all_healthy and (qwen_loaded or qwen_available_on_disk) and tinycd_loaded and cmaf_loaded) else ("degraded" if all_healthy else "unhealthy")
+
     return {
-        "status": "healthy" if all_healthy else "degraded",
+        "status": status_str,
+        "service": "SatQuery AI",
         "app_name": settings.app_name,
         "version": settings.app_version,
+        "deployment": "baseline-2026-09-18",
         "environment": settings.env,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "gpu_available": gpu_available,
+        "cuda_available": cuda_available,
+        "mps_available": mps_available,
+        "models": models_status,
         "registered_tools_count": len(default_registry.list_tools()),
         "tools_health": tool_health,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@router.get("/version", summary="SatQuery Deployment Version & Model Manifest")
+async def get_version():
+    """Returns deployment identifier, git commit, and frozen model revisions."""
+    manifest_path = Path("deployment/baseline_manifest.json")
+    git_commit = "f1487fbd8eafeff60b64d4d6735a299d212269a8"
+    if manifest_path.exists():
+        try:
+            manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+            git_commit = manifest_data.get("git", {}).get("commit_sha", git_commit)
+        except Exception:
+            pass
+
+    tools_map = getattr(default_registry, "_tools", {})
+    qwen_tool = tools_map.get("single_image_rs_specialist")
+    tinycd_tool = tools_map.get("bitemporal_change_specialist")
+    cmaf_tool = tools_map.get("optical_sar_cross_modal_specialist")
+
+    return {
+        "service": "SatQuery AI",
+        "deployment": "baseline-2026-09-18",
+        "version": settings.app_version,
+        "git_commit": git_commit,
+        "models": {
+            "qwen25vl": {
+                "architecture": "Qwen2.5-VL-3B-Instruct",
+                "revision": "stage1-baseline",
+                "parameters": 3754622976,
+                "loaded": qwen_tool is not None and getattr(qwen_tool, "qwen_engine", None) is not None,
+                "shards": [
+                    {
+                        "file": "model-00001-of-00002.safetensors",
+                        "sha256": "a654744766321bc582b83b7ee5cfcddbf5788248563d9bb82d88b972722c4071",
+                    },
+                    {
+                        "file": "model-00002-of-00002.safetensors",
+                        "sha256": "9a636ac0ceda90b18b384687247c3cc649efaa4e1f850455a7512069a56e4673",
+                    },
+                ],
+            },
+            "tinycd": {
+                "architecture": "TinyCD",
+                "parameters": 3565034,
+                "loaded": tinycd_tool is not None and getattr(tinycd_tool, "_model_loaded", False),
+                "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+            },
+            "cmaf": {
+                "architecture": "CMAF",
+                "loaded": cmaf_tool is not None and getattr(cmaf_tool, "model", None) is not None,
+                "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+            },
+        },
     }
 
 

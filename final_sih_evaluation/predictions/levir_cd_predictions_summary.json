@@ -1,0 +1,12 @@
+{
+  "benchmark": "LEVIR-CD",
+  "num_scenes": 128,
+  "total_pixels": 8388608,
+  "predicted_changed_pixels": 387794,
+  "predicted_unchanged_pixels": 8000814,
+  "pixel_precision": 0.833571,
+  "pixel_recall": 0.756302,
+  "pixel_f1": 0.793059,
+  "pixel_iou": 0.657082,
+  "pixel_oa": 0.979889
+}

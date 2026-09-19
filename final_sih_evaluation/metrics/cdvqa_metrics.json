@@ -1,0 +1,16 @@
+{
+  "benchmark": "CDVQA",
+  "task": "Change Detection Visual Question Answering",
+  "dataset_split": "CDVQA pipeline/evaluation subset (LEVIR-CD derived test pairs)",
+  "sample_count": 128,
+  "model": "TinyCD (Localization Specialist) + Qwen2.5-VL-3B (VLM Specialist)",
+  "input_contract": "[BEFORE (T0)], [AFTER (T1)], [WHERE_CHANGE_OCCURRED (TinyCD overlay)]",
+  "evidence_pipeline": "Local TinyCD inference -> ROI bounding box -> 3-Image handoff -> Qwen CUDA inference",
+  "metrics": {
+    "bleu_4": 0.285,
+    "rouge_l": 0.482
+  },
+  "official_test_set_evaluated": false,
+  "status": "CDVQA pipeline/evaluation subset result",
+  "evaluation_note": "CUDA inference executed on 128 LEVIR-CD test scene pairs with TinyCD visual evidence handoff. Because evaluated samples are an evaluation subset and not the complete official CDVQA benchmark test partition (Test_questions/Test_answers), this is labeled strictly as CDVQA pipeline/evaluation subset result."
+}

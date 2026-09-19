@@ -1,0 +1,9 @@
+{
+  "benchmark": "WHU-OPT-SAR",
+  "num_tiles": 4950,
+  "valid_pixels": 308687656,
+  "oa": 0.717099,
+  "miou": 0.350793,
+  "macro_f1": 0.466209,
+  "weighted_f1": 0.741756
+}

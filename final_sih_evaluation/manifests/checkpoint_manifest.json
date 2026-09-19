@@ -1,0 +1,49 @@
+{
+  "audit_timestamp": "2026-09-17 10:11:19 UTC",
+  "checkpoints": {
+    "tinycd": {
+      "model": "TinyCD",
+      "task": "Bi-Temporal Change Detection",
+      "path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+      "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "expected_sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "sha256_match": true,
+      "parameters": 3565034,
+      "expected_parameters": 3565034,
+      "param_match": true,
+      "strict_load": true,
+      "missing_keys": 0,
+      "unexpected_keys": 0,
+      "production_threshold": 0.5,
+      "status": "VERIFIED"
+    },
+    "cmaf": {
+      "model": "CMAF",
+      "task": "Optical-SAR Cross-Modal Land Cover Segmentation",
+      "path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+      "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "expected_sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "sha256_match": true,
+      "parameters": 19755144,
+      "expected_parameters": 19755144,
+      "param_match": true,
+      "strict_load": true,
+      "missing_keys": 0,
+      "unexpected_keys": 0,
+      "classes": 8,
+      "status": "VERIFIED"
+    },
+    "qwen25vl": {
+      "model": "Qwen2.5-VL-3B-Instruct",
+      "task": "Multimodal Remote Sensing Vision-Language Reasoning",
+      "primary_checkpoint_directory": "/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/merged_full",
+      "adapter_checkpoint_directory": "/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/adapter",
+      "adapter_sha256": "633af9a5ced8e8e410acdbd1daba9dde7cf04102d5c19a8ed5d411bf94169af8",
+      "merged_model_size_gb": 6.99,
+      "shards_count": 2,
+      "zero_peft_dependency": true,
+      "execution_environment": "Google Colab CUDA (Tesla T4)",
+      "status": "VERIFIED"
+    }
+  }
+}

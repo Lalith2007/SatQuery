@@ -1,0 +1,29 @@
+{
+  "deployment": "baseline-2026-09-18",
+  "qwen": {
+    "architecture": "Qwen2.5-VL-3B-Instruct",
+    "parameters": 3754622976,
+    "revision": "stage1-baseline",
+    "shards": [
+      {
+        "file": "model-00001-of-00002.safetensors",
+        "sha256": "a654744766321bc582b83b7ee5cfcddbf5788248563d9bb82d88b972722c4071",
+        "size_bytes": 3995916856
+      },
+      {
+        "file": "model-00002-of-00002.safetensors",
+        "sha256": "9a636ac0ceda90b18b384687247c3cc649efaa4e1f850455a7512069a56e4673",
+        "size_bytes": 3513421080
+      }
+    ]
+  },
+  "tinycd": {
+    "architecture": "TinyCD",
+    "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+    "parameters": 3565034
+  },
+  "cmaf": {
+    "architecture": "CMAF",
+    "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b"
+  }
+}

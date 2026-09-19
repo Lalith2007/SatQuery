@@ -53,9 +53,25 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
         self.backend = (backend or os.getenv("VISION_LANGUAGE_BACKEND", "qwen25vl")).lower().strip()
 
         if self.backend == "qwen25vl":
-            resolved_base_model = base_model_id or os.getenv("MODEL_ID", "Qwen/Qwen2.5-VL-3B-Instruct")
+            resolved_base_model = base_model_id or os.getenv("MODEL_ID")
+            if not resolved_base_model:
+                for candidate in [
+                    Path("merged_full"),
+                    Path(__file__).resolve().parent.parent.parent / "merged_full",
+                    Path("artifacts/qwen25vl_stage1/merged_full"),
+                ]:
+                    if candidate.exists() and (candidate / "model.safetensors.index.json").exists():
+                        resolved_base_model = str(candidate)
+                        break
+            if not resolved_base_model:
+                resolved_base_model = "Qwen/Qwen2.5-VL-3B-Instruct"
+
             default_ad = Path("specialists/single_image/weights/qwen25vl_lora")
-            resolved_adapter = adapter_path or (str(default_ad) if default_ad.exists() else None)
+            # Standalone merged model has zero PEFT dependency
+            if "merged_full" in str(resolved_base_model):
+                resolved_adapter = None
+            else:
+                resolved_adapter = adapter_path or (str(default_ad) if default_ad.exists() else None)
             desc = (
                 "Single-Image Remote-Sensing Intelligence Specialist powered by Qwen2.5-VL — "
                 "SatQuery Remote-Sensing Adapted. Supports VQA, text-guided visual grounding, "
@@ -95,6 +111,7 @@ class SingleImageRSSpecialistTool(BaseSpecialistTool):
                 TaskType.SINGLE_IMAGE_VQA,
                 TaskType.SINGLE_IMAGE_GROUNDING,
                 TaskType.SINGLE_IMAGE_CAPTION,
+                TaskType.CHANGE_VQA,
             ],
             required_modalities=[
                 ImageModality.OPTICAL,

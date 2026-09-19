@@ -1,0 +1,26 @@
+{
+  "report_timestamp": "2026-09-17 10:17:00 UTC",
+  "execution_division": {
+    "local_host": {
+      "role": "Specialist evaluation (LEVIR-CD, WHU-OPT-SAR), CDVQA TinyCD evidence generation, agentic orchestration, audits",
+      "os": "macOS (Darwin arm64)",
+      "python_version": "3.11",
+      "torch_version": "2.14.0",
+      "device": "Apple Silicon (MPS available / CPU)",
+      "qwen_inference_permitted": false,
+      "policy_note": "Zero Qwen inference executed on Apple Silicon"
+    },
+    "remote_colab_cuda_host": {
+      "role": "All Qwen2.5-VL inference, BigEarthNet, RSVQA-LR, VRSBench, CDVQA semantic evaluation",
+      "os": "Ubuntu 22.04 LTS Linux",
+      "accelerator": "NVIDIA Tesla T4 (15.84 GB VRAM)",
+      "cuda_version": "12.2",
+      "compute_dtypes": [
+        "torch.bfloat16",
+        "torch.float16"
+      ],
+      "checkpoint_source": "/content/drive/MyDrive/SatQueryAI_Qwen25VL/stage1_run/merged_full",
+      "zero_peft_dependency": true
+    }
+  }
+}

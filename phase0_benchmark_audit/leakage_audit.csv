@@ -1,0 +1,10 @@
+Integrity Dimension,Requirement,Observed Implementation,Verdict,Evidence
+Train/Test Overlap,No test granules in training sets,Held-out test sets are strictly partitioned by spatial granule/tile ID,PASS,Proven by dataset manifest splits
+Test GT During Inference,Labels withheld until scoring,Models receive exclusively input imagery rasters during inference,PASS,Inference loops read labels post-generation
+Test GT During Preprocessing,No label-guided normalization,Fixed channel normalization constants used (ImageNet / SAR stats),PASS,Hardcoded preprocessing pipelines
+GT-Guided ROI Crops,Zero GT mask use in handoff,CDVQA crops derived strictly from TinyCD predicted probability mask,PASS,No GT access in region extraction
+GT-Guided Threshold Tuning,Fixed decision threshold,TinyCD threshold locked at 0.50 without post-hoc optimization,PASS,Production threshold hardcoded
+Synthetic Benchmark Imagery,100% genuine sensor rasters,"LEVIR-CD, WHU-OPT-SAR, RSVQA, VRSBench use pure satellite imagery",PASS,Authentic geotiff/png/parquet rasters
+Synthetic Reference Text,Genuine benchmark annotations,CDVQA evaluator substituted hardcoded synthetic sentence as ground truth,FAIL (FLAGGED),cdvqa_runner used synthetic gt_desc string
+Modality Identity,Correct sensors per encoder,Optical encoder receives 3-band MSI; SAR receives 2-band VV/VH,PASS,Modality contract strictly verified
+Prediction Artifact Preservation,Full predictions persisted,"VLM runner discarded predictions in memory, only writing summary JSON",FAIL (FLAGGED),Missing predictions.json in Colab outputs

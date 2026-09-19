@@ -91,6 +91,9 @@ class QwenSingleImageEngine:
 
     @staticmethod
     def _detect_device() -> str:
+        forced = os.getenv("SATQUERY_DEVICE", os.getenv("DEVICE", "")).lower().strip()
+        if forced in ("cuda", "mps", "cpu"):
+            return forced
         if torch.cuda.is_available():
             return "cuda"
         elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():

@@ -1,0 +1,17 @@
+Benchmark,Metric,Reported Value,Independently Recomputed,Difference,Classification,Forensic Explanation
+LEVIR-CD,F1 Score,79.31%,79.31%,0.00%,VERIFIED,"Exact match across 8,388,608 test pixels (TP: 323,254, FP: 64,540, FN: 104,160)."
+LEVIR-CD,IoU,65.71%,65.71%,0.00%,VERIFIED,Exact match across 128 test scenes.
+LEVIR-CD,Overall Accuracy,97.99%,97.99%,0.00%,VERIFIED,Exact match across 128 test scenes.
+LEVIR-CD,Precision,83.36%,83.36%,0.00%,VERIFIED,Exact match.
+LEVIR-CD,Recall,75.63%,75.63%,0.00%,VERIFIED,Exact match.
+LEVIR-CD,Specificity,99.19%,99.19%,0.00%,VERIFIED,Exact match.
+WHU-OPT-SAR,Overall Accuracy,71.71%,71.71%,0.00%,VERIFIED,"Exact match across 308,687,656 labeled pixels (4,950 tiles)."
+WHU-OPT-SAR,mIoU,35.08%,35.08%,0.00%,VERIFIED,Exact match across all 8 classes.
+WHU-OPT-SAR,Macro F1,46.62%,46.62%,0.00%,VERIFIED,Exact match.
+WHU-OPT-SAR,Weighted F1,74.18%,74.18%,0.00%,VERIFIED,Exact match.
+RSVQA-LR,Overall Accuracy,39.15%,NOT RECOMPUTED,N/A,REQUIRES REVALIDATION,Individual prediction strings were not serialized to disk in Colab runner; recalculation blocked.
+VRSBench Captioning,CIDEr / BLEU-4,NOT GENERATED,NOT RECOMPUTED,N/A,NOT AVAILABLE,Runner log did not output metric; individual predictions were not saved.
+VRSBench Grounding,Box Mean IoU,0.0484,0.0000 (Cross-Axis),N/A,INVALID,Methodological error in runner: x/y axes inverted in parsing. Acc@0.5 not computed.
+VRSBench VQA,Overall Accuracy,32.40%,NOT RECOMPUTED,N/A,REQUIRES REVALIDATION,Substituted substring match for official answer normalization; predictions not saved.
+CDVQA,BLEU-4,0.285,NOT RECOMPUTED,N/A,INVALID,"Computed against a single synthetic template string, not official CDVQA human references."
+CDVQA,ROUGE-L,0.482,NOT RECOMPUTED,N/A,INVALID,"Computed against a single synthetic template string, not official CDVQA human references."

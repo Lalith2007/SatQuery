@@ -1,0 +1,72 @@
+{
+  "manifest_version": "1.0.0",
+  "deployment_identifier": "baseline-2026-09-18",
+  "freeze_date_utc": "2026-09-18T10:51:08.329363+00:00",
+  "git": {
+    "commit_sha": "f1487fb93e277102f430a4db8f5df2a663664a52",
+    "branch": "deployment/zerogpu-baseline",
+    "tag": "baseline-2026-09-18",
+    "repository": "https://github.com/Lalith2007/SatQuery"
+  },
+  "runtime_environment": {
+    "python_version": "3.11.15",
+    "pytorch_version": "2.14.0",
+    "transformers_version": "5.16.1",
+    "target_platform": "Hugging Face Spaces ZeroGPU"
+  },
+  "models": {
+    "division_2_qwen": {
+      "architecture": "Qwen2.5-VL-3B-Instruct",
+      "model_type": "vision_language_transformer",
+      "checkpoint_format": "safetensors",
+      "revision": "stage1-baseline",
+      "parameter_count": 3754622976,
+      "peft_dependency": false,
+      "weights_directory": "merged_full",
+      "shards": [
+        {
+          "filename": "model-00001-of-00002.safetensors",
+          "size_bytes": 3995916856,
+          "sha256": "a654744766321bc582b83b7ee5cfcddbf5788248563d9bb82d88b972722c4071"
+        },
+        {
+          "filename": "model-00002-of-00002.safetensors",
+          "size_bytes": 3513421080,
+          "sha256": "9a636ac0ceda90b18b384687247c3cc649efaa4e1f850455a7512069a56e4673"
+        }
+      ],
+      "status": "VERIFIED"
+    },
+    "division_3_tinycd": {
+      "architecture": "TinyCD",
+      "checkpoint_path": "specialists/temporal_change/weights/ChangeDetector-TinyCD.pth",
+      "size_bytes": 14352163,
+      "sha256": "b9a1009355865c0277d7b3266244a6d9864d0659cd279a1d8735f705ec3345d0",
+      "parameter_count": 3565034,
+      "status": "FROZEN"
+    },
+    "division_4_cmaf": {
+      "architecture": "CMAF",
+      "checkpoint_path": "specialists/optical_sar/checkpoints/cmaf_landcover_best.pth",
+      "size_bytes": 439818817,
+      "sha256": "26288ce0e8d3f251c7b962638b0a8228288954655b6b4b0514a4edd482a4c76b",
+      "status": "FROZEN"
+    }
+  },
+  "active_thresholds": {
+    "temporal_change": {
+      "change_threshold": 0.5,
+      "min_region_area_pixels": 100,
+      "morphology_kernel_size": 3,
+      "max_regions_reported": 20,
+      "model_input_size": 256
+    },
+    "optical_sar": {
+      "confidence_threshold": 0.5,
+      "lower_quantile": 0.01,
+      "upper_quantile": 0.99,
+      "fusion_channels": 256
+    }
+  },
+  "deployment_status": "READY_FOR_DEPLOYMENT"
+}

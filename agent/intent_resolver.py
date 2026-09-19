@@ -57,7 +57,7 @@ class IntentResolver:
         # 1. Manual Task Hint Override
         if task_hint:
             logger.info(f"Using explicit task hint: {task_hint.value}")
-            is_comp = (task_hint == TaskType.CHANGE_VQA)
+            is_comp = (task_hint == TaskType.CHANGE_VQA and num_images == 2)
             sec_task = TaskType.SINGLE_IMAGE_GROUNDING if ("where" in query_cleaned and is_comp) else (TaskType.SINGLE_IMAGE_VQA if is_comp else None)
             return TaskIntent(
                 task=task_hint,
