@@ -43,6 +43,43 @@ from evaluation.benchmarks.vrsbench import VRSBenchEvaluator
 from scripts.vrsbench_coordinate_converter import CoordinateConverter
 
 
+def locate_file(eval_dir: Path, filename: str, subpaths: Optional[List[str]] = None) -> Path:
+    """Locate an evaluation file under eval_dir checking common subpaths and falling back to rglob."""
+    if subpaths:
+        for sub in subpaths:
+            candidate = eval_dir / sub
+            if candidate.exists():
+                return candidate
+
+    # Check direct
+    direct = eval_dir / filename
+    if direct.exists():
+        return direct
+
+    # Check qwen/predictions
+    qp = eval_dir / "qwen" / "predictions" / filename
+    if qp.exists():
+        return qp
+
+    # Check predictions
+    p = eval_dir / "predictions" / filename
+    if p.exists():
+        return p
+
+    # Check qwen
+    q = eval_dir / "qwen" / filename
+    if q.exists():
+        return q
+
+    # Recursive search
+    matches = list(eval_dir.rglob(filename))
+    if matches:
+        return matches[0]
+
+    # Default fallback
+    return eval_dir / "qwen" / "predictions" / filename
+
+
 def audit_inventory(eval_dir: Path) -> List[Dict[str, Any]]:
     """Recursively inventory all artifacts in the evaluation directory."""
     inventory = []
@@ -371,7 +408,16 @@ def audit_cdvqa(pred_file: Path) -> Dict[str, Any]:
 
 def audit_bigearthnet(eval_dir: Path) -> Dict[str, Any]:
     """Audit BigEarthNet Stage-1 report in the evaluation directory."""
-    ben_report = eval_dir / "qwen/bigenet_stage1/evaluation_report.json"
+    ben_report = locate_file(
+        eval_dir,
+        "evaluation_report.json",
+        [
+            "qwen/bigenet_stage1/evaluation_report.json",
+            "bigenet_stage1/evaluation_report.json",
+            "qwen/evaluation_report.json",
+            "evaluation_report.json",
+        ],
+    )
     if not ben_report.exists():
         return {"status": "NOT_FOUND"}
     try:
@@ -622,32 +668,61 @@ def main():
     print(f"[*] Discovered {len(inventory)} total artifacts in {eval_dir}")
 
     # 2. Manifest
-    manifest_p = eval_dir / "qwen/predictions/prediction_manifest.json"
+    manifest_p = locate_file(
+        eval_dir,
+        "prediction_manifest.json",
+        ["qwen/predictions/prediction_manifest.json", "predictions/prediction_manifest.json"],
+    )
     manifest_info = inspect_manifest(manifest_p)
-    print(f"[*] Prediction Manifest: {manifest_info.get('status')}")
+    print(f"[*] Prediction Manifest: {manifest_info.get('status')} ({manifest_p})")
 
     # 3. RSVQA
-    rsvqa_p = eval_dir / "qwen/predictions/rsvqa_predictions.jsonl"
+    rsvqa_p = locate_file(
+        eval_dir,
+        "rsvqa_predictions.jsonl",
+        ["qwen/predictions/rsvqa_predictions.jsonl", "predictions/rsvqa_predictions.jsonl"],
+    )
     rsvqa_audit = audit_rsvqa(rsvqa_p)
     print(f"[*] RSVQA-LR: {rsvqa_audit.get('total_records', 0)} records | Recomputed Acc: {rsvqa_audit.get('recomputed_metrics', {}).get('overall_accuracy', 0) * 100:.2f}%")
 
     # 4. VRSBench Grounding
-    grd_p = eval_dir / "qwen/predictions/vrsbench_grounding_predictions.jsonl"
+    grd_p = locate_file(
+        eval_dir,
+        "vrsbench_grounding_predictions.jsonl",
+        ["qwen/predictions/vrsbench_grounding_predictions.jsonl", "predictions/vrsbench_grounding_predictions.jsonl"],
+    )
     grd_audit = audit_vrsbench_grounding(grd_p)
     print(f"[*] VRSBench Grounding: {grd_audit.get('total_records', 0)} records | Acc@0.5: {grd_audit.get('recomputed_metrics', {}).get('acc_05_all')}%")
 
     # 5. VRSBench VQA
-    vqa_p = eval_dir / "qwen/predictions/vrsbench_vqa_predictions.jsonl"
+    vqa_p = locate_file(
+        eval_dir,
+        "vrsbench_vqa_predictions.jsonl",
+        ["qwen/predictions/vrsbench_vqa_predictions.jsonl", "predictions/vrsbench_vqa_predictions.jsonl"],
+    )
     vqa_audit = audit_vrsbench_vqa(vqa_p)
     print(f"[*] VRSBench VQA: {vqa_audit.get('total_records', 0)} records (62 resumed + {vqa_audit.get('fresh_count')} fresh) | Combined Acc: {vqa_audit.get('overall_metrics', {}).get('overall_accuracy')}%")
 
     # 6. VRSBench Caption
-    cap_p = eval_dir / "qwen/predictions/vrsbench_caption_predictions.jsonl"
+    cap_p = locate_file(
+        eval_dir,
+        "vrsbench_caption_predictions.jsonl",
+        [
+            "qwen/predictions/vrsbench_caption_predictions.jsonl",
+            "predictions/vrsbench_caption_predictions.jsonl",
+            "qwen/predictions/vrsbench_captioning_predictions.jsonl",
+            "predictions/vrsbench_captioning_predictions.jsonl",
+        ],
+    )
     cap_audit = audit_vrsbench_caption(cap_p)
     print(f"[*] VRSBench Captioning: {cap_audit.get('total_records', 0)} records | BLEU-4: {cap_audit.get('recomputed_metrics', {}).get('bleu_4')}")
 
     # 7. CDVQA
-    cdvqa_p = eval_dir / "qwen/predictions/cdvqa_predictions.jsonl"
+    cdvqa_p = locate_file(
+        eval_dir,
+        "cdvqa_predictions.jsonl",
+        ["qwen/predictions/cdvqa_predictions.jsonl", "predictions/cdvqa_predictions.jsonl"],
+    )
     cdvqa_audit = audit_cdvqa(cdvqa_p)
     print(f"[*] CDVQA: {cdvqa_audit.get('total_records', 0)} / 39,686 records ({cdvqa_audit.get('evaluated_fraction_pct')}%) | Accuracy: {cdvqa_audit.get('overall_accuracy_pct')}%")
 
