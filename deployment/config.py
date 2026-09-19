@@ -58,7 +58,7 @@ class DeploymentConfig(BaseModel):
     )
 
     # Hugging Face Model Repository
-    hf_model_repo_id: str = Field(default="Lalith2007/SatQuery-Models")
+    hf_model_repo_id: str = Field(default="Lalith47/SatQuery-Models")
     hf_model_revision: str = Field(default="stage1-baseline")
 
     # Static assets

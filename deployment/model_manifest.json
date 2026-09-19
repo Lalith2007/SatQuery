@@ -1,7 +1,7 @@
 {
   "deployment": "baseline-2026-09-18",
   "qwen": {
-    "repository": "Lalith2007/SatQuery-Models",
+    "repository": "Lalith47/SatQuery-Models",
     "revision": "stage1-baseline",
     "architecture": "Qwen2.5-VL-3B-Instruct",
     "parameter_count": 3754622976,

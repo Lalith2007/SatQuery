@@ -1,7 +1,7 @@
 """Model Publishing CLI Utility for SatQuery AI.
 
 Publishes an explicitly verified model revision (e.g. stage1-baseline) to the
-Hugging Face Model Repository: Lalith2007/SatQuery-Models.
+Hugging Face Model Repository: Lalith47/SatQuery-Models.
 
 Verification Steps:
 1. Verifies presence of all model shards and configuration files
@@ -103,7 +103,7 @@ def verify_model_directory(model_dir: Path) -> Dict[str, Any]:
 
 def publish_model(
     model_dir: Path,
-    repo_id: str = "Lalith2007/SatQuery-Models",
+    repo_id: str = "Lalith47/SatQuery-Models",
     revision: str = "stage1-baseline",
     token: Optional[str] = None,
     dry_run: bool = False,
@@ -161,7 +161,7 @@ def main():
     parser.add_argument(
         "--repo-id",
         type=str,
-        default="Lalith2007/SatQuery-Models",
+        default="Lalith47/SatQuery-Models",
         help="Hugging Face model repository ID",
     )
     parser.add_argument(
