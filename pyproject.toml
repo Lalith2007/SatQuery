@@ -14,6 +14,7 @@ requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.110.0",
     "uvicorn>=0.28.0",
+    "gradio>=4.0.0",
     "pydantic>=2.6.0",
     "pydantic-settings>=2.2.0",
     "pillow>=10.2.0",

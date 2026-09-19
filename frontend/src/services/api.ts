@@ -45,8 +45,51 @@ class ApiService {
     return res.data;
   }
 
-  // Submit structured JSON query
+  // Submit structured JSON query (Gradio Server queued API with REST fallback)
   async submitQuery(req: QueryRequest): Promise<QueryResponse> {
+    try {
+      const imagePaths = req.images.map((img) => img.path_or_uri);
+      const taskHint = req.task_hint || 'single_image_vqa';
+      
+      const callRes = await this.client.post<{ event_id: string }>('/gradio_api/call/predict', {
+        data: [req.query, taskHint, JSON.stringify(imagePaths)],
+      });
+      const eventId = callRes.data?.event_id;
+      if (eventId) {
+        const streamRes = await fetch(`${API_BASE}/gradio_api/call/predict/${eventId}`);
+        if (streamRes.ok) {
+          const reader = streamRes.body?.getReader();
+          const decoder = new TextDecoder('utf-8');
+          if (reader) {
+            let buffer = '';
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || '';
+              for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('data:')) {
+                  const jsonStr = trimmed.replace(/^data:\s*/, '');
+                  try {
+                    const parsed = JSON.parse(jsonStr);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                      return parsed[0] as QueryResponse;
+                    }
+                  } catch {
+                    // partial or keepalive
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Gradio Server queue submission fell back to REST:', err);
+    }
+
     const res = await this.client.post<QueryResponse>('/api/v1/query', req);
     return res.data;
   }

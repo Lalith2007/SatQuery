@@ -1,3 +1,13 @@
+---
+title: SatQuery AI — Agentic Multimodal Satellite Intelligence
+emoji: 🛰️
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+app_file: app.py
+pinned: false
+---
+
 # SatQuery AI 🛰️
 
 **An Interactive Vision-Language Assistant & Multi-Specialist Agent for Remote-Sensing Intelligence**

@@ -50,6 +50,7 @@ class ZeroGPURuntime:
     """Manages lazy model lifecycles and GPU forward-pass executions."""
 
     _instance: Optional[ZeroGPURuntime] = None
+    gpu_decorator = staticmethod(zero_gpu)
 
     def __init__(self) -> None:
         self.qwen_model: Optional[Any] = None

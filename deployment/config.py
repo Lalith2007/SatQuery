@@ -21,7 +21,7 @@ class DeploymentConfig(BaseModel):
     deployment_name: str = Field(default="SatQuery AI — ZeroGPU Production")
     deployment_identifier: str = Field(default="baseline-2026-09-18")
     environment: str = Field(
-        default_factory=lambda: os.getenv("SATQUERY_ENV", "zerogpu")
+        default_factory=lambda: os.getenv("SATQUERY_ENV", os.getenv("ENVIRONMENT", "zerogpu" if os.getenv("SPACE_ID") else "development"))
     )
     host: str = Field(default_factory=lambda: os.getenv("HOST", "0.0.0.0"))
     port: int = Field(default_factory=lambda: int(os.getenv("PORT", "7860")))
